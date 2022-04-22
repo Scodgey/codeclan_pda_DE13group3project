@@ -1,6 +1,0 @@
----
-title: "Group 3 Project - Notebook"
-output: html_notebook
----
-
-# Notebook to open and check repository. 
