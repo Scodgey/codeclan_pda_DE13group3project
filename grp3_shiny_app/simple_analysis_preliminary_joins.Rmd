@@ -1,0 +1,12 @@
+#libraries loaded from global.R
+
+```{r}
+library(here)
+library(janitor)
+library(tidyverse)
+
+#simple analysis of columns
+
+glimpse(here(""))
+```
+
