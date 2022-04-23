@@ -46,17 +46,23 @@ admis_board_specialty <- read_csv(here("raw_data/hospital_admissions_hb_specialt
   clean_names()
 
 
-nhs_data_joined <- bind_rows(act_by_board_age_sex, 
+nhs_data_joined1 <- bind_rows(act_by_board_age_sex, 
                              act_by_board_specialty,
                              act_by_board_deprivation,
-                             act_ae_waiting,
-                             bed_by_board_treatment_specialty,
+                             act_ae_waiting,.id = NULL)
+
+nhs_data_joined2 <- bind_rows(admis_board_age_sex,
+                              admis_board_deprivation,
+                              admis_board_specialty,.id = NULL)
+
+nhs_data_joined3 <-bind_rows(bed_by_board_treatment_specialty,
                              delayed_discharge_beddays_board,
-                             admis_board_age_sex,
-                             admis_board_deprivation,
-                             admis_board_specialty,
                              .id = NULL)
 
-write_csv(nhs_data_joined,"raw_data/nhs_data_joined.csv")
+                        
+
+write_csv(nhs_data_joined1,"raw_data/nhs_data_joined1.csv")
+write_csv(nhs_data_joined2,"raw_data/nhs_data_joined2.csv")
+write_csv(nhs_data_joined3,"raw_data/nhs_data_joined3.csv")
 
 
