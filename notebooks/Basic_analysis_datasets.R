@@ -15,8 +15,9 @@ compare_df_cols_same(nhs_joined_1, nhs_joined_2, nhs_joined_3)
 
 #checking columns to spit into Workflow_Project
 
-glimpse(here("raw_data/activity_by_board_age_sex.csv"))
+activity_by_board_age_sex <- read_csv(here("raw_data/activity_by_board_age_sex.csv"))
 
+activity_by_board_age_sex %>% 
 glimpse()
 head()
 tail()
