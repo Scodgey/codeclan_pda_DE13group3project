@@ -51,6 +51,8 @@ library(rnaturalearthdata) #geospatial
 
 
 
+
+
 # Demographic Data
 # This is data required for demographic insight.
 
