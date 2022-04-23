@@ -1,10 +1,6 @@
 # The purpose of this script is to join the data from the projects 
 #raw_data folder prior to subsequent cleaning and wrangling.
 
-<<<<<<< Updated upstream
-librarys
-=======
-
 # The below datasets are read-in and will be binded into a single dataframe.
 
 #Activity by Board (Age & Sex)
@@ -65,4 +61,4 @@ write_csv(nhs_data_joined2,"raw_data/nhs_data_joined2.csv")
 write_csv(nhs_data_joined3,"raw_data/nhs_data_joined3.csv")
 
 
->>>>>>> Stashed changes
+
