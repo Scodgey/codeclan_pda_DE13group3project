@@ -13,7 +13,7 @@
 ## Packages ----
 ###############################################.
 
-librarys <- function(){
+#librarys <- function(){
 library(here) # for reading in data from repo.
 library(janitor) # for cleaning names when reading in raw-data.
 library(lubridate) # for handling dates and times in R.
@@ -39,7 +39,7 @@ library(rgeos) #geospatial
 library(rnaturalearth) #geospatial
 library(leaflet) #geospatial e.g. markers etc.
 library(rnaturalearthdata) #geospatial
-}
+#}
 
 ###############################################.
 ## Data - Including Cleaning & Wrangling ----
