@@ -18,10 +18,17 @@ compare_df_cols_same(nhs_joined_1, nhs_joined_2, nhs_joined_3)
 #loading df's into R
 
 activity_by_board_age_sex <- read_csv(here("raw_data/activity_by_board_age_sex.csv"))
+
+
 activity_by_board_and_specialty <- read_csv(here("raw_data/activity_by_board_and_specialty.csv"))
+
 activity_by_board_deprivation <- read_csv(here("raw_data/activity_by_board_deprivation.csv"))
-beds_by_nhs_board_of_treatment_and_specialty <- read_csv(here("raw_data/beds_by_nhs_board_of_treatment_and_specialty.csv"))
-delayed_discharge_beddays_health_board <- read_csv(here("raw_data/delayed-discharge-beddays-health-board.csv"))
+
+beds_by_nhs_board_of_treatment_and_specialty <- read_csv(here("raw_data/beds_by_nhs_board_of_treatment_and_specialty.csv")) %>% 
+  clean_names()
+
+delayed_discharge_beddays_health_board <- read_csv(here("raw_data/delayed-discharge-beddays-health-board.csv")) 
+
 ```
 
 ```{r}
@@ -30,11 +37,15 @@ glimpse(activity_by_board_age_sex)
 
 
 ```{r}
+names(beds_by_nhs_board_of_treatment_and_specialty)
 skim(beds_by_nhs_board_of_treatment_and_specialty)
-#I suspect all of the "raw" data coming from PHS is already tidy.
+distinct(beds_by_nhs_board_of_treatment_and_specialty$specialty)
+
 
 ```
 
-Data needs to be put through janitor
 
-Percentage occupancy is skewing left
+Data needs to be put through janitor 
+
+Percentage occupancy is skewing left which requires further investigation. Is this due to seasonal or demographic reasons? Or a combination of the two?
+
