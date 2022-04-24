@@ -16,9 +16,10 @@ knitr::opts_chunk$set(echo = FALSE)#Whether to display code inc it's results.
 knitr::opts_chunk$set(message = FALSE)#Whether to display messages.
 knitr::opts_chunk$set(warning = FALSE)#Whether to display warnings.
 knitr::opts_chunk$set(error = FALSE)#Whether to display errors.
-#knitr::opts_chunk$set(eval = FALSE)#Whether to evaluate the code & incl results.
+knitr::opts_chunk$set(eval = TRUE)#Whether to evaluate the code & incl results.
 
 ```
+
 
 # 1. Documentation
 
@@ -133,13 +134,13 @@ was admitted.
 
 | **Bed Definition** | **Description** |
 | --- | --- | 
-| Available Staffed Beds | This reflects the number of beds that can be used for inpatient or daycase care, multiplied by the number of days in a time period i.e. number of available staffed bed days over the year: **Total number of available staffed beds (aasb) over the year = Allocated Beds + Borrowed Beds – Lent Beds + Temporary Beds** | 
- Average Available Staffed Beds | This is the average daily number of beds, which are staffed and available for the reception of patients (borrowed and temporary beds are included):**Average number of available staffed beds per day (asb) = aasb / number of days in the year**  |
+| Available Staffed Beds | This reflects the number of beds that can be used for inpatient or daycase care, multiplied by the number of days in a time period i.e. number of available staffed bed days over the quarter: **Total number of available staffed beds (aasb) over the quarter = Allocated Beds + Borrowed Beds – Lent Beds + Temporary Beds** | 
+ Average Available Staffed Beds | This is the average daily number of beds, which are staffed and available for the reception of patients (borrowed and temporary beds are included):**Average number of available staffed beds per day (asb) = aasb / number of days in the quarter**  |
  Allocated Beds | An [ allocated bed](https://www.ndc.scot.nhs.uk/Dictionary-A-Z/Definitions/index.asp?Search=A&ID=76&Title=Allocated%20Bed/) is a bed from the specialty bed complement which is resourced for use by the specialty.Beds temporarily out of use remain part of the specialty bed complement but are not available for use, normally for inpatient and day cases. | 
  Borrowed Beds | A [ borrowed bed ](https://www.ndc.scot.nhs.uk/Dictionary-A-Z/Definitions/index.asp?Search=B&ID=117&Title=Borrowed%20Bed/) is a bed which is made available to a specialty/significant facility other than the specialty/significant facility to which it is allocated. |
  Lent Beds | A [ lent bed ](https://www.ndc.scot.nhs.uk/Dictionary-A-Z/Definitions/index.asp?Search=L&ID=307&Title=Lent%20Bed/) is a bed which is donated temporarily by a specialty/significant facility to another specialty/significant facility. |  
  Temporary | A [temporary bed ](https://www.ndc.scot.nhs.uk/Dictionary-A-Z/Definitions/index.asp?Search=T&ID=492&Title=Temporary%20Bed/ ) is a bed erected in a ward, additional to the bed complement of the ward, Note: Temporary beds are used at times of overcrowding and are normally located in the area of accommodation of the specialty involved. |
- Occupied Bed | An occupied bed is an available staffed bed, which is either being used to accommodate an inpatient or reserved for a patient on pass: **Total number of occupied bed days (tobd) = Sum of the number of occupied beds for each day of the year. Average number of occupied beds per day (aob) = tobd / number of days in the year.** |
+ Occupied Bed | An occupied bed is an available staffed bed, which is either being used to accommodate an inpatient or reserved for a patient on pass: **Total number of occupied bed days (tobd) = Sum of the number of occupied beds for each day of the quarter. Average number of occupied beds per day (aob) = tobd / number of days in the quarter.** |
  Percentage Occupancy (%) | The percentage occupancy is the percentage of average available staffed beds that were occupied by inpatients during the period: Percentage occupancy = (aob / asb) x 100 |
  
 
@@ -168,8 +169,110 @@ for return outpatients in SMR00 is poor**
 
 #### 2b. Revision
 NHS Boards can update both their current and historical data monthly. This may 
-result in changes in the used data sources..
+result in changes in the used data sources.
+
+The data used in this document was last updated	22 February 2022, 
+11:30 (UTC+00:00).
 
 <br>
 
+# 3. Data Analysis - Beds
+
+```{r, results="hide"}
+# The first step in the analysis was to run the library's available on the 
+# global.r script for this project.  
+
+# The next step was to load in the bed dataset from the group joined data set
+# script. 
+
+bed_data <- read_csv(here("raw_data/nhs_data_joined3.csv"))
+
+#Next I loaded in the location look up file. 
+location_look_up <- read_csv(here("raw_data/hospital_locations_lookup_file.csv")) %>% 
+  clean_names() %>% 
+  select(-"id")
+```
+
+
+```{r, results="hide" }
+#The next step is to view the date, using skimr package.
+
+bed_data %>% 
+  skimr::skim()
+```
+
+
+```{r, results="hide"}
+#Remove columns not required to review bed occupancy & split quarter column.
+
+bed_data_year <- bed_data %>% 
+#change variable name to reflect definitions.
+  rename("available_staffed_beds" = "all_staffed_beds") %>% 
+  select(1:20) %>% 
+#split quarter variable into quarter & year.
+mutate(quarter_year = str_remove(quarter, pattern = "([Q]*[1-4]+$)"), 
+       .before = quarter) %>% 
+mutate(quarter_year = as.numeric(quarter_year)) %>% 
+mutate(quarter = str_remove(quarter, pattern = "(^[0-9]+[0-9]+[0-9]+[0-9]+)"), 
+       .after = quarter_year ) %>% 
+#round variables
+mutate(average_available_staffed_beds = round(average_available_staffed_beds),
+       average_occupied_beds = round(average_occupied_beds), 
+       percentage_occupancy = round(percentage_occupancy)) %>% 
+filter(!is.na(quarter_year)) %>% 
+#filter years to 2018 onwards, as agreed with project group.  
+filter(quarter_year >= 2018)
+
+```
+
+
+
+```{r, results="hide"}
+#Upon review of the data it was identified that every second observation, 
+# had a statistical qualifier "d" (see qualifier information for definition). 
+#Based on the definition, and the intent of this analysis these observations 
+#were removed. 
+
+#This was filtered out prior to a join with the look_up file. 
+
+#join location look-up file to bed_data
+joined_bed_data <- bed_data_year %>% 
+  filter(!location_qf %in% "d") %>% 
+  left_join(location_look_up, by = "location") %>% 
+#End joined table at postcode variable.
+  select(1:27)
+
+```
+
+
+> **Plot 1 - Hospital Average Occupancy (%) Compared to other Scottish Hospitals:**
+
+
+```{r, echo=TRUE}
+plot1 <- joined_bed_data %>%
+  select(location_name, percentage_occupancy) %>% 
+  group_by(location_name) %>% 
+  summarise(location_total = n(), 
+            average_bed_occupancy = round(sum(percentage_occupancy, na.rm =TRUE)/ 
+                                        location_total)) %>% 
+  mutate(quartiles = cut_number(x = average_bed_occupancy,n = 4, 
+                        labels = c("AveOcc in Highest 25%",
+                                   "AveOcc in Highest 50 % ",
+                                   "AveOcc in Lowest 50%", 
+                                   "AveOcc in Lowest 25%"))
+                                           ) %>% 
+  ggplot()+
+  aes(x = location_name, y = average_bed_occupancy, fill = quartiles)+
+  geom_col()+
+  theme_bw() +
+  coord_flip()+
+labs(x = "Location Name", y = "Average Occupancy (%)")
+
+ggplotly(plot1)
+       
+
+#Checked NA's prior to removal 8 in total across Dr Grays Hospital & Borders. 
+# Should a verification be added here in terms of NA's exceed percentage of 
+#location total entries.
+```
 
