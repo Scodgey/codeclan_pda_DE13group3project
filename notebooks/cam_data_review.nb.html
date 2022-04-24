@@ -11,7 +11,7 @@
 
 
 
-<title>R Notebook</title>
+<title>Exploring the data</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -1760,15 +1760,34 @@ pre code {
 
 
 
-<h1 class="title toc-ignore">R Notebook</h1>
+<h1 class="title toc-ignore">Exploring the data</h1>
 
 </div>
 
 
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShsdWJyaWRhdGUpXG5saWJyYXJ5KHpvbylcblxudGVzdGluZ19kYXRhIDwtIG5oc19kYXRhX2pvaW5lZDEgJT4lIFxuICBzZWxlY3QocXVhcnRlciwgc3BlY2lhbHR5X25hbWUsIGxlbmd0aF9vZl9zdGF5KSAlPiUgXG4gIG11dGF0ZShxdWFydGVyID0gcGFyc2VfZGF0ZV90aW1lKHF1YXJ0ZXIsIG9yZGVycyA9IFwiJVklcVwiKSlcblxudGVzdGluZ19kYXRhICU+JSBcbiAgZmlsdGVyKHF1YXJ0ZXIgPiAwKSAlPiUgXG4gIGZpbHRlcighaXMubmEocXVhcnRlcikpICU+JSBcbiAgZ2dwbG90KCkrXG4gIGFlcyh4ID0gcXVhcnRlciwgeSA9IGxlbmd0aF9vZl9zdGF5KStcbiAgZ2VvbV9saW5lKClcbmBgYCJ9 -->
+<pre class="r"><code>library(lubridate)
+library(zoo)
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiUiBOb3RlYm9vayIKb3V0cHV0OiBodG1sX25vdGVib29rCi0tLQoKCgoKCg==</div>
+testing_data &lt;- nhs_data_joined1 %&gt;% 
+  select(quarter, specialty_name, length_of_stay) %&gt;% 
+  mutate(quarter = parse_date_time(quarter, orders = &quot;%Y%q&quot;))
+
+testing_data %&gt;% 
+  filter(quarter &gt; 0) %&gt;% 
+  filter(!is.na(quarter)) %&gt;% 
+  ggplot()+
+  aes(x = quarter, y = length_of_stay)+
+  geom_line()</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiRXhwbG9yaW5nIHRoZSBkYXRhIgpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sKLS0tCgoKCgoKCgoKYGBge3J9CmxpYnJhcnkobHVicmlkYXRlKQpsaWJyYXJ5KHpvbykKCnRlc3RpbmdfZGF0YSA8LSBuaHNfZGF0YV9qb2luZWQxICU+JSAKICBzZWxlY3QocXVhcnRlciwgc3BlY2lhbHR5X25hbWUsIGxlbmd0aF9vZl9zdGF5KSAlPiUgCiAgbXV0YXRlKHF1YXJ0ZXIgPSBwYXJzZV9kYXRlX3RpbWUocXVhcnRlciwgb3JkZXJzID0gIiVZJXEiKSkKCnRlc3RpbmdfZGF0YSAlPiUgCiAgZmlsdGVyKHF1YXJ0ZXIgPiAwKSAlPiUgCiAgZmlsdGVyKCFpcy5uYShxdWFydGVyKSkgJT4lIAogIGdncGxvdCgpKwogIGFlcyh4ID0gcXVhcnRlciwgeSA9IGxlbmd0aF9vZl9zdGF5KSsKICBnZW9tX2xpbmUoKQpgYGAKCgoK</div>
 
 
 
