@@ -1,3 +1,4 @@
+```{r}
 #most libraries derived from global.R
 
 library(readxl)
@@ -28,5 +29,5 @@ tail()
 summary(activity_by_board_age_sex)
 #I suspect all of the "raw" data coming from PHS is already tidy.
 
-
+```
 
