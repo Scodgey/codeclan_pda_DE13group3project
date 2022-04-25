@@ -16,7 +16,7 @@ knitr::opts_chunk$set(echo = FALSE)#Whether to display code inc it's results.
 knitr::opts_chunk$set(message = FALSE)#Whether to display messages.
 knitr::opts_chunk$set(warning = FALSE)#Whether to display warnings.
 knitr::opts_chunk$set(error = FALSE)#Whether to display errors.
-knitr::opts_chunk$set(eval = TRUE)#Whether to evaluate the code & incl results.
+knitr::opts_chunk$set(eval = FALSE)#Whether to evaluate the code & incl results.
 
 ```
 
@@ -198,6 +198,9 @@ location_look_up <- read_csv(here("raw_data/hospital_locations_lookup_file.csv")
 #The next step is to view the date, using skimr package.
 
 bed_data %>% 
+  skimr::skim()
+
+location_look_up %>% 
   skimr::skim()
 ```
 
