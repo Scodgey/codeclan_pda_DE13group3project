@@ -40,6 +40,10 @@ admis_board_deprivation <- read_csv(here("raw_data/hospital_admissions_hb_depriv
 admis_board_specialty <- read_csv(here("raw_data/hospital_admissions_hb_specialty.csv")) %>% 
   clean_names()
 
+#Hospital Location Data
+hospital_locations_lookup_file <- read_csv(here("raw_data/hospital_locations_lookup_file.csv")) %>% 
+  clean_names()
+
 
 nhs_data_joined1 <- bind_rows(act_by_board_age_sex, 
                              act_by_board_specialty,
