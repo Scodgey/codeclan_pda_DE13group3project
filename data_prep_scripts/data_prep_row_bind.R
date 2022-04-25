@@ -40,11 +40,26 @@ admis_board_deprivation <- read_csv(here("raw_data/hospital_admissions_hb_depriv
 admis_board_specialty <- read_csv(here("raw_data/hospital_admissions_hb_specialty.csv")) %>% 
   clean_names()
 
+#Hospital Location Data
+hospital_locations_lookup_file <- read_csv(here("raw_data/hospital_locations_lookup_file.csv")) %>% 
+  clean_names()
+
 
 nhs_data_joined1 <- bind_rows(act_by_board_age_sex, 
                              act_by_board_specialty,
                              act_by_board_deprivation,
-                             act_ae_waiting,.id = NULL)
+                             act_ae_waiting,.id = NULL)%>% 
+  mutate(quarter_year = str_remove(quarter, pattern = "([Q]*[1-4]+$)"), 
+         .after = quarter) %>% 
+  mutate(quarter_year = as.numeric(quarter_year)) %>% 
+  mutate(quarter =str_remove(quarter, pattern = "(^[0-9]+[0-9]+[0-9]+[0-9]+)"), 
+         .after = quarter_year) %>% 
+  mutate(season = case_when(
+    quarter == "Q1" ~"Spring",
+    quarter == "Q2" ~"Summer",
+    quarter == "Q3" ~"Autumn",
+    quarter == "Q4" ~"Winter"
+  ), .after = quarter)
 
 nhs_data_joined2 <- bind_rows(admis_board_age_sex,
                               admis_board_deprivation,
@@ -52,9 +67,22 @@ nhs_data_joined2 <- bind_rows(admis_board_age_sex,
 
 nhs_data_joined3 <-bind_rows(bed_by_board_treatment_specialty,
                              delayed_discharge_beddays_board,
-                             .id = NULL)
+                             .id = NULL) %>% 
+  mutate(quarter_year = str_remove(quarter, pattern = "([Q]*[1-4]+$)"), 
+    .after = quarter) %>% 
+  mutate(quarter_year = as.numeric(quarter_year)) %>% 
+  mutate(quarter =str_remove(quarter, pattern = "(^[0-9]+[0-9]+[0-9]+[0-9]+)"), 
+    .after = quarter_year) %>% 
+  mutate(season = case_when(
+    quarter == "Q1" ~"Spring",
+    quarter == "Q2" ~"Summer",
+    quarter == "Q3" ~"Autumn",
+    quarter == "Q4" ~"Winter"
+  ), .after = quarter)
 
-                        
+nhs_data_joined3$season
+
+
 
 write_csv(nhs_data_joined1,"raw_data/nhs_data_joined1.csv")
 write_csv(nhs_data_joined2,"raw_data/nhs_data_joined2.csv")
