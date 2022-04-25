@@ -68,20 +68,23 @@ _Delayed_discharge_beddays
 
 ```{r}
 nhs_joined_1 %>% 
-  group_by(quarter, age) %>% 
+  group_by(quarter_year, quarter, age) %>% 
   summarise(count = n())
 
 ```
 
 ```{r}
 nhs_joined_2 %>% 
-  group_by(quarter, age_group) %>% 
+  filter(!age_group == "All ages") %>% 
+  group_by(quarter_year, quarter, age_group) %>% 
   summarise(count = n())
 ```
 
 ```{r}
 nhs_joined_3 %>% 
-  group_by(quarter, age_group) %>% 
+  group_by(quarter_year, quarter, age_group) %>% 
   summarise(count = n())
 ```
 
+currently, going to the nhs_join_3, we couldn't answer any demographic data related to age (or gender, or deprivation) without creating a new df with a join.
+Average time
