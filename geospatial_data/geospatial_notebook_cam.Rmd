@@ -1,0 +1,87 @@
+---
+title: "Exploring the data"
+output: html_notebook
+---
+
+# Documentation
+
+This is documentation on how to plot the local authority areas of Scotland and
+therefore the health boards of Scotland.
+
+The shape file for the polygons were obtained from 
+
+
+# Loading in the data and manipulating the shape file
+
+```{r}
+nhs_data_joined1 <- read_csv(here("raw_data/nhs_data_joined1.csv"))
+
+nhs_data_joined2<- read_csv(here("raw_data/nhs_data_joined2.csv"))
+
+nhs_data_joined3<- read_csv(here("raw_data/nhs_data_joined3.csv"))
+```
+
+```{r}
+nhs_data_joined1
+```
+
+
+
+```{r}
+scot_local_authorities <- 
+  st_read("scottish_local_authority_data_2021/SG_NHS_HealthBoards_2019.shp") %>% 
+  clean_names() %>% 
+  st_simplify(dTolerance = 2000) %>% 
+  rename(hb = hb_code) %>% 
+  st_transform('+proj=longlat +datum=WGS84')
+```
+
+
+```{r}
+# Joining on to NHS Joined 3 to see if we can get a working interactive map
+nhs_data_joined3 %>% 
+  right_join(scot_local_authorities, by = "hb") %>% 
+  leaflet() %>% 
+  addTiles() %>% 
+  addPolygons(
+    fillColor = ~colorQuantile("YlOrRd", nc_simplified$BIR79)(BIR79),
+    fillOpacity = 0.6,
+    weight = 1
+  )
+
+nhs_data_joined2 %>% 
+  filter(!is.na(specialty))
+```
+
+
+
+
+```{r}
+library(sf)
+library(dplyr)
+library(ggplot2)
+
+# Municipal Waste (tonnes) and arising per capita (kgs)
+# https://statistics.gov.scot/resource?uri=http%3A%2F%2Fstatistics.gov.scot%2Fdata%2Fmunicipal-waste
+# Use the URL for the csv button
+waste <- read.csv("https://statistics.gov.scot/downloads/cube-table?uri=http%3A%2F%2Fstatistics.gov.scot%2Fdata%2Fmunicipal-waste") %>%
+  filter(Indicator..municipal.waste. == 'Waste Recycled',
+         DateCode == '2011/2012',
+         FeatureCode != 'S92000003')
+
+
+# Local Authority Districts (December 2018) Boundaries UK BGC
+# https://geoportal.statistics.gov.uk/datasets/local-authority-districts-december-2018-boundaries-uk-bgc/geoservice?geometry=-33.064%2C49.415%2C26.438%2C58.428
+# Use the GeoJSON API
+la <- st_read("https://services1.arcgis.com/ESMARspQHYMw9BZ9/arcgis/rest/services/Local_Authority_Districts_December_2021_GB_BFC/FeatureServer/0/query?outFields=*&where=1%3D1&f=geojson")
+
+# Join the two datasets
+la_waste <- merge(la, waste, by.x = 'lad18cd', by.y = 'FeatureCode')
+
+# Plot with ggplot2's sf geom
+ggplot() +
+  geom_sf(data = la_waste["Value"], mapping = aes(fill = Value), colour = "white")
+```
+
+
+
