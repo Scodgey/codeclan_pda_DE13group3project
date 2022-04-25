@@ -27,7 +27,31 @@ glimpse()
 head()
 tail()
 summary(activity_by_board_age_sex)
-#I suspect all of the "raw" data coming from PHS is already tidy.
 
 ```
+
+Activity by board age sex
+delayed discharge beddays healthboard
+activity by board deprivation
+```{r}
+glimpse (activity_by_board_age_sex)
+
+```
+column breakdown:
+
+Of interest:
+
+__Temporal__
+Quarter: need to transfrom via str_remove year data OR if it makes more sense use lubridate quarter(date) function to normalize the "time" column"
+
+
+__Demographic__
+Age: need to mutate str_remove "years" figure out how to impute the range of 10-19 to something more meaningful OR transform other df age columns to this format and do counts for inputs to ggplot
+
+Admission Type: patient info that may be useful for graphing, but not specifically
+
+Episodes: need to correlate with
+__GeoSpatial__
+HB: (Health Board), can be joined to spatial data
+Location: (Hospital), can be joined to spatial data
 
