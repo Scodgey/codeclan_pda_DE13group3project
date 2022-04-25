@@ -16,7 +16,7 @@ knitr::opts_chunk$set(echo = FALSE)#Whether to display code inc it's results.
 knitr::opts_chunk$set(message = FALSE)#Whether to display messages.
 knitr::opts_chunk$set(warning = FALSE)#Whether to display warnings.
 knitr::opts_chunk$set(error = FALSE)#Whether to display errors.
-knitr::opts_chunk$set(eval = TRUE)#Whether to evaluate the code & incl results.
+knitr::opts_chunk$set(eval = FALSE)#Whether to evaluate the code & incl results.
 
 ```
 
@@ -199,6 +199,9 @@ location_look_up <- read_csv(here("raw_data/hospital_locations_lookup_file.csv")
 
 bed_data %>% 
   skimr::skim()
+
+location_look_up %>% 
+  skimr::skim()
 ```
 
 
@@ -221,7 +224,7 @@ mutate(average_available_staffed_beds = round(average_available_staffed_beds),
        percentage_occupancy = round(percentage_occupancy)) %>% 
 filter(!is.na(quarter_year)) %>% 
 #filter years to 2018 onwards, as agreed with project group.  
-filter(quarter_year >= 2018)
+filter(quarter_year >= 2018 & quarter %in% c("Q2", "Q3", "Q4"))
 
 ```
 
