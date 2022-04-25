@@ -29,6 +29,7 @@ tail()
 summary(activity_by_board_age_sex)
 
 ```
+Focusing on these three dfs:
 
 Activity by board age sex
 delayed discharge beddays healthboard
@@ -50,8 +51,16 @@ Age: need to mutate str_remove "years" figure out how to impute the range of 10-
 
 Admission Type: patient info that may be useful for graphing, but not specifically
 
-Episodes: need to correlate with
+Episodes: need to correlate with demographic data
+LengthOfEpisode: need to correlate with demographic data
+AverageLengthofEpisode: need to correlate with demographic data
+
+Stays: essential for correlating and answering question
+LengthofStay: essential for correlating and answering question
+AverageLengthofStay: essential for correlating and answering question
 __GeoSpatial__
 HB: (Health Board), can be joined to spatial data
 Location: (Hospital), can be joined to spatial data
 
+
+_Delayed_discharge_beddays
