@@ -224,7 +224,7 @@ mutate(average_available_staffed_beds = round(average_available_staffed_beds),
        percentage_occupancy = round(percentage_occupancy)) %>% 
 filter(!is.na(quarter_year)) %>% 
 #filter years to 2018 onwards, as agreed with project group.  
-filter(quarter_year >= 2018)
+filter(quarter_year >= 2018 & quarter %in% c("Q2", "Q3", "Q4"))
 
 ```
 
