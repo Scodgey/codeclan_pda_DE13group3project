@@ -31,7 +31,14 @@ activity by board deprivation
 ```{r}
 glimpse (activity_by_board_age_sex)
 
+
 ```
+```{r}
+activity_by_board_age_sex %>% 
+  group_by(Quarter, Age) %>% 
+  summarise(count = n())
+```
+
 column breakdown:
 
 Of interest:
@@ -58,3 +65,23 @@ Location: (Hospital), can be joined to spatial data
 
 
 _Delayed_discharge_beddays
+
+```{r}
+nhs_joined_1 %>% 
+  group_by(quarter, age) %>% 
+  summarise(count = n())
+
+```
+
+```{r}
+nhs_joined_2 %>% 
+  group_by(quarter, age_group) %>% 
+  summarise(count = n())
+```
+
+```{r}
+nhs_joined_3 %>% 
+  group_by(quarter, age_group) %>% 
+  summarise(count = n())
+```
+
