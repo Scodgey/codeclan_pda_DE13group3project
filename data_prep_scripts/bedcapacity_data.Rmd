@@ -218,7 +218,7 @@ mutate(average_available_staffed_beds = round(average_available_staffed_beds),
        percentage_occupancy = round(percentage_occupancy)) %>% 
 filter(!is.na(quarter_year)) %>% 
 #filter years to 2018 onwards, as agreed with project group.  
-filter(quarter_year >= 2018 & quarter %in% c("Q2", "Q3", "Q4"))
+filter(quarter_year >= 2018 & quarter %in% c("Q1", "Q2", "Q3", "Q4"))
 
 ```
 
@@ -255,25 +255,71 @@ plot1 <- joined_bed_data %>%
             average_bed_occupancy = round(sum(percentage_occupancy, na.rm =TRUE)/ 
                                         location_total)) %>% 
   mutate(quartiles = cut_number(x = average_bed_occupancy,n = 4, 
-                        labels = c("AveOcc in Highest 25%",
-                                   "AveOcc in Highest 50 % ",
-                                   "AveOcc in Lowest 50%", 
-                                   "AveOcc in Lowest 25%"))
+                        labels = c("AveOcc in Lowest 25%",
+                                   "AveOcc in Lowest 50%",
+                                   "AveOcc in Highest 50%", 
+                                   "AveOcc in Highest 75%"))
                                            ) %>% 
   ggplot()+
   aes(x = location_name, y = average_bed_occupancy, fill = quartiles)+
   geom_col()+
   theme_bw() +
   coord_flip()+
-labs(x = "Location Name", y = "Average Bed Occupancy (%)")
+labs(x = "Location Name", y = "Average Bed Occupancy (%)")+
+  scale_fill_discrete(name = "Quartile")
 
 ggplotly(plot1)
        
 
-#Checked NA's prior to removal 8 in total across Dr Grays Hospital & Borders. 
+#Checked NA's prior to removal, 8 in total across Dr Grays Hospital & Borders. 
 # Should a verification be added here in terms of NA's exceed percentage of 
 #location total entries.
 ```
+
+
+> **Plot 2 - Hospital Average Occupancy (%) & Season Compared to other Scottish Hospitals:**
+
+
+```{r, echo=TRUE}
+plot2 <- joined_bed_data %>%
+  select(location_name, percentage_occupancy, season) %>%  
+  #You can add a filter column her by location name linked to ui, allow multiple selections.
+  group_by(location_name, season) %>% 
+  summarise(location_total = n(), 
+            average_bed_occupancy = round(sum(percentage_occupancy, na.rm =TRUE)/ 
+                                        location_total)) %>% 
+  ggplot()+
+  aes(x = location_name, y = average_bed_occupancy, shape = season, colour = season)+
+  geom_point()+
+  theme_bw()+
+  coord_flip()+
+labs(x = "Location Name", y = "Average Bed Occupancy (%)")
+ 
+ggplotly(plot2)
+
+```
+
+> **Plot 3 - Hospital Average Occupancy (%) by Specialty (All) Hosiptals**
+
+
+```{r, echo=TRUE}
+plot3 <- joined_bed_data %>%
+  select(specialty_name, percentage_occupancy) %>% 
+  filter(!specialty_name %in% c("All Specialties", "All Acute")) %>% 
+  #You can add a filter column her by location name linked to ui, allow multiple selections.
+  group_by(specialty_name) %>% 
+  summarise(specialty_total = n(), 
+            average_bed_occupancy = round(sum(percentage_occupancy, na.rm =TRUE)/ 
+                                        specialty_total)) %>% 
+  ggplot()+
+  aes(x = specialty_name, y = average_bed_occupancy)+
+  geom_col()+
+  theme_bw() +
+labs(x = "Location Name", y = "Average Bed Occupancy (%)")
+
+```
+
+
 
 # 3. Hypothesis Testing
 
