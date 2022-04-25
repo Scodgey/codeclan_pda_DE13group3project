@@ -1,0 +1,30 @@
+---
+title: "Exploring the data"
+output: html_notebook
+---
+
+
+
+
+
+
+
+
+```{r}
+library(lubridate)
+library(zoo)
+
+testing_data <- nhs_data_joined1 %>% 
+  select(quarter, specialty_name, length_of_stay) %>% 
+  mutate(quarter = parse_date_time(quarter, orders = "%Y%q"))
+
+testing_data %>% 
+  filter(quarter > 0) %>% 
+  filter(!is.na(quarter)) %>% 
+  ggplot()+
+  aes(x = quarter, y = length_of_stay)+
+  geom_line()
+```
+
+
+
