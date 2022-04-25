@@ -18,10 +18,14 @@ compare_df_cols_same(nhs_joined_1, nhs_joined_2, nhs_joined_3)
 #checking columns to spit into Workflow_Project
 
 activity_by_board_age_sex <- read_csv(here("raw_data/activity_by_board_age_sex.csv"))
+
 activity_by_board_and_specialty <- read_csv(here("raw_data/activity_by_board_and_specialty.csv"))
+
 activity_by_board_deprivation <- read_csv(here("raw_data/activity_by_board_deprivation.csv"))
-beds_by_nhs_board_of_treatment_and_specialty <- (here("raw_data/beds_by_nhs_board_of_treatment_and_specialty.csv"))
-delayed_discharge_beddays_health_board <- (here("raw_data/delayed-discharge-beddays-health-board.csv"))
+
+beds_by_nhs_board_of_treatment_and_specialty <- read_csv(here("raw_data/beds_by_nhs_board_of_treatment_and_specialty.csv"))
+
+delayed_discharge_beddays_health_board <- read_csv(here("raw_data/delayed-discharge-beddays-health-board.csv"))
 ```
 Focusing on these three dfs:
 
