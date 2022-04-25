@@ -91,13 +91,12 @@ nhs_data_joined3 <-bind_rows(bed_by_board_treatment_specialty,
     quarter == "Q4" ~"Winter"
   ), .after = quarter)
 
-nhs_data_joined3$season
 
-
-
+# Writing the 
 write_csv(nhs_data_joined1,"raw_data/nhs_data_joined1.csv")
 write_csv(nhs_data_joined2,"raw_data/nhs_data_joined2.csv")
 write_csv(nhs_data_joined3,"raw_data/nhs_data_joined3.csv")
+write_csv(hospital_locations_lookup_file, "raw_data/hospital_locations_lookup_file.csv")
 
 
 

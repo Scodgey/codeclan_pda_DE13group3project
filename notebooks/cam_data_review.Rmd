@@ -11,19 +11,30 @@ output: html_notebook
 
 
 ```{r}
-library(lubridate)
-library(zoo)
+library(sf)
+library(dplyr)
+library(ggplot2)
 
-testing_data <- nhs_data_joined1 %>% 
-  select(quarter, specialty_name, length_of_stay) %>% 
-  mutate(quarter = parse_date_time(quarter, orders = "%Y%q"))
+# Municipal Waste (tonnes) and arising per capita (kgs)
+# https://statistics.gov.scot/resource?uri=http%3A%2F%2Fstatistics.gov.scot%2Fdata%2Fmunicipal-waste
+# Use the URL for the csv button
+waste <- read.csv("https://statistics.gov.scot/downloads/cube-table?uri=http%3A%2F%2Fstatistics.gov.scot%2Fdata%2Fmunicipal-waste") %>%
+  filter(Indicator..municipal.waste. == 'Waste Recycled',
+         DateCode == '2011/2012',
+         FeatureCode != 'S92000003')
 
-testing_data %>% 
-  filter(quarter > 0) %>% 
-  filter(!is.na(quarter)) %>% 
-  ggplot()+
-  aes(x = quarter, y = length_of_stay)+
-  geom_line()
+
+# Local Authority Districts (December 2018) Boundaries UK BGC
+# https://geoportal.statistics.gov.uk/datasets/local-authority-districts-december-2018-boundaries-uk-bgc/geoservice?geometry=-33.064%2C49.415%2C26.438%2C58.428
+# Use the GeoJSON API
+la <- st_read("https://services1.arcgis.com/ESMARspQHYMw9BZ9/arcgis/rest/services/Local_Authority_Districts_December_2021_GB_BFC/FeatureServer/0/query?outFields=*&where=1%3D1&f=geojson")
+
+# Join the two datasets
+la_waste <- merge(la, waste, by.x = 'lad18cd', by.y = 'FeatureCode')
+
+# Plot with ggplot2's sf geom
+ggplot() +
+  geom_sf(data = la_waste["Value"], mapping = aes(fill = Value), colour = "white")
 ```
 
 
