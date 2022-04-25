@@ -1768,26 +1768,47 @@ pre code {
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShsdWJyaWRhdGUpXG5saWJyYXJ5KHpvbylcblxudGVzdGluZ19kYXRhIDwtIG5oc19kYXRhX2pvaW5lZDEgJT4lIFxuICBzZWxlY3QocXVhcnRlciwgc3BlY2lhbHR5X25hbWUsIGxlbmd0aF9vZl9zdGF5KSAlPiUgXG4gIG11dGF0ZShxdWFydGVyID0gcGFyc2VfZGF0ZV90aW1lKHF1YXJ0ZXIsIG9yZGVycyA9IFwiJVklcVwiKSlcblxudGVzdGluZ19kYXRhICU+JSBcbiAgZmlsdGVyKHF1YXJ0ZXIgPiAwKSAlPiUgXG4gIGZpbHRlcighaXMubmEocXVhcnRlcikpICU+JSBcbiAgZ2dwbG90KCkrXG4gIGFlcyh4ID0gcXVhcnRlciwgeSA9IGxlbmd0aF9vZl9zdGF5KStcbiAgZ2VvbV9saW5lKClcbmBgYCJ9 -->
-<pre class="r"><code>library(lubridate)
-library(zoo)
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShzZilcbmxpYnJhcnkoZHBseXIpXG5saWJyYXJ5KGdncGxvdDIpXG5cbiMgTXVuaWNpcGFsIFdhc3RlICh0b25uZXMpIGFuZCBhcmlzaW5nIHBlciBjYXBpdGEgKGtncylcbiMgaHR0cHM6Ly9zdGF0aXN0aWNzLmdvdi5zY290L3Jlc291cmNlP3VyaT1odHRwJTNBJTJGJTJGc3RhdGlzdGljcy5nb3Yuc2NvdCUyRmRhdGElMkZtdW5pY2lwYWwtd2FzdGVcbiMgVXNlIHRoZSBVUkwgZm9yIHRoZSBjc3YgYnV0dG9uXG53YXN0ZSA8LSByZWFkLmNzdihcImh0dHBzOi8vc3RhdGlzdGljcy5nb3Yuc2NvdC9kb3dubG9hZHMvY3ViZS10YWJsZT91cmk9aHR0cCUzQSUyRiUyRnN0YXRpc3RpY3MuZ292LnNjb3QlMkZkYXRhJTJGbXVuaWNpcGFsLXdhc3RlXCIpICU+JVxuICBmaWx0ZXIoSW5kaWNhdG9yLi5tdW5pY2lwYWwud2FzdGUuID09ICdXYXN0ZSBSZWN5Y2xlZCcsXG4gICAgICAgICBEYXRlQ29kZSA9PSAnMjAxMS8yMDEyJyxcbiAgICAgICAgIEZlYXR1cmVDb2RlICE9ICdTOTIwMDAwMDMnKVxuXG5cbiMgTG9jYWwgQXV0aG9yaXR5IERpc3RyaWN0cyAoRGVjZW1iZXIgMjAxOCkgQm91bmRhcmllcyBVSyBCR0NcbiMgaHR0cHM6Ly9nZW9wb3J0YWwuc3RhdGlzdGljcy5nb3YudWsvZGF0YXNldHMvbG9jYWwtYXV0aG9yaXR5LWRpc3RyaWN0cy1kZWNlbWJlci0yMDE4LWJvdW5kYXJpZXMtdWstYmdjL2dlb3NlcnZpY2U/Z2VvbWV0cnk9LTMzLjA2NCUyQzQ5LjQxNSUyQzI2LjQzOCUyQzU4LjQyOFxuIyBVc2UgdGhlIEdlb0pTT04gQVBJXG5sYSA8LSBzdF9yZWFkKFwiaHR0cHM6Ly9zZXJ2aWNlczEuYXJjZ2lzLmNvbS9FU01BUnNwUUhZTXc5Qlo5L2FyY2dpcy9yZXN0L3NlcnZpY2VzL0xvY2FsX0F1dGhvcml0eV9EaXN0cmljdHNfRGVjZW1iZXJfMjAyMV9HQl9CRkMvRmVhdHVyZVNlcnZlci8wL3F1ZXJ5P291dEZpZWxkcz0qJndoZXJlPTElM0QxJmY9Z2VvanNvblwiKVxuYGBgIn0= -->
+<pre class="r"><code>library(sf)
+library(dplyr)
+library(ggplot2)
 
-testing_data &lt;- nhs_data_joined1 %&gt;% 
-  select(quarter, specialty_name, length_of_stay) %&gt;% 
-  mutate(quarter = parse_date_time(quarter, orders = &quot;%Y%q&quot;))
+# Municipal Waste (tonnes) and arising per capita (kgs)
+# https://statistics.gov.scot/resource?uri=http%3A%2F%2Fstatistics.gov.scot%2Fdata%2Fmunicipal-waste
+# Use the URL for the csv button
+waste &lt;- read.csv(&quot;https://statistics.gov.scot/downloads/cube-table?uri=http%3A%2F%2Fstatistics.gov.scot%2Fdata%2Fmunicipal-waste&quot;) %&gt;%
+  filter(Indicator..municipal.waste. == &#39;Waste Recycled&#39;,
+         DateCode == &#39;2011/2012&#39;,
+         FeatureCode != &#39;S92000003&#39;)
 
-testing_data %&gt;% 
-  filter(quarter &gt; 0) %&gt;% 
-  filter(!is.na(quarter)) %&gt;% 
-  ggplot()+
-  aes(x = quarter, y = length_of_stay)+
-  geom_line()</code></pre>
+
+# Local Authority Districts (December 2018) Boundaries UK BGC
+# https://geoportal.statistics.gov.uk/datasets/local-authority-districts-december-2018-boundaries-uk-bgc/geoservice?geometry=-33.064%2C49.415%2C26.438%2C58.428
+# Use the GeoJSON API
+la &lt;- st_read(&quot;https://services1.arcgis.com/ESMARspQHYMw9BZ9/arcgis/rest/services/Local_Authority_Districts_December_2021_GB_BFC/FeatureServer/0/query?outFields=*&amp;where=1%3D1&amp;f=geojson&quot;)</code></pre>
 <!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiUmVhZGluZyBsYXllciBgR2VvSlNPTlNlcScgZnJvbSBkYXRhIHNvdXJjZSBcbiAgYGh0dHBzOi8vc2VydmljZXMxLmFyY2dpcy5jb20vRVNNQVJzcFFIWU13OUJaOS9hcmNnaXMvcmVzdC9zZXJ2aWNlcy9Mb2NhbF9BdXRob3JpdHlfRGlzdHJpY3RzX0RlY2VtYmVyXzIwMjFfR0JfQkZDL0ZlYXR1cmVTZXJ2ZXIvMC9xdWVyeT9vdXRGaWVsZHM9KiZ3aGVyZT0xJTNEMSZmPWdlb2pzb24nIFxuICB1c2luZyBkcml2ZXIgYEdlb0pTT05TZXEnXG5TaW1wbGUgZmVhdHVyZSBjb2xsZWN0aW9uIHdpdGggMSBmZWF0dXJlIGFuZCAwIGZpZWxkcyAod2l0aCAxIGdlb21ldHJ5IGVtcHR5KVxuR2VvbWV0cnkgdHlwZTogR0VPTUVUUllDT0xMRUNUSU9OXG5EaW1lbnNpb246ICAgICBYWVxuQm91bmRpbmcgYm94OiAgeG1pbjogTkEgeW1pbjogTkEgeG1heDogTkEgeW1heDogTkFcbkdlb2RldGljIENSUzogIFdHUyA4NFxuIn0= -->
+<pre><code>Reading layer `GeoJSONSeq&#39; from data source 
+  `https://services1.arcgis.com/ESMARspQHYMw9BZ9/arcgis/rest/services/Local_Authority_Districts_December_2021_GB_BFC/FeatureServer/0/query?outFields=*&amp;where=1%3D1&amp;f=geojson&#39; 
+  using driver `GeoJSONSeq&#39;
+Simple feature collection with 1 feature and 0 fields (with 1 geometry empty)
+Geometry type: GEOMETRYCOLLECTION
+Dimension:     XY
+Bounding box:  xmin: NA ymin: NA xmax: NA ymax: NA
+Geodetic CRS:  WGS 84</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBKb2luIHRoZSB0d28gZGF0YXNldHNcbmxhX3dhc3RlIDwtIG1lcmdlKGxhLCB3YXN0ZSwgYnkueCA9ICdsYWQxOGNkJywgYnkueSA9ICdGZWF0dXJlQ29kZScpXG5gYGAifQ== -->
+<pre class="r"><code># Join the two datasets
+la_waste &lt;- merge(la, waste, by.x = &#39;lad18cd&#39;, by.y = &#39;FeatureCode&#39;)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiRXJyb3IgaW4gZml4LmJ5KGJ5LngsIHgpIDogJ2J5JyBtdXN0IHNwZWNpZnkgYSB1bmlxdWVseSB2YWxpZCBjb2x1bW5cbiJ9 -->
+<pre><code>Error in fix.by(by.x, x) : &#39;by&#39; must specify a uniquely valid column</code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiRXhwbG9yaW5nIHRoZSBkYXRhIgpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sKLS0tCgoKCgoKCgoKYGBge3J9CmxpYnJhcnkobHVicmlkYXRlKQpsaWJyYXJ5KHpvbykKCnRlc3RpbmdfZGF0YSA8LSBuaHNfZGF0YV9qb2luZWQxICU+JSAKICBzZWxlY3QocXVhcnRlciwgc3BlY2lhbHR5X25hbWUsIGxlbmd0aF9vZl9zdGF5KSAlPiUgCiAgbXV0YXRlKHF1YXJ0ZXIgPSBwYXJzZV9kYXRlX3RpbWUocXVhcnRlciwgb3JkZXJzID0gIiVZJXEiKSkKCnRlc3RpbmdfZGF0YSAlPiUgCiAgZmlsdGVyKHF1YXJ0ZXIgPiAwKSAlPiUgCiAgZmlsdGVyKCFpcy5uYShxdWFydGVyKSkgJT4lIAogIGdncGxvdCgpKwogIGFlcyh4ID0gcXVhcnRlciwgeSA9IGxlbmd0aF9vZl9zdGF5KSsKICBnZW9tX2xpbmUoKQpgYGAKCgoK</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiRXhwbG9yaW5nIHRoZSBkYXRhIgpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sKLS0tCgoKCgoKCgoKYGBge3J9CmxpYnJhcnkoc2YpCmxpYnJhcnkoZHBseXIpCmxpYnJhcnkoZ2dwbG90MikKCiMgTXVuaWNpcGFsIFdhc3RlICh0b25uZXMpIGFuZCBhcmlzaW5nIHBlciBjYXBpdGEgKGtncykKIyBodHRwczovL3N0YXRpc3RpY3MuZ292LnNjb3QvcmVzb3VyY2U/dXJpPWh0dHAlM0ElMkYlMkZzdGF0aXN0aWNzLmdvdi5zY290JTJGZGF0YSUyRm11bmljaXBhbC13YXN0ZQojIFVzZSB0aGUgVVJMIGZvciB0aGUgY3N2IGJ1dHRvbgp3YXN0ZSA8LSByZWFkLmNzdigiaHR0cHM6Ly9zdGF0aXN0aWNzLmdvdi5zY290L2Rvd25sb2Fkcy9jdWJlLXRhYmxlP3VyaT1odHRwJTNBJTJGJTJGc3RhdGlzdGljcy5nb3Yuc2NvdCUyRmRhdGElMkZtdW5pY2lwYWwtd2FzdGUiKSAlPiUKICBmaWx0ZXIoSW5kaWNhdG9yLi5tdW5pY2lwYWwud2FzdGUuID09ICdXYXN0ZSBSZWN5Y2xlZCcsCiAgICAgICAgIERhdGVDb2RlID09ICcyMDExLzIwMTInLAogICAgICAgICBGZWF0dXJlQ29kZSAhPSAnUzkyMDAwMDAzJykKCgojIExvY2FsIEF1dGhvcml0eSBEaXN0cmljdHMgKERlY2VtYmVyIDIwMTgpIEJvdW5kYXJpZXMgVUsgQkdDCiMgaHR0cHM6Ly9nZW9wb3J0YWwuc3RhdGlzdGljcy5nb3YudWsvZGF0YXNldHMvbG9jYWwtYXV0aG9yaXR5LWRpc3RyaWN0cy1kZWNlbWJlci0yMDE4LWJvdW5kYXJpZXMtdWstYmdjL2dlb3NlcnZpY2U/Z2VvbWV0cnk9LTMzLjA2NCUyQzQ5LjQxNSUyQzI2LjQzOCUyQzU4LjQyOAojIFVzZSB0aGUgR2VvSlNPTiBBUEkKbGEgPC0gc3RfcmVhZCgiaHR0cHM6Ly9zZXJ2aWNlczEuYXJjZ2lzLmNvbS9FU01BUnNwUUhZTXc5Qlo5L2FyY2dpcy9yZXN0L3NlcnZpY2VzL0xvY2FsX0F1dGhvcml0eV9EaXN0cmljdHNfRGVjZW1iZXJfMjAyMV9HQl9CRkMvRmVhdHVyZVNlcnZlci8wL3F1ZXJ5P291dEZpZWxkcz0qJndoZXJlPTElM0QxJmY9Z2VvanNvbiIpCgojIEpvaW4gdGhlIHR3byBkYXRhc2V0cwpsYV93YXN0ZSA8LSBtZXJnZShsYSwgd2FzdGUsIGJ5LnggPSAnbGFkMThjZCcsIGJ5LnkgPSAnRmVhdHVyZUNvZGUnKQoKIyBQbG90IHdpdGggZ2dwbG90MidzIHNmIGdlb20KZ2dwbG90KCkgKwogIGdlb21fc2YoZGF0YSA9IGxhX3dhc3RlWyJWYWx1ZSJdLCBtYXBwaW5nID0gYWVzKGZpbGwgPSBWYWx1ZSksIGNvbG91ciA9ICJ3aGl0ZSIpCmBgYAoKCgo=</div>
 
 
 
