@@ -85,23 +85,30 @@ body <-
       tabItem(tabName = "Admissions",
               fluidRow(
                 
-                # Split this row up into three equal parts (so column is 4)
-                column(4, 
-                       
-                       # Creating an Info box of current admission number for the quarter
-                       # Default will be whole population (if can work this out)
-                       infoBox(
-                         "Admission numbers", # info box title
-                         10 * 2, # value in info box
-                         icon = icon("hospital-user"), # hospital user icon
-                         color = "light-blue",
-                         # red, yellow, aqua, blue, light-blue, green, navy, teal, olive, lime, 
-                         # orange, fuchsia, purple, maroon, black
-                         fill = TRUE
+                #Creating the first row with the following columns
+                # 1. graph of trend of admissions over time
+                # 2. 
+                
+                column(8,
+                       box(plotOutput(
+                         "predicted graph of admissions"
                        ),
-                       # Dynamic infoBoxes
-                       infoBoxOutput("progressBox"),
-                       infoBoxOutput("approvalBox")
+                       width = NULL,
+                       height = 400
+                       )
+                ),
+                
+                column(4,
+                       box(
+                         plotOutput("Admission Emergency v Planned"),
+                         width = NULL,
+                         height = 100
+                       ),
+                       box(
+                         plotOutput("input$healthboard"),
+                         width = NULL,
+                         height = 300
+                       )
                 )
               )
       ),
@@ -174,7 +181,7 @@ sidebar <- dashboardSidebar(
 
 
 # Put them together into a dashboardPage
-dashboardPage(
+ui <- dashboardPage(
   dashboardHeader(title = "NHS Winter Crisis"),
   sidebar,
   body
