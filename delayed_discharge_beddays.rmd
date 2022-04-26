@@ -7,9 +7,23 @@ delayed_discharge_df <- read_csv(here("raw_data/delayed-discharge-beddays-health
 
 
 ```{r}
+monthtime <-  ym(delayed_discharge_df$month_of_delay) %>% 
   
-  monthtime <- delayed_discharge_df %>% as.Date(month_of_delay, format = "%Y%m")
+
 
 
 ```
+```{r}
+#use this
+delayed_discharge_df %>% 
+  mutate(datetime = ym(month_of_delay), .after = month_of_delay) %>% 
+  filter(datetime >= "2018-04-01")
+```
+
+```{r}
+as.Date(delayed_discharge_df$month_of_delay, format = "%Y%m")
+```
+
+
+
 
