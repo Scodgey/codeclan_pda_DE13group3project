@@ -1,28 +1,26 @@
 ```{r}
-library(here)
 delayed_discharge_df <- read_csv(here("raw_data/delayed-discharge-beddays-health-board.csv")) %>%
   clean_names()
 
 ```
 
-
-```{r}
-monthtime <-  ym(delayed_discharge_df$month_of_delay) %>% 
-  
-
-
-
-```
 ```{r}
 #use this
-delayed_discharge_df %>% 
+delayed_discharge_df <- delayed_discharge_df %>% 
   mutate(datetime = ym(month_of_delay), .after = month_of_delay) %>% 
   filter(datetime >= "2018-04-01")
 ```
 
+
 ```{r}
-as.Date(delayed_discharge_df$month_of_delay, format = "%Y%m")
+summarise(count = n()) %>% 
+ggplot() + 
+  aes(x = datetime, y = count) +
+  geom_line()
 ```
+
+
+
 
 
 
