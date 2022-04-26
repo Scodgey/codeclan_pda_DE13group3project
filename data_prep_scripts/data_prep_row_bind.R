@@ -43,14 +43,12 @@ admis_board_deprivation <- read_csv(here("raw_data/hospital_admissions_hb_depriv
   
 #Hospital Admissions by Board, Speciality
 admis_board_specialty <- read_csv(here("raw_data/hospital_admissions_hb_specialty.csv")) %>% 
-  clean_names() %>% 
+  clean_names() 
   
 
 #Hospital Location Data
 hospital_locations_lookup_file <- read_csv(here("raw_data/hospital_locations_lookup_file.csv")) %>% 
-  clean_names() %>% 
-  select(-id)
-
+  clean_names() 
 
 ###############################################.
 ## Joined Data Sets Formation
@@ -80,7 +78,7 @@ nhs_data_joined2 <- bind_rows(admis_board_age_sex,
                               admis_board_specialty,.id = NULL) %>% 
   mutate(
     week_ending = ymd(week_ending),
-   # quarter_year = as.yearqtr(week_ending), .after= week_ending,
+   quarter_year = as.yearqtr(week_ending), .after= week_ending,
     quarter = str_remove(quarter_year, pattern = "(^[0-9]+[0-9]+[0-9]+[0-9]+\ )")) %>% 
   mutate(quarter_year = year(quarter_year)) %>% 
   mutate(season = case_when(
