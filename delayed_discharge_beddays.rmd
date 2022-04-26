@@ -21,6 +21,18 @@ ggplot() +
 
 
 
+```{r}
+delayed_discharge <- delayed_discharge_df %>% 
+  filter(!age_group == "18plus") %>% 
+  filter(!reason_for_delay == "All Delay Reasons") %>% 
+  group_by(datetime) %>% 
+  summarise(datetime, ave_num = mean(number_of_delayed_bed_days)) 
+ggplot() + 
+  aes(x = datetime) +
+ geom_line(aes(y = ave_num, colour = "#603BF2"))+
+  scale_alpha_continuous() 
+ggplotly(delayed_discharge)
+```
 
 
 
