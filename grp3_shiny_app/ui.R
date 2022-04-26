@@ -49,26 +49,33 @@ body <-
               
               fluidRow(
                 column(8,
-                       box(plotOutput(
-                         "map of scotland"
-                       ),
-                       width = NULL,
-                       height = 600
+                       box(
+                         status = "primary", # allows header to be coloured
+                         title = "Health Boards across Scotland",
+                         solidHeader = TRUE,
+                         plotOutput(
+                           "map of scotland"
+                         ),
+                         width = NULL,
+                         height = 600
                        )
                 ),
                 
                 column(4,
                        box(
+                         title = "Health Boards with Highest Admission Rates",
                          plotOutput("Box content here"),
                          width = NULL,
                          height = 200
                        ),
                        box(
+                         title = "Hospitals with Highest Occupancy Rates",
                          plotOutput("Box content 2"),
                          width = NULL,
                          height = 200
                        ),
                        box(
+                         title = "Hospitals with Highest Discharge Rates",
                          plotOutput("Box content 3"),
                          width = NULL,
                          height = 200
@@ -86,29 +93,61 @@ body <-
               fluidRow(
                 
                 #Creating the first row with the following columns
-                # 1. graph of trend of admissions over time
-                # 2. 
+                # 1. graph of trend of admissions with predictive modelling
+                # 2. row for the percentage of elect v planned & top 5 most populated health boards
                 
                 column(8,
-                       box(plotOutput(
-                         "predicted graph of admissions"
-                       ),
-                       width = NULL,
-                       height = 400
+                       box(
+                         color = "blue",
+                         solidHeader = TRUE,
+                         title = "Admissions predictive model",
+                         #this should be static but highlighted portion shows year selected
+                          plotOutput("predicted graph of admissions"),
+                          width = NULL
                        )
                 ),
                 
                 column(4,
                        box(
+                         title = "Percentage of Emergency v Planned",
                          plotOutput("Admission Emergency v Planned"),
                          width = NULL,
                          height = 100
                        ),
                        box(
+                         title = "Health Boards with Most Admissions",
                          plotOutput("input$healthboard"),
                          width = NULL,
                          height = 300
                        )
+                )
+              ),
+              
+              #Creating the second row with the following columns
+              # 1. age graph - that changes on year and health baord selected
+              # 2. box plot of gender
+              # 3. graph of smid score
+              
+              fluidRow(
+                
+                box(
+                  title = "Age",
+                  plotOutput("age_ranges_admissions"),
+                  width = 4,
+                  height = 300
+                ),
+                box(
+                  title = "Gender",
+                  plotOutput("gender_diff_admissions"),
+                  width = 4,
+                  height = 300
+                ),
+                
+                box(
+                  title = "Deprivation",
+                  plotOutput("smid_score_admissions"),
+                  width = 4,
+                  height = 300
                 )
               )
       ),
@@ -120,47 +159,125 @@ body <-
       tabItem(tabName = "Occupancy",
               fluidRow(
                 
-                # Split this row up into three equal parts (so column is 4)
-                column(4, 
-                       
-                       # Creating an Info box of current admission number for the quarter
-                       # Default will be whole population (if can work this out)
-                       infoBox(
-                         "Admission numbers", # info box title
-                         10 * 2, # value in info box
-                         icon = icon("hospital-user"), # hospital user icon
-                         color = "light-blue",
-                         # red, yellow, aqua, blue, light-blue, green, navy, teal, olive, lime, 
-                         # orange, fuchsia, purple, maroon, black
-                         fill = TRUE
+                #Creating the first row with the following columns
+                # 1. graph of trend of admissions with predictive modelling
+                # 2. row for the percentage of elect v planned & top 5 most populated health boards
+                
+                column(8,
+                       box(
+                         title = "Occupancy predictive model",
+                         #this should be static but highlighted portion shows year selected
+                         plotOutput("predicted graph of occupancy"),
+                         width = NULL
+                       )
+                ),
+                
+                column(4,
+                       box(
+                         title = "Percentage of Emergency v Planned",
+                         plotOutput("Occupancy Emergency v Planned"),
+                         width = NULL,
+                         height = 100
                        ),
-                       # Dynamic infoBoxes
-                       infoBoxOutput("progressBox"),
-                       infoBoxOutput("approvalBox")
+                       box(
+                         title = "Health Boards with Most Occupancy",
+                         plotOutput("input$healthboard"),
+                         width = NULL,
+                         height = 300
+                       )
+                )
+              ),
+              
+              #Creating the second row with the following columns
+              # 1. age graph - that changes on year and health baord selected
+              # 2. box plot of gender
+              # 3. graph of smid score
+              
+              fluidRow(
+                
+                box(
+                  title = "Age",
+                  plotOutput("age_ranges_occupancy"),
+                  width = 4,
+                  height = 300
+                ),
+                box(
+                  title = "Gender",
+                  plotOutput("gender_diff_occupancy"),
+                  width = 4,
+                  height = 300
+                ),
+                
+                box(
+                  title = "Deprivation",
+                  plotOutput("smid_score_occupancy"),
+                  width = 4,
+                  height = 300
                 )
               )
       ),
       
+      #############################################
+      ###  Dashboard layout for Discharge page  ###
+      #############################################
+      
       tabItem(tabName = "Discharge",
               fluidRow(
                 
-                # Split this row up into three equal parts (so column is 4)
-                column(4, 
-                       
-                       # Creating an Info box of current admission number for the quarter
-                       # Default will be whole population (if can work this out)
-                       infoBox(
-                         "Admission numbers", # info box title
-                         10 * 2, # value in info box
-                         icon = icon("hospital-user"), # hospital user icon
-                         color = "light-blue",
-                         # red, yellow, aqua, blue, light-blue, green, navy, teal, olive, lime, 
-                         # orange, fuchsia, purple, maroon, black
-                         fill = TRUE
+                #Creating the first row with the following columns
+                # 1. graph of trend of admissions with predictive modelling
+                # 2. row for the percentage of elect v planned & top 5 most populated health boards
+                
+                column(8,
+                       box(
+                         title = "Discharge predictive model",
+                         #this should be static but highlighted portion shows year selected
+                         plotOutput("predicted graph of dsicharge"),
+                         width = NULL
+                       )
+                ),
+                
+                column(4,
+                       box(
+                         title = "Percentage of Emergency v Planned",
+                         plotOutput("discharge Emergency v Planned"),
+                         width = NULL,
+                         height = 100
                        ),
-                       # Dynamic infoBoxes
-                       infoBoxOutput("progressBox"),
-                       infoBoxOutput("approvalBox")
+                       box(
+                         title = "Health Boards with Most Discharge",
+                         plotOutput("input$healthboard"),
+                         width = NULL,
+                         height = 300
+                       )
+                )
+              ),
+              
+              #Creating the second row with the following columns
+              # 1. age graph - that changes on year and health baord selected
+              # 2. box plot of gender
+              # 3. graph of smid score
+              
+              fluidRow(
+                
+                box(
+                  title = "Age",
+                  plotOutput("age_ranges_discharge"),
+                  width = 4,
+                  height = 300
+                ),
+                box(
+                  title = "Gender Box Plot",
+                  plotOutput("gender_diff_discharge"),
+                  width = 4,
+                  height = 300
+                ),
+                
+                box(
+                  title = "Deprivation",
+                  plotOutput("smid_score_discharge"),
+                  width = 4,
+                  height = 300
                 )
               )
       )
