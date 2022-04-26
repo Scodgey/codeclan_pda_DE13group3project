@@ -53,8 +53,8 @@ body <-
                          status = "primary", # allows header to be coloured
                          title = "Health Boards across Scotland",
                          solidHeader = TRUE,
-                         plotOutput(
-                           "map of scotland"
+                         plotlyOutput(
+                           scottish_health_boards
                          ),
                          width = NULL,
                          height = 600
@@ -64,13 +64,13 @@ body <-
                 column(4,
                        box(
                          title = "Health Boards with Highest Admission Rates",
-                         plotOutput("Box content here"),
+                         plotOutput("box 1 plot"),
                          width = NULL,
                          height = 200
                        ),
                        box(
                          title = "Hospitals with Highest Occupancy Rates",
-                         plotOutput("Box content 2"),
+                         plotOutput("output$top_occupancy_hospitals"),
                          width = NULL,
                          height = 200
                        ),
