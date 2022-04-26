@@ -302,7 +302,8 @@ ggplotly(plot2)
 > **Plot 3 - Hospital Average Occupancy (%) by Specialty (All) Hosiptals**
 
 
-```{r, echo=TRUE}
+
+```{r}
 plot3 <- joined_bed_data %>%
   select(specialty_name, percentage_occupancy) %>% 
   filter(!specialty_name %in% c("All Specialties", "All Acute")) %>% 
@@ -314,10 +315,34 @@ plot3 <- joined_bed_data %>%
   ggplot()+
   aes(x = specialty_name, y = average_bed_occupancy)+
   geom_col()+
+  coord_flip()+
   theme_bw() +
-labs(x = "Location Name", y = "Average Bed Occupancy (%)")
+labs(x = "Location Name", y = "Average Bed Occupancy (%)")+
+theme(axis.text.x=element_text(size=0.5))
 
+ggplotly(plot3)
 ```
+
+```{r}
+plot4 <- joined_bed_data %>%
+  select(location_name, percentage_occupancy, season, quarter, quarter_year) %>% 
+  filter(location_name == "Perth Royal Informary" & quarter_year == "2018") %>% 
+  #You can add a filter column her by location name linked to ui, allow multiple selections.
+  group_by(quarter) %>% 
+  summarise(quarter = quarter, 
+            average_bed_occupancy = round(mean(percentage_occupancy, na.rm =TRUE)))%>%  
+                                        
+  ggplot()+
+  aes(x = location_name, y = average_bed_occupancy, shape = season, colour = season)+
+  geom_point()+
+  theme_bw()+
+  coord_flip()+
+labs(x = "Location Name", y = "Average Bed Occupancy (%)")
+ 
+ggplotly(plot2)
+```
+
+
 
 
 
