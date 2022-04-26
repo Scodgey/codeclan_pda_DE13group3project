@@ -1,0 +1,15 @@
+```{r}
+library(here)
+delayed_discharge_df <- read_csv(here("raw_data/delayed-discharge-beddays-health-board.csv")) %>%
+  clean_names()
+
+```
+
+
+```{r}
+  
+  monthtime <- delayed_discharge_df %>% as.Date(month_of_delay, format = "%Y%m")
+
+
+```
+
