@@ -45,49 +45,80 @@ library(sf)
 server <- shinyServer(function(input, output) {
   
   output$scottish_health_boards <- renderLeaflet({
-    leaflet(scot_health_board_shapes) %>% 
-      addTiles() %>% 
-      addPolygons()
-    # ggplot(scot_health_board_shapes %>% 
-    #                   st_cast("MULTIPOLYGON")) +
-    #            aes(fill = hb == get( select$selected_healthboard))+
-    #          geom_sf())
+    leaflet(scot_health_board_shapes) %>%
+      addTiles() %>%
+      addPolygons(popup = ~paste0(
+        "NHS: ", hb_name, "<br>",
+        "Health Board Code: ", hb, "<br>",
+        "Admissions: ", "%", "<br>",
+        "Bed Occupancy: ", "%", "<br>",
+        "Discharge Delay: ", "%"
+        ),
+        layerId = scot_health_board_shapes$hb)
   })
   
-  
-  
-  # filter_health_board_from_map <- 
-  #   
-  #   observeEvent(input$stations,{
-  #     updateSelectInput(session, "stations", "Click on Station", 
-  #                       choices = levels(factor(quakes$stations)), 
-  #                       selected = c(input$stations))
-  #   })
-  # 
-  # observeEvent(input$map_marker_click, {
-  #   click <- input$map_marker_click
-  #   station <- quakes[which(quakes$lat == click$lat & quakes$long == click$lng), ]$stations
-  #   updateSelectInput(session, "stations", "Click on Station", 
-  #                     choices = levels(factor(quakes$stations)), 
-  #                     selected = c(station))
-  # })
+  ######################################
+  ### Code for filtering by Polygons ###
+  ######################################
+  rv <- reactiveVal()
+  observeEvent(input$scottish_health_boards_shape_click,{
+    rv(input$scottish_health_boards_shape_click$id)
+  })
 
 
+  
+#########################################################
+### Plotting the hospitals with the highest occupancy ###
+#########################################################
 
   output$top_occupancy_hospitals <- renderPlot({
+    if (is.null(rv())){
+      joined_bed_data_3 %>%
+        select(location_name, percentage_occupancy, hb.x) %>%
+        #You can add a filter column her by location name linked to ui, allow multiple selections.
+        group_by(location_name) %>%
+        summarise(location_total = n(),
+                  average_bed_occupancy = round(sum(percentage_occupancy, na.rm =TRUE)/
+                                                  location_total)) %>%
+        arrange(desc(average_bed_occupancy)) %>% 
+        ggplot()+
+        aes(x = reorder(location_name, average_bed_occupancy), y = average_bed_occupancy)+
+        geom_col()+
+        theme_bw() +
+        coord_flip()+
+        labs(x = "Location Name", y = "Average Bed Occupancy (%)")
+    
+    } else {
     joined_bed_data_3 %>%
+      
+      ### This is the difference between this and above - so there will always
+      ### be a plot 
+      
+      filter(hb.x == rv()) %>%
+      
+      ### The data gets filtered by which polygon is clicked
+      
       select(location_name, percentage_occupancy, hb.x) %>%
-      filter(hb.x == input$selected_healthboard) %>%
       #You can add a filter column her by location name linked to ui, allow multiple selections.
       group_by(location_name) %>%
       summarise(location_total = n(),
                 average_bed_occupancy = round(sum(percentage_occupancy, na.rm =TRUE)/
                                                 location_total)) %>%
+        arrange(desc(average_bed_occupancy)) %>% 
       ggplot()+
-      aes(x = location_name, y = average_bed_occupancy)+
+      aes(x = reorder(location_name, average_bed_occupancy), y = average_bed_occupancy)+
       geom_col()+
       theme_bw() +
       coord_flip()+
-      labs(x = "Location Name", y = "Average Bed Occupancy (%)")
+      labs(x = "Location Name", y = "Average Bed Occupancy (%)")}
   })
+  
+
+
+
+
+
+  
+  
+  
 })

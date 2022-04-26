@@ -18,6 +18,7 @@ body <-
       tabItem(tabName = "Summary",
               fluidRow(
                 
+                
                 # Creating an Info box of current admission number for the quarter
                 # Default will be whole population (if can work this out)
                 infoBox(
@@ -29,7 +30,7 @@ body <-
                   # orange, fuchsia, purple, maroon, black
                   fill = TRUE
                 ),
-                # Dynamic infoBoxes
+                
                 infoBox(
                   "Current Occupancy Percentage", # info box title
                   ave_bed_occ,  # occupancy rate but have total as default 
@@ -37,6 +38,7 @@ body <-
                   color = "light-blue",
                   fill = TRUE
                 ),
+                
                 infoBox(
                   title = "Current Delayed Discharge Rate", # info box title
                   "input$discharge_rate", # discharge rate but have total as default
@@ -47,42 +49,54 @@ body <-
               ),
               
               
+              ########################
+              ### Health Board Map ###
+              ########################
+              
               fluidRow(
-                column(8,
+                column(6,
                        box(
                          status = "primary", # allows header to be coloured
                          title = "Health Boards across Scotland",
                          solidHeader = TRUE,
                          leafletOutput(
-                           "scottish_health_boards"
+                           outputId = "scottish_health_boards"
                          ),
                          width = NULL,
-                         height = 600
+                         height = 500
                        )
                 ),
                 
-                column(4,
-                       box(
-                         title = "Health Boards with Highest Admission Rates",
-                         plotOutput("box 1 plot"),
+                column(6,
+                       tabBox(
+                         title = "KPI Insights",
+                         height = 500,
                          width = NULL,
-                         height = 200
-                       ),
-                       box(
-                         title = "Hospitals with Highest Average Bed Occupancy",
-                         plotOutput("top_occupancy_hospitals"),
-                         width = NULL,
-                         height = 200
-                       ),
-                       box(
-                         title = "Hospitals with Highest Discharge Rates",
-                         plotOutput("Box content 3"),
-                         width = NULL,
-                         height = 200
+                         
+                         tabPanel(
+                           "Admission Rate",
+                           plotOutput("box 1 plot"),
+                           width = NULL,
+                           height = "100%"
+                         ),
+                         
+                         tabPanel(
+                           "Average Bed Occupancy",
+                           plotOutput("top_occupancy_hospitals"),
+                           width = NULL,
+                           height = "100%"
+                         ),
+                         
+                         tabPanel(
+                           "Discharge Rate",
+                           plotOutput("Box content 3"),
+                           width = NULL,
+                           height = "100%"
+                         )
                        )
                 )
               )
-      ),
+              ),
       
       
       ##############################################
@@ -294,9 +308,15 @@ sidebar <- dashboardSidebar(
     menuItem("Occupancy", icon = icon("bed"), tabName = "Occupancy"),
     menuItem("Discharge", icon = icon("running"), tabName = "Discharge")
   ),
+  
+  
+  ### Health Board Select Input
+  
   selectInput("selected_healthboard",
                "Health Board:",
-               choices = c("Ayreshire and Arran" = "S08000015",
+              selected = "Please Select:",
+               choices = c("Please Select:" = TRUE,
+                          "Ayreshire and Arran" = "S08000015",
                           "Borders" = "S08000016",
                           "Dumfries and Galloway"  ="S08000017",
                           "Fife" = "S08000029",
@@ -311,7 +331,18 @@ sidebar <- dashboardSidebar(
                           "Tayside" = "S08000030",
                           "Western Isles" = "S08000028"
                            )
+  ),
+  
+  
+  ### Year Select Input
+  
+  dateRangeInput("date_range",
+    label = "Date range input:",
+    start = "2018/04/01",
+    end = Sys.Date(),
+    format = "dd/mm/yyyy"
   )
+  
 )
 
 
