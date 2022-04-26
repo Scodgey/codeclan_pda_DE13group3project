@@ -1895,29 +1895,57 @@ Scottish Hospitals:</strong></p>
 </blockquote>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>plot1 <span class="ot">&lt;-</span> joined_bed_data <span class="sc">%&gt;%</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(location_name, percentage_occupancy) <span class="sc">%&gt;%</span> </span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(location_name) <span class="sc">%&gt;%</span> </span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">location_total =</span> <span class="fu">n</span>(), </span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">average_bed_occupancy =</span> <span class="fu">round</span>(<span class="fu">sum</span>(percentage_occupancy, <span class="at">na.rm =</span><span class="cn">TRUE</span>)<span class="sc">/</span> </span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>                                        location_total)) <span class="sc">%&gt;%</span> </span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">quartiles =</span> <span class="fu">cut_number</span>(<span class="at">x =</span> average_bed_occupancy,<span class="at">n =</span> <span class="dv">4</span>, </span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>                        <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">&quot;AveOcc in Highest 25%&quot;</span>,</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>                                   <span class="st">&quot;AveOcc in Highest 50 % &quot;</span>,</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>                                   <span class="st">&quot;AveOcc in Lowest 50%&quot;</span>, </span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>                                   <span class="st">&quot;AveOcc in Lowest 25%&quot;</span>))</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>                                           ) <span class="sc">%&gt;%</span> </span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>()<span class="sc">+</span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(<span class="at">x =</span> location_name, <span class="at">y =</span> average_bed_occupancy, <span class="at">fill =</span> quartiles)<span class="sc">+</span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>()<span class="sc">+</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>()<span class="sc">+</span></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Location Name&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Average Occupancy (%)&quot;</span>)</span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplotly</span>(plot1)</span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>       </span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="co">#Checked NA&#39;s prior to removal 8 in total across Dr Grays Hospital &amp; Borders. </span></span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Should a verification be added here in terms of NA&#39;s exceed percentage of </span></span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="co">#location total entries.</span></span></code></pre></div>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="co">#You can add a filter column her by location name linked to ui, allow multiple selections.</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(location_name) <span class="sc">%&gt;%</span> </span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">location_total =</span> <span class="fu">n</span>(), </span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">average_bed_occupancy =</span> <span class="fu">round</span>(<span class="fu">sum</span>(percentage_occupancy, <span class="at">na.rm =</span><span class="cn">TRUE</span>)<span class="sc">/</span> </span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>                                        location_total)) <span class="sc">%&gt;%</span> </span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">quartiles =</span> <span class="fu">cut_number</span>(<span class="at">x =</span> average_bed_occupancy,<span class="at">n =</span> <span class="dv">4</span>, </span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>                        <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">&quot;AveOcc in Highest 25%&quot;</span>,</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>                                   <span class="st">&quot;AveOcc in Highest 50 % &quot;</span>,</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>                                   <span class="st">&quot;AveOcc in Lowest 50%&quot;</span>, </span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>                                   <span class="st">&quot;AveOcc in Lowest 25%&quot;</span>))</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>                                           ) <span class="sc">%&gt;%</span> </span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>()<span class="sc">+</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(<span class="at">x =</span> location_name, <span class="at">y =</span> average_bed_occupancy, <span class="at">fill =</span> quartiles)<span class="sc">+</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>()<span class="sc">+</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>()<span class="sc">+</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Location Name&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Average Bed Occupancy (%)&quot;</span>)</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplotly</span>(plot1)</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>       </span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="co">#Checked NA&#39;s prior to removal 8 in total across Dr Grays Hospital &amp; Borders. </span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Should a verification be added here in terms of NA&#39;s exceed percentage of </span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="co">#location total entries.</span></span></code></pre></div>
+</div>
+<div id="hypothesis-testing" class="section level1">
+<h1>3. Hypothesis Testing</h1>
+<p>Perform an appropriate statistical test to determine whether there is
+a statistically significant difference in the average occupancy between
+hospitals.</p>
+<div id="a.-hypothesis-test" class="section level3">
+<h3>3a. Hypothesis Test</h3>
+<p>H0: There is no difference in average occupancy between two selected
+hospitals.</p>
+<p><span class="math display">\[ H_0: \mu_{average_occupancy \
+hours(hospital\ 1)} -\mu_{ave \ bed \ occupancy \ (hospital\ 2)} = 0
+\]</span></p>
+<p>Ha: There is a difference in average occupancy between two selected
+hospitals</p>
+<p><span class="math display">\[ H_a: \mu_{average_occupancy \
+hours(hospital\ 1)} -\mu_{ave \ bed \ occupancy \ (hospital\ 2)} \neq
+0\]</span></p>
+<p>Step 1 of the bootstrap will be to filter the bed occupancy data by
+the users selction in the below code i have selected the UI.</p>
+<p>Upon review of the osberved stat, there is a difference between the
+average bed occupancy, however is this signficant.</p>
+</div>
+<div id="b.-null-distribution-calculation" class="section level3">
+<h3>3b. Null Distribution Calculation</h3>
+<p><strong>Visualise Distribution</strong></p>
+</div>
 </div>
 
 

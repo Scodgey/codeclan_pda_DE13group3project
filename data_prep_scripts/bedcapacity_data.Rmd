@@ -211,20 +211,14 @@ location_look_up %>%
 bed_data_year <- bed_data %>% 
 #change variable name to reflect definitions.
   rename("available_staffed_beds" = "all_staffed_beds") %>% 
-  select(1:20) %>% 
-#split quarter variable into quarter & year.
-mutate(quarter_year = str_remove(quarter, pattern = "([Q]*[1-4]+$)"), 
-       .before = quarter) %>% 
-mutate(quarter_year = as.numeric(quarter_year)) %>% 
-mutate(quarter = str_remove(quarter, pattern = "(^[0-9]+[0-9]+[0-9]+[0-9]+)"), 
-       .after = quarter_year ) %>% 
-#round variables
+  #Select will need to change if variables changed in joined data set 3. 
+  select(-c(month_of_delay:average_daily_number_of_delayed_beds))%>% 
 mutate(average_available_staffed_beds = round(average_available_staffed_beds),
        average_occupied_beds = round(average_occupied_beds), 
        percentage_occupancy = round(percentage_occupancy)) %>% 
 filter(!is.na(quarter_year)) %>% 
 #filter years to 2018 onwards, as agreed with project group.  
-filter(quarter_year >= 2018 & quarter %in% c("Q2", "Q3", "Q4"))
+filter(quarter_year >= 2018 & quarter %in% c("Q1", "Q2", "Q3", "Q4"))
 
 ```
 
@@ -242,8 +236,9 @@ filter(quarter_year >= 2018 & quarter %in% c("Q2", "Q3", "Q4"))
 joined_bed_data <- bed_data_year %>% 
   filter(!location_qf %in% "d") %>% 
   left_join(location_look_up, by = "location") %>% 
-#End joined table at postcode variable.
-  select(1:27)
+#End joined table at postcode variable. 
+  select(-c(address_line:based_on_postcode))
+
 
 ```
 
@@ -254,28 +249,164 @@ joined_bed_data <- bed_data_year %>%
 ```{r, echo=TRUE}
 plot1 <- joined_bed_data %>%
   select(location_name, percentage_occupancy) %>% 
+  #You can add a filter column her by location name linked to ui, allow multiple selections.
   group_by(location_name) %>% 
   summarise(location_total = n(), 
             average_bed_occupancy = round(sum(percentage_occupancy, na.rm =TRUE)/ 
                                         location_total)) %>% 
   mutate(quartiles = cut_number(x = average_bed_occupancy,n = 4, 
-                        labels = c("AveOcc in Highest 25%",
-                                   "AveOcc in Highest 50 % ",
-                                   "AveOcc in Lowest 50%", 
-                                   "AveOcc in Lowest 25%"))
+                        labels = c("AveOcc in Lowest 25%",
+                                   "AveOcc in Lowest 50%",
+                                   "AveOcc in Highest 50%", 
+                                   "AveOcc in Highest 75%"))
                                            ) %>% 
   ggplot()+
   aes(x = location_name, y = average_bed_occupancy, fill = quartiles)+
   geom_col()+
   theme_bw() +
   coord_flip()+
-labs(x = "Location Name", y = "Average Occupancy (%)")
+labs(x = "Location Name", y = "Average Bed Occupancy (%)")+
+  scale_fill_discrete(name = "Quartile")
 
 ggplotly(plot1)
        
 
-#Checked NA's prior to removal 8 in total across Dr Grays Hospital & Borders. 
+#Checked NA's prior to removal, 8 in total across Dr Grays Hospital & Borders. 
 # Should a verification be added here in terms of NA's exceed percentage of 
 #location total entries.
+```
+
+
+> **Plot 2 - Hospital Average Occupancy (%) & Season Compared to other Scottish Hospitals:**
+
+
+```{r, echo=TRUE}
+plot2 <- joined_bed_data %>%
+  select(location_name, percentage_occupancy, season) %>%  
+  #You can add a filter column her by location name linked to ui, allow multiple selections.
+  group_by(location_name, season) %>% 
+  summarise(location_total = n(), 
+            average_bed_occupancy = round(sum(percentage_occupancy, na.rm =TRUE)/ 
+                                        location_total)) %>% 
+  ggplot()+
+  aes(x = location_name, y = average_bed_occupancy, shape = season, colour = season)+
+  geom_point()+
+  theme_bw()+
+  coord_flip()+
+labs(x = "Location Name", y = "Average Bed Occupancy (%)")
+ 
+ggplotly(plot2)
+
+```
+
+> **Plot 3 - Hospital Average Occupancy (%) by Specialty (All) Hosiptals**
+
+
+```{r, echo=TRUE}
+plot3 <- joined_bed_data %>%
+  select(specialty_name, percentage_occupancy) %>% 
+  filter(!specialty_name %in% c("All Specialties", "All Acute")) %>% 
+  #You can add a filter column her by location name linked to ui, allow multiple selections.
+  group_by(specialty_name) %>% 
+  summarise(specialty_total = n(), 
+            average_bed_occupancy = round(sum(percentage_occupancy, na.rm =TRUE)/ 
+                                        specialty_total)) %>% 
+  ggplot()+
+  aes(x = specialty_name, y = average_bed_occupancy)+
+  geom_col()+
+  theme_bw() +
+labs(x = "Location Name", y = "Average Bed Occupancy (%)")
+
+```
+
+
+
+# 3. Hypothesis Testing
+
+Perform an appropriate statistical test to determine whether 
+there is a statistically significant difference in the average occupancy
+between hospitals.
+
+### 3a. Hypothesis Test
+
+H0: There is no difference in average occupancy between two selected hospitals.
+
+$$ H_0: \mu_{average_occupancy \ hours(hospital\ 1)} -\mu_{ave \ bed \ occupancy \ (hospital\ 2)} = 0 $$
+
+Ha: There is a difference in average occupancy between two selected hospitals
+
+$$ H_a: \mu_{average_occupancy \ hours(hospital\ 1)} -\mu_{ave \ bed \ occupancy \ (hospital\ 2)} \neq 0$$
+
+Step 1 of the bootstrap will be to filter the bed occupancy data by the users selction
+in the below code i have selected the UI. 
+
+```{r}
+average_bed_occupancy_hosp <- joined_bed_data %>% 
+ select(location_name, percentage_occupancy) %>% 
+  #The below filter would be linked to the UI hospital selection. We can also
+  # add a season filter and quarter filter.
+  filter(location_name == "Western General Hospital" | 
+           location_name == "Belford Hospital") %>% 
+  group_by(location_name) 
+
+observed_ave_occupancy_stat <- average_bed_occupancy_hosp %>% 
+  specify(percentage_occupancy ~ location_name) %>%
+  #order will again be controlled by UI location name selection)
+  calculate(stat = "diff in means", 
+            order = c("Western General Hospital", "Belford Hospital"))
+  
+observed_ave_occupancy_stat
+
+# Extension - Can we add an if function here to return a phrase if in the observed stat 
+#there is a difference.
+
+```
+
+Upon review of the osberved stat, there is a difference between the 
+average bed occupancy, however is this signficant. 
+
+### 3b. Null Distribution Calculation 
+
+```{r}
+null_dist1 <- average_bed_occupancy_hosp %>% 
+#testing relationship between hospital and average bed occupancy.
+  specify(percentage_occupancy ~ location_name) %>% 
+#the null hypothesis is there is no relationship i.e. they are independent
+  hypothesize(null = "independence") %>% 
+  generate(reps = 10000, type = "permute") %>% 
+#Sample stat is mean of hospitals done in this order.
+  calculate(stat = "diff in means", 
+            order = c("Western General Hospital", "Belford Hospital"))
+
+head(null_dist1)
+```
+
+### 3c. **Visualise Average Bed Occupancy Distribution**
+
+```{r}
+# Lets's visualise the distribution with the observed stat. Direction set to 
+#both because we are looking for difference. 
+
+null_dist1 %>%
+  visualise(bins = 30) +
+  shade_p_value(obs_stat = observed_ave_occupancy_stat, direction = "both")
+```
+
+```{r}
+#Selection of one-tailed test.
+p_value <- null_dist1 %>%
+  get_p_value(obs_stat = observed_ave_occupancy_stat, direction = "both")
+
+p_value
+
+# Extension - Can we add an if function here to return a phrase whether there is
+#a significant difference based on probability value greater than significance value
+#e.g. O.05, 0.01 etc. The signficance value would need to be selected by the UI.
+
+```
+
+
+
+
 ```
 
