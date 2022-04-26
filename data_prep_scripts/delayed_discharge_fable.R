@@ -4,7 +4,7 @@ delayed_discharge_df <- read_csv(here("raw_data/delayed-discharge-beddays-health
   clean_names()
 
 #POSIX compliant datetime as discrete field from original month_of_delay
-delayed_discharge_df %>% 
+delayed_discharge_df <- delayed_discharge_df %>% 
   mutate(datetime = ym(month_of_delay), .after = month_of_delay) %>% 
   filter(datetime >= "2018-04-01")
   filter(!age == "18plus") #removing 18plus value from age column-- nothing to
