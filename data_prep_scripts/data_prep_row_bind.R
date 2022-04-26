@@ -66,7 +66,7 @@ nhs_data_joined2 <- bind_rows(admis_board_age_sex,
                               admis_board_specialty,.id = NULL) %>% 
   mutate(
     week_ending = ymd(week_ending),
-    quarter_year = as.yearqtr(week_ending), .after= week_ending,
+   # quarter_year = as.yearqtr(week_ending), .after= week_ending,
     quarter = str_remove(quarter_year, pattern = "(^[0-9]+[0-9]+[0-9]+[0-9]+\ )")) %>% 
   mutate(quarter_year = year(quarter_year)) %>% 
   mutate(season = case_when(
@@ -85,7 +85,6 @@ nhs_data_joined3 <-bind_rows(bed_by_board_treatment_specialty,
   mutate(quarter_year = as.numeric(quarter_year)) %>% 
   mutate(quarters =str_remove(quarter, pattern = "(^[0-9]+[0-9]+[0-9]+[0-9]+)"), 
     .after = quarter_year)%>% 
-  mutate(quarter = as.yearqtr(quarter)) %>% 
   mutate(season = case_when(
     quarters == "Q1" ~"Spring",
     quarters == "Q2" ~"Summer",
