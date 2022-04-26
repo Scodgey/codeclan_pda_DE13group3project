@@ -76,19 +76,21 @@ nhs_data_joined2 <- bind_rows(admis_board_age_sex,
     quarter == "Q4" ~"Winter"
   ), .after = quarter)
 
+
 nhs_data_joined3 <-bind_rows(bed_by_board_treatment_specialty,
                              delayed_discharge_beddays_board,
                              .id = NULL) %>% 
   mutate(quarter_year = str_remove(quarter, pattern = "([Q]*[1-4]+$)"), 
     .after = quarter) %>% 
   mutate(quarter_year = as.numeric(quarter_year)) %>% 
-  mutate(quarter =str_remove(quarter, pattern = "(^[0-9]+[0-9]+[0-9]+[0-9]+)"), 
-    .after = quarter_year) %>% 
+  mutate(quarters =str_remove(quarter, pattern = "(^[0-9]+[0-9]+[0-9]+[0-9]+)"), 
+    .after = quarter_year)%>% 
+  mutate(quarter = as.yearqtr(quarter)) %>% 
   mutate(season = case_when(
-    quarter == "Q1" ~"Spring",
-    quarter == "Q2" ~"Summer",
-    quarter == "Q3" ~"Autumn",
-    quarter == "Q4" ~"Winter"
+    quarters == "Q1" ~"Spring",
+    quarters == "Q2" ~"Summer",
+    quarters == "Q3" ~"Autumn",
+    quarters == "Q4" ~"Winter"
   ), .after = quarter)
 
 

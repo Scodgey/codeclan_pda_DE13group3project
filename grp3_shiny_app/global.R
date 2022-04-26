@@ -39,6 +39,9 @@ library(rgeos) #geospatial
 library(rnaturalearth) #geospatial
 library(leaflet) #geospatial e.g. markers etc.
 library(rnaturalearthdata) #geospatial
+library(zoo) #Time series conversion.
+library(tsibble) # Time series conversion. 
+
 #}
 
 ###############################################.
