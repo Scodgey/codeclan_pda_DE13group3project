@@ -18,81 +18,60 @@ body <-
       tabItem(tabName = "Summary",
               fluidRow(
                 
-                # Split this row up into three equal parts (so column is 4)
-                column(4, 
-                       
-                       # Creating an Info box of current admission number for the quarter
-                       # Default will be whole population (if can work this out)
-                       infoBox(
-                         "Current Admission numbers", # info box title
-                         10 * 2, # value in info box
-                         icon = icon("hospital-user"), # hospital user icon
-                         color = "light-blue",
-                         # red, yellow, aqua, blue, light-blue, green, navy, teal, olive, lime, 
-                         # orange, fuchsia, purple, maroon, black
-                         fill = TRUE
-                       ),
-                       # Dynamic infoBoxes
-                       infoBoxOutput("progressBox"),
-                       infoBoxOutput("approvalBox")
+                # Creating an Info box of current admission number for the quarter
+                # Default will be whole population (if can work this out)
+                infoBox(
+                  "Current Admission numbers", # info box title
+                  "input$admission_rate", # value in info box
+                  icon = icon("hospital-user"), # hospital user icon
+                  color = "light-blue",
+                  # red, yellow, aqua, blue, light-blue, green, navy, teal, olive, lime, 
+                  # orange, fuchsia, purple, maroon, black
+                  fill = TRUE
                 ),
-                
-                column(
-                  4,
-                  
-                  # 
-                  infoBox(
-                    "Current Occupancy Percentage", # info box title
-                    "input$occupancy_rate",  # occupancy rate but have total as deafault 
-                    icon = icon("bed"), # bed icon for info box
-                    color = "light-blue",
-                    fill = TRUE
-                  ), 
-                  # Dynamic infoBoxes
-                  infoBoxOutput("progressBox"),
-                  infoBoxOutput("approvalBox")
+                # Dynamic infoBoxes
+                infoBox(
+                  "Current Occupancy Percentage", # info box title
+                  "input$occupancy_rate",  # occupancy rate but have total as deafault 
+                  icon = icon("bed"), # bed icon for info box
+                  color = "light-blue",
+                  fill = TRUE
                 ),
-                
-                column(
-                  4,
-                  
-                  fluidRow(
-                    infoBox(
-                      title = "Current Delayed Discharge Rate", # info box title
-                      "input$discharge_rate", # discharge rate but have total as default
-                      icon = icon("running"), # person icon for info box
-                      color = "light-blue",
-                      fill = TRUE
-                    ),
-                    # Dynamic infoBoxes
-                    infoBoxOutput("progressBox"),
-                    infoBoxOutput("approvalBox")
-                  ))
-                
+                infoBox(
+                  title = "Current Delayed Discharge Rate", # info box title
+                  "input$discharge_rate", # discharge rate but have total as default
+                  icon = icon("running"), # person icon for info box
+                  color = "light-blue",
+                  fill = TRUE
+                )
               ),
+              
               
               fluidRow(
                 column(8,
                        box(plotOutput(
                          "map of scotland"
                        ),
-                       height = 300
-                       ),
-                       
+                       width = NULL,
+                       height = 600
+                       )
                 ),
                 
                 column(4,
                        box(
                          plotOutput("Box content here"),
-                         height = 100
+                         width = NULL,
+                         height = 200
                        ),
                        box(
                          plotOutput("Box content 2"),
-                         height = 100
+                         width = NULL,
+                         height = 200
                        ),
                        box(
                          plotOutput("Box content 3"),
-                         height = 100
+                         width = NULL,
+                         height = 200
                        )
                 )
               )
@@ -186,8 +165,10 @@ body <-
 
 sidebar <- dashboardSidebar(
   sidebarMenu(
-    menuItem("Summary", tabName = "Summary", icon = icon("dashboard")),
-    menuItem("Admissions", icon = icon("th"), tabName = "Admissions")
+    menuItem("Summary", tabName = "Summary", icon = icon("th")),
+    menuItem("Admissions", icon = icon("hospital-user"), tabName = "Admissions"),
+    menuItem("Occupancy", icon = icon("bed"), tabName = "Occupancy"),
+    menuItem("Discharge", icon = icon("running"), tabName = "Discharge")
   )
 )
 
