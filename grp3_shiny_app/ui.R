@@ -6,89 +6,195 @@ library(fontawesome)
 # Icon list found here: https://www.angularjswiki.com/fontawesome/
 
 
-# This is just the summary component of the dashboard
-summary_page <- 
-  dashboardPage(
-  
-  ### Input the agreed title of the DASHBOARD ###
-  
-  dashboardHeader(title = "NHS Winter Crisis"),
-  
-  ### Here we can format what goes in the side bar
-  
-  dashboardSidebar(),
+
+body <- 
   dashboardBody(
-    #
-    fluidRow(
-      
-      # Split this row up into three equal parts (so column is 4)
-      column(4, 
-        
-        # Creating an Info box of current admission number for the quarter
-        # Default will be whole population (if can work this out)
-        infoBox(
-          "Current Admission numbers", # info box title
-          10 * 2, # value in info box
-          icon = icon("hospital-user"), # hospital user icon
-          color = "light-blue",
-          # red, yellow, aqua, blue, light-blue, green, navy, teal, olive, lime, 
-          # orange, fuchsia, purple, maroon, black
-          fill = TRUE
-          ),
-        # Dynamic infoBoxes
-        infoBoxOutput("progressBox"),
-        infoBoxOutput("approvalBox")
-      ),
-      
-      column(
-        4,
-        
-        # 
-        infoBox(
-          "Current Occupancy Percentage", # info box title
-          "input$occupancy_rate",  # occupancy rate but have total as deafault 
-          icon = icon("bed"), # bed icon for info box
-          color = "light-blue",
-          fill = TRUE
-          ), 
-        # Dynamic infoBoxes
-        infoBoxOutput("progressBox"),
-        infoBoxOutput("approvalBox")
-      ),
-      
-      column(
-        4,
-        
-        fluidRow(
-        infoBox(
-          title = "Current Delayed Discharge Rate", # info box title
-          "input$discharge_rate", # discharge rate but have total as default
-          icon = icon("running"), # person icon for info box
-          color = "light-blue",
-          fill = TRUE
-          ),
-        # Dynamic infoBoxes
-        infoBoxOutput("progressBox"),
-        infoBoxOutput("approvalBox")
-      ))
-      
-    ),
     
-    fluidRow(
-      column(6,
-             box(plotOutput(
-               "map of scotland"
-             )),
-             
+    ###########################################
+    ###  Dashboard layout for SUMMARY page  ###
+    ###########################################
+    
+    tabItems(
+      tabItem(tabName = "Summary",
+              fluidRow(
+                
+                # Split this row up into three equal parts (so column is 4)
+                column(4, 
+                       
+                       # Creating an Info box of current admission number for the quarter
+                       # Default will be whole population (if can work this out)
+                       infoBox(
+                         "Current Admission numbers", # info box title
+                         10 * 2, # value in info box
+                         icon = icon("hospital-user"), # hospital user icon
+                         color = "light-blue",
+                         # red, yellow, aqua, blue, light-blue, green, navy, teal, olive, lime, 
+                         # orange, fuchsia, purple, maroon, black
+                         fill = TRUE
+                       ),
+                       # Dynamic infoBoxes
+                       infoBoxOutput("progressBox"),
+                       infoBoxOutput("approvalBox")
+                ),
+                
+                column(
+                  4,
+                  
+                  # 
+                  infoBox(
+                    "Current Occupancy Percentage", # info box title
+                    "input$occupancy_rate",  # occupancy rate but have total as deafault 
+                    icon = icon("bed"), # bed icon for info box
+                    color = "light-blue",
+                    fill = TRUE
+                  ), 
+                  # Dynamic infoBoxes
+                  infoBoxOutput("progressBox"),
+                  infoBoxOutput("approvalBox")
+                ),
+                
+                column(
+                  4,
+                  
+                  fluidRow(
+                    infoBox(
+                      title = "Current Delayed Discharge Rate", # info box title
+                      "input$discharge_rate", # discharge rate but have total as default
+                      icon = icon("running"), # person icon for info box
+                      color = "light-blue",
+                      fill = TRUE
+                    ),
+                    # Dynamic infoBoxes
+                    infoBoxOutput("progressBox"),
+                    infoBoxOutput("approvalBox")
+                  ))
+                
+              ),
+              
+              fluidRow(
+                column(8,
+                       box(plotOutput(
+                         "map of scotland"
+                       ),
+                       height = 300
+                       ),
+                       
+                ),
+                
+                column(4,
+                       box(
+                         plotOutput("Box content here"),
+                         height = 100
+                       ),
+                       box(
+                         plotOutput("Box content 2"),
+                         height = 100
+                       ),
+                       box(
+                         plotOutput("Box content 3"),
+                         height = 100
+                       )
+                )
+              )
       ),
       
-      column(6,
-      box(
-       "Box content here", br(), "More box content",
-       sliderInput("slider", "Slider input:", 1, 100, 50),
-       textInput("text", "Text input:")
-       )
+      
+      ##############################################
+      ###  Dashboard layout for ADMISSIONS page  ###
+      ##############################################
+      
+      tabItem(tabName = "Admissions",
+              fluidRow(
+                
+                # Split this row up into three equal parts (so column is 4)
+                column(4, 
+                       
+                       # Creating an Info box of current admission number for the quarter
+                       # Default will be whole population (if can work this out)
+                       infoBox(
+                         "Admission numbers", # info box title
+                         10 * 2, # value in info box
+                         icon = icon("hospital-user"), # hospital user icon
+                         color = "light-blue",
+                         # red, yellow, aqua, blue, light-blue, green, navy, teal, olive, lime, 
+                         # orange, fuchsia, purple, maroon, black
+                         fill = TRUE
+                       ),
+                       # Dynamic infoBoxes
+                       infoBoxOutput("progressBox"),
+                       infoBoxOutput("approvalBox")
+                )
+              )
+      ),
+      
+      #############################################
+      ###  Dashboard layout for OCCUPANCY page  ###
+      #############################################
+      
+      tabItem(tabName = "Occupancy",
+              fluidRow(
+                
+                # Split this row up into three equal parts (so column is 4)
+                column(4, 
+                       
+                       # Creating an Info box of current admission number for the quarter
+                       # Default will be whole population (if can work this out)
+                       infoBox(
+                         "Admission numbers", # info box title
+                         10 * 2, # value in info box
+                         icon = icon("hospital-user"), # hospital user icon
+                         color = "light-blue",
+                         # red, yellow, aqua, blue, light-blue, green, navy, teal, olive, lime, 
+                         # orange, fuchsia, purple, maroon, black
+                         fill = TRUE
+                       ),
+                       # Dynamic infoBoxes
+                       infoBoxOutput("progressBox"),
+                       infoBoxOutput("approvalBox")
+                )
+              )
+      ),
+      
+      tabItem(tabName = "Discharge",
+              fluidRow(
+                
+                # Split this row up into three equal parts (so column is 4)
+                column(4, 
+                       
+                       # Creating an Info box of current admission number for the quarter
+                       # Default will be whole population (if can work this out)
+                       infoBox(
+                         "Admission numbers", # info box title
+                         10 * 2, # value in info box
+                         icon = icon("hospital-user"), # hospital user icon
+                         color = "light-blue",
+                         # red, yellow, aqua, blue, light-blue, green, navy, teal, olive, lime, 
+                         # orange, fuchsia, purple, maroon, black
+                         fill = TRUE
+                       ),
+                       # Dynamic infoBoxes
+                       infoBoxOutput("progressBox"),
+                       infoBoxOutput("approvalBox")
+                )
+              )
       )
+      
     )
   )
+
+
+
+sidebar <- dashboardSidebar(
+  sidebarMenu(
+    menuItem("Summary", tabName = "Summary", icon = icon("dashboard")),
+    menuItem("Admissions", icon = icon("th"), tabName = "Admissions")
+  )
+)
+
+
+# Put them together into a dashboardPage
+dashboardPage(
+  dashboardHeader(title = "NHS Winter Crisis"),
+  sidebar,
+  body
 )
