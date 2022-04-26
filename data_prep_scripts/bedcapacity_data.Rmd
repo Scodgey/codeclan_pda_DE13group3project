@@ -219,7 +219,7 @@ mutate(average_available_staffed_beds = round(average_available_staffed_beds),
        percentage_occupancy = round(percentage_occupancy)) %>% 
 filter(!is.na(quarter_year)) %>% 
 #filter years to 2018 onwards, as agreed with project group.  
-filter(quarter_year >= 2018 & quarter %in% c("Q1", "Q2", "Q3", "Q4"))
+filter(quarter_year >= 2018 & quarters %in% c("Q1", "Q2", "Q3", "Q4"))
 
 ```
 
@@ -302,8 +302,6 @@ ggplotly(plot2)
 
 > **Plot 3 - Hospital Average Occupancy (%) by Specialty (All) Hosiptals**
 
-
-
 ```{r}
 plot3 <- joined_bed_data %>%
   select(specialty_name, percentage_occupancy) %>% 
@@ -323,25 +321,34 @@ theme(axis.text.x=element_text(size=0.5))
 
 ggplotly(plot3)
 ```
+plot 4 - Average Occupancy - All Hospital by Quarter
 
 ```{r}
+
 plot4 <- joined_bed_data %>%
-  select(location_name, percentage_occupancy, season, quarter, quarter_year) %>% 
-  filter(location_name == "Perth Royal Informary" & quarter_year == "2018") %>% 
-  #You can add a filter column her by location name linked to ui, allow multiple selections.
-  group_by(quarter) %>% 
-  summarise(quarter = quarter, 
-            average_bed_occupancy = round(mean(percentage_occupancy, na.rm =TRUE)))%>%  
-                                        
+  mutate(ts_quarter = yearquarter(quarter)) %>% # turn into regular date
+  filter(!is.na(ts_quarter)) %>% 
+  filter(location_name == "Aberdeen Royal Infirmary" |
+         location_name == "St John's Hospital") %>% 
+  #You can add a filter column here by location name linked to ui, allow multiple selections.
+  group_by(ts_quarter, location_name) %>% 
+  summarise(location_total = n(), 
+            average_bed_occupancy = round(sum(percentage_occupancy, na.rm =TRUE)/ 
+                                        location_total)) %>% 
   ggplot()+
-  aes(x = location_name, y = average_bed_occupancy, shape = season, colour = season)+
+  aes(x = ts_quarter, y = average_bed_occupancy, group = location_name, colour = location_name)+
+  geom_line()+
   geom_point()+
-  theme_bw()+
-  coord_flip()+
-labs(x = "Location Name", y = "Average Bed Occupancy (%)")
- 
-ggplotly(plot2)
+  scale_alpha_continuous()
+
+  ggplotly(plot4) 
+
+
+
+
 ```
+
+
 
 
 
@@ -398,7 +405,7 @@ null_dist1 <- average_bed_occupancy_hosp %>%
 #testing relationship between hospital and average bed occupancy.
   specify(percentage_occupancy ~ location_name) %>% 
 #the null hypothesis is there is no relationship i.e. they are independent
-  hypothesize(null = "independence") %>% 
+  hypothesise(null = "independence") %>% 
   generate(reps = 10000, type = "permute") %>% 
 #Sample stat is mean of hospitals done in this order.
   calculate(stat = "diff in means", 
