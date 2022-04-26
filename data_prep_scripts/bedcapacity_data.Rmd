@@ -281,7 +281,7 @@ theme(legend.position = "none", axis.text.x=element_blank())+
 ggplotly(plot3)
 ```
 
-> **Plot 4 - Average Occupancy - All Hospital by Quarter**
+> **Plot 4 - Average Bed Occupancy - Selected Hospital by Quarter**
 
 ```{r}
 
@@ -309,6 +309,8 @@ labs(title = "Average Bed Occupancy (%) by, Location & Quarter (2018 Q1 Onwards)
 
 ```
 
+
+**Plot 5 - Average Bed Occupancy - Selected Specialty by Quarter**
 ```{r}
 
 plot5 <- bed_data %>%
@@ -337,19 +339,6 @@ labs(title = "Average Bed Occupancy (%) by, Specialty & Quarter (2018 Q1 Onwards
 
 
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
