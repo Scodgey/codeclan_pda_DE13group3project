@@ -1,0 +1,15 @@
+```{r}
+library(here)
+delayed_discharge_df <- read_csv(here("raw_data/delayed-discharge-beddays-health-board.csv")) %>% 
+  clean_names()
+```
+
+```{r}
+delayed_discharge_df %>% 
+  filter(!age_group == "") %>% 
+  summarise(age_group_count = (n)) %>% 
+  ggplot()+
+    aes(x = monthtime, y = (age_group_count)) +
+  geom_line()
+
+```

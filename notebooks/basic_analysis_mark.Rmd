@@ -1,0 +1,94 @@
+```{r}
+#most libraries derived from global.R
+
+library(readxl)
+library(skimr)
+
+#Basic analysis of datasets
+nhs_joined_1 <- read_csv(here("raw_data/nhs_data_joined1.csv"))
+nhs_joined_2 <- read_csv(here("raw_data/nhs_data_joined2.csv"))
+nhs_joined_3 <- read_csv(here("raw_data/nhs_data_joined3.csv"))
+
+#checking consistency of rowbound csvs (do the columns match?)
+
+compare_df_cols_same(nhs_joined_1, nhs_joined_2, nhs_joined_3)
+
+#answer: Yes
+
+#checking columns to spit into Workflow_Project
+
+activity_by_board_age_sex <- read_csv(here("raw_data/activity_by_board_age_sex.csv"))
+
+activity_by_board_and_specialty <- read_csv(here("raw_data/activity_by_board_and_specialty.csv"))
+
+activity_by_board_deprivation <- read_csv(here("raw_data/activity_by_board_deprivation.csv"))
+
+beds_by_nhs_board_of_treatment_and_specialty <- read_csv(here("raw_data/beds_by_nhs_board_of_treatment_and_specialty.csv"))
+
+delayed_discharge_beddays_health_board <- read_csv(here("raw_data/delayed-discharge-beddays-health-board.csv"))
+```
+Focusing on these three dfs:
+
+Activity by board age sex
+delayed discharge beddays healthboard
+activity by board deprivation
+```{r}
+glimpse (activity_by_board_age_sex)
+
+
+```
+```{r}
+activity_by_board_age_sex %>% 
+  group_by(Quarter, Age) %>% 
+  summarise(count = n())
+```
+
+column breakdown:
+
+Of interest:
+
+__Temporal__
+Quarter: need to transfrom via str_remove year data OR if it makes more sense use lubridate quarter(date) function to normalize the "time" column"
+
+
+__Demographic__
+Age: need to mutate str_remove "years" figure out how to impute the range of 10-19 to something more meaningful OR transform other df age columns to this format and do counts for inputs to ggplot
+
+Admission Type: patient info that may be useful for graphing, but not specifically
+
+Episodes: need to correlate with demographic data
+LengthOfEpisode: need to correlate with demographic data
+AverageLengthofEpisode: need to correlate with demographic data
+
+Stays: essential for correlating and answering question
+LengthofStay: essential for correlating and answering question
+AverageLengthofStay: essential for correlating and answering question
+__GeoSpatial__
+HB: (Health Board), can be joined to spatial data
+Location: (Hospital), can be joined to spatial data
+
+
+_Delayed_discharge_beddays
+
+```{r}
+nhs_joined_1 %>% 
+  group_by(quarter_year, quarter, age) %>% 
+  summarise(count = n())
+
+```
+
+```{r}
+nhs_joined_2 %>% 
+  filter(!age_group == "All ages") %>% 
+  group_by(quarter_year, quarter, age_group) %>% 
+  summarise(count = n())
+```
+
+```{r}
+nhs_joined_3 %>% 
+  group_by(quarter_year, quarter, age_group) %>% 
+  summarise(count = n())
+```
+
+currently, going to the nhs_join_3, we couldn't answer any demographic data related to age (or gender, or deprivation) without creating a new df with a join.
+Average time

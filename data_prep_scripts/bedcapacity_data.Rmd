@@ -1,0 +1,445 @@
+---
+title: "Group 3 Bed-Capacity"
+output:
+  html_document: 
+   theme: journal
+   highlight: monochrome
+   toc: yes
+   toc_depth: 3
+   toc_float: yes
+   code_folding: hide  
+      
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)#Whether to display code inc it's results.
+knitr::opts_chunk$set(message = FALSE)#Whether to display messages.
+knitr::opts_chunk$set(warning = FALSE)#Whether to display warnings.
+knitr::opts_chunk$set(error = FALSE)#Whether to display errors.
+knitr::opts_chunk$set(eval = FALSE)#Whether to evaluate the code & incl results.
+
+```
+
+
+# 1. Documentation
+
+<br>
+
+
+#### Purpose of this document.
+
+The purpose of this document is to improve insight into bed capacity across
+each of Scotland's Health Boards.  
+
+This document aims to achieve this by analysing open source data made available by 
+[ Public Health Scptland (PHS) ](https://www.opendata.nhs.scot/) via
+The Scottish Health and Social Care Open Data platform.
+
+This documents focuses on bed capacity across Scotland's Acute Hospital Activity.
+
+This group contains datasets on outpatient activity, inpatient and day case 
+activity, the number of NHS beds derived from the [ Acute Hospital Activity and 
+NHS Beds Information publication from ISD Scotland ](https://publichealthscotland.scot/publications/acute-hospital-activity-and-nhs-beds-information-annual/acute-hospital-activity-and-nhs-beds-information-annual-annual-year-ending-31-march-2020/). 
+
+Note that 'Acute' hospital care excludes obstetric, psychiatric and 
+long stay care services that are covered in other groups and datasets.
+
+
+#### 1a. Domain Knowledge 
+
+The average number of available hospital beds in Scotland has generally been
+decreasing over the years. In 2019/20, the average available staffed beds for acute
+specialties was 13,156; a small 0.5% increase on last year (2018/19) and a 6%
+decrease when compared to five years ago (2014/15).
+For 2019/20:
+- 9,260 (70%) were for medical specialties
+- 3,896 (30%) were for surgical specialties.
+The percentage occupancy has remained relatively stable over the years. In
+2019/20, the percentage occupancy for acute specialties was 86.7%.
+
+How long a patient stays in hospital will be strongly related to the complexity 
+of any operation carried out as well the underlying health condition of the person. 
+The average length of stay has been reducing over the years. In 2019/20, 
+the average length of stay was 6.1 days compared to 6.9 days in 2010/11. 
+Patients admitted as emergencies generally stay longer than elective hospital 
+admissions. In 2019/20:
+
+* Elective admissions: the average length of stay was 3.4 days
+* Emergency admissions: the average length of stay was 6.7 days
+
+The number of hospital beds has been reducing for many years. This is a result of both
+medical advances which have led to shorter stays in hospital for patients including planned
+daycase procedures (see Chart 10) alongside a shift to treatment and care in a more
+ambulatory setting or in the community.
+
+
+Background
+There are two broad ways in which patients access and make use of acute hospital
+services.
+
+
+* 1. The first is part of a planned or elective pathway of care which is 
+normally initiated following a visit to the GP or other healthcare professional, 
+and may result in a referral to see a consultant as an **outpatient** for 
+specialist advice or diagnosis. This outpatient appointment may then result in 
+an onward referral for further tests or admission into hospital for treatment.
+
+<br>
+
+* 2. The second way in which patients make use of hospital services is as a result 
+of an emergency referral either by a healthcare professional or directly by the 
+patient themselves.This may be via an Accident & Emergency department, directly to
+Ambulatory Emergency Care or to an Acute Assessment Unit, where it will be decided 
+if the patient needs to be admitted to an **inpatient ward**.
+
+
+When admitted to hospital, the patient is either treated on a same day basis, 
+often referred to as a **daycase**, or as an inpatient, when the patient will
+normally spend at least one night in hospital. Some inpatients may be discharged from 
+hospital on the same day as their admission.
+
+
+
+#### 1b. Definitions Used in this Document  
+<br>
+
+* **Admissions;** terminology used to describe hospital activity in the
+reported periods. Strictly speaking the activity actually refers to hospital 
+discharges in the reported time period rather than admissions. The difference 
+between admissions and discharges is of small importance at the level of detail
+considered in this document. 
+
+<br>
+
+* **Hospital admissions;** number of **continuous inpatient stays (CIS)** 
+in hospital where the patient was admitted.When showing information by CIS, 
+the admission type e.g. elective/emergency is determined by the first admitting 
+episode. As a result, transfers will generally not appear within the CIS
+analysis.When a transfer does appear it is often the result of a patient being 
+transferred from another provider unit e.g. outwith Scotland. However, there 
+will also be instances where the admission type has been incorrectly coded, 
+unfortunately it is not possible to fully ascertain what the correct admission 
+type should have been. As a result, you will see that a small proportion of 
+transfers do appear within the various tables. 
+
+<br>
+
+* **Episodes of Care and Continuous Inpatient Stays;**
+If patient admitted,  care can  be transferred between consultants of different 
+specialty's. These separate elements are known as ‘episodes’ of care within each continuous
+inpatient stay. For the purpose of this document,hospital admissions are 
+defined as the number of continuous inpatient stays in hospital where the patient 
+was admitted.
+
+
+| **Bed Definition** | **Description** |
+| --- | --- | 
+| Available Staffed Beds | This reflects the number of beds that can be used for inpatient or daycase care, multiplied by the number of days in a time period i.e. number of available staffed bed days over the quarter: **Total number of available staffed beds (aasb) over the quarter = Allocated Beds + Borrowed Beds – Lent Beds + Temporary Beds** | 
+ Average Available Staffed Beds | This is the average daily number of beds, which are staffed and available for the reception of patients (borrowed and temporary beds are included):**Average number of available staffed beds per day (asb) = aasb / number of days in the quarter**  |
+ Allocated Beds | An [ allocated bed](https://www.ndc.scot.nhs.uk/Dictionary-A-Z/Definitions/index.asp?Search=A&ID=76&Title=Allocated%20Bed/) is a bed from the specialty bed complement which is resourced for use by the specialty.Beds temporarily out of use remain part of the specialty bed complement but are not available for use, normally for inpatient and day cases. | 
+ Borrowed Beds | A [ borrowed bed ](https://www.ndc.scot.nhs.uk/Dictionary-A-Z/Definitions/index.asp?Search=B&ID=117&Title=Borrowed%20Bed/) is a bed which is made available to a specialty/significant facility other than the specialty/significant facility to which it is allocated. |
+ Lent Beds | A [ lent bed ](https://www.ndc.scot.nhs.uk/Dictionary-A-Z/Definitions/index.asp?Search=L&ID=307&Title=Lent%20Bed/) is a bed which is donated temporarily by a specialty/significant facility to another specialty/significant facility. |  
+ Temporary | A [temporary bed ](https://www.ndc.scot.nhs.uk/Dictionary-A-Z/Definitions/index.asp?Search=T&ID=492&Title=Temporary%20Bed/ ) is a bed erected in a ward, additional to the bed complement of the ward, Note: Temporary beds are used at times of overcrowding and are normally located in the area of accommodation of the specialty involved. |
+ Occupied Bed | An occupied bed is an available staffed bed, which is either being used to accommodate an inpatient or reserved for a patient on pass: **Total number of occupied bed days (tobd) = Sum of the number of occupied beds for each day of the quarter. Average number of occupied beds per day (aob) = tobd / number of days in the quarter.** |
+ Percentage Occupancy (%) | The percentage occupancy is the percentage of average available staffed beds that were occupied by inpatients during the period: Percentage occupancy = (aob / asb) x 100 |
+ 
+
+# 2.Data 
+
+#### 2a. Data Background & Quality 
+Outpatient, inpatient and daycase activity data are collected across NHS Scotland 
+and arebased on nationally available information routinely drawn from hospital 
+administrative systems across the country. The principal data sources are:
+
+* SMR00 (patient-level outpatient records) - source for outpatients (except return
+attendances
+
+* SMR01(inpatients and daycases discharges from non-obstetric and non-psychiatric
+specialties) - source for acute inpatients and daycases;
+
+* ISD(S)1 (aggregate hospital activity) - source for bed data returns and return
+outpatients. ISD(S)1 is a set of aggregated summary statistics on activity in 
+hospitals in NHS Scotland and is derived from monthly and quarterly returns from 
+the NHS Boards. 
+
+**Note:  ISD(S)1 is the only source of bed occupancy and bed availability 
+data and contains summarised data by NHS Board of Treatment, hospital and 
+specialty. ISD(S)1 is also used for return outpatient activity since completeness 
+for return outpatients in SMR00 is poor**
+
+#### 2b. Revision
+NHS Boards can update both their current and historical data monthly. This may 
+result in changes in the used data sources.
+
+The data used in this document was last updated	22 February 2022, 
+11:30 (UTC+00:00).
+
+<br>
+
+# 3. Data Analysis - Beds
+
+```{r, results="hide"}
+# The first step in the analysis was to run the library's available on the 
+# global.r script for this project.  
+
+# The next step was to load in the bed dataset from the group joined data set
+# script. 
+
+bed_data <- read_csv(here("raw_data/nhs_data_joined3.csv")) %>% 
+  mutate(quarter = as.yearqtr(quarter)) 
+
+#Next I loaded in the location look up file. 
+location_look_up <- read_csv(here("raw_data/hospital_locations_lookup_file.csv")) %>% 
+  clean_names() %>% 
+  select(-"id")
+```
+
+
+```{r, results="hide" }
+#The next step is to view the date, using skimr package.
+
+bed_data %>% 
+  skimr::skim()
+
+location_look_up %>% 
+  skimr::skim()
+```
+
+
+```{r, results="hide"}
+#Remove columns not required to review bed occupancy & split quarter column.
+
+bed_data_year <- bed_data %>% 
+#change variable name to reflect definitions.
+  rename("available_staffed_beds" = "all_staffed_beds") %>% 
+  #Select will need to change if variables changed in joined data set 3. 
+  select(-c(month_of_delay:average_daily_number_of_delayed_beds))%>% 
+mutate(average_available_staffed_beds = round(average_available_staffed_beds),
+       average_occupied_beds = round(average_occupied_beds), 
+       percentage_occupancy = round(percentage_occupancy)) %>% 
+filter(!is.na(quarter_year)) %>% 
+#filter years to 2018 onwards, as agreed with project group.  
+filter(quarter_year >= 2018 & quarters %in% c("Q1", "Q2", "Q3", "Q4"))
+
+```
+
+
+
+```{r, results="hide"}
+#Upon review of the data it was identified that every second observation, 
+# had a statistical qualifier "d" (see qualifier information for definition). 
+#Based on the definition, and the intent of this analysis these observations 
+#were removed. 
+
+#This was filtered out prior to a join with the look_up file. 
+
+#join location look-up file to bed_data
+joined_bed_data <- bed_data_year %>% 
+  filter(!location_qf %in% "d") %>% 
+  left_join(location_look_up, by = "location") %>% 
+#End joined table at postcode variable. 
+  select(-c(address_line:based_on_postcode))
+
+
+```
+
+
+> **Plot 1 - Hospital Average Occupancy (%) Compared to other Scottish Hospitals:**
+
+
+```{r, echo=TRUE}
+plot1 <- joined_bed_data %>%
+  select(location_name, percentage_occupancy) %>% 
+  #You can add a filter column her by location name linked to ui, allow multiple selections.
+  group_by(location_name) %>% 
+  summarise(location_total = n(), 
+            average_bed_occupancy = round(sum(percentage_occupancy, na.rm =TRUE)/ 
+                                        location_total)) %>% 
+  mutate(quartiles = cut_number(x = average_bed_occupancy,n = 4, 
+                        labels = c("AveOcc in Lowest 25%",
+                                   "AveOcc in Lowest 50%",
+                                   "AveOcc in Highest 50%", 
+                                   "AveOcc in Highest 75%"))
+                                           ) %>% 
+  ggplot()+
+  aes(x = location_name, y = average_bed_occupancy, fill = quartiles)+
+  geom_col()+
+  theme_bw() +
+  coord_flip()+
+labs(x = "Location Name", y = "Average Bed Occupancy (%)")+
+  scale_fill_discrete(name = "Quartile")
+
+ggplotly(plot1)
+       
+
+#Checked NA's prior to removal, 8 in total across Dr Grays Hospital & Borders. 
+# Should a verification be added here in terms of NA's exceed percentage of 
+#location total entries.
+```
+
+
+> **Plot 2 - Hospital Average Occupancy (%) & Season Compared to other Scottish Hospitals:**
+
+
+```{r, echo=TRUE}
+plot2 <- joined_bed_data %>%
+  select(location_name, percentage_occupancy, season) %>%  
+  #You can add a filter column her by location name linked to ui, allow multiple selections.
+  group_by(location_name, season) %>% 
+  summarise(location_total = n(), 
+            average_bed_occupancy = round(sum(percentage_occupancy, na.rm =TRUE)/ 
+                                        location_total)) %>% 
+  ggplot()+
+  aes(x = location_name, y = average_bed_occupancy, shape = season, colour = season)+
+  geom_point()+
+  theme_bw()+
+  coord_flip()+
+labs(x = "Location Name", y = "Average Bed Occupancy (%)")
+ 
+ggplotly(plot2)
+
+```
+
+> **Plot 3 - Hospital Average Occupancy (%) by Specialty (All) Hosiptals**
+
+```{r}
+plot3 <- joined_bed_data %>%
+  select(specialty_name, percentage_occupancy) %>% 
+  filter(!specialty_name %in% c("All Specialties", "All Acute")) %>% 
+  #You can add a filter column her by location name linked to ui, allow multiple selections.
+  group_by(specialty_name) %>% 
+  summarise(specialty_total = n(), 
+            average_bed_occupancy = round(sum(percentage_occupancy, na.rm =TRUE)/ 
+                                        specialty_total)) %>% 
+  ggplot()+
+  aes(x = specialty_name, y = average_bed_occupancy)+
+  geom_col()+
+  coord_flip()+
+  theme_bw() +
+labs(x = "Location Name", y = "Average Bed Occupancy (%)")+
+theme(axis.text.x=element_text(size=0.5))
+
+ggplotly(plot3)
+```
+plot 4 - Average Occupancy - All Hospital by Quarter
+
+```{r}
+
+plot4 <- joined_bed_data %>%
+  mutate(ts_quarter = yearquarter(quarter)) %>% # turn into regular date
+  filter(!is.na(ts_quarter)) %>% 
+  filter(location_name == "Aberdeen Royal Infirmary" |
+         location_name == "St John's Hospital") %>% 
+  #You can add a filter column here by location name linked to ui, allow multiple selections.
+  group_by(ts_quarter, location_name) %>% 
+  summarise(location_total = n(), 
+            average_bed_occupancy = round(sum(percentage_occupancy, na.rm =TRUE)/ 
+                                        location_total)) %>% 
+  ggplot()+
+  aes(x = ts_quarter, y = average_bed_occupancy, group = location_name, colour = location_name)+
+  geom_line()+
+  geom_point()+
+  scale_alpha_continuous()
+
+  ggplotly(plot4) 
+
+
+
+
+```
+
+
+
+
+
+
+
+# 3. Hypothesis Testing
+
+Perform an appropriate statistical test to determine whether 
+there is a statistically significant difference in the average occupancy
+between hospitals.
+
+### 3a. Hypothesis Test
+
+H0: There is no difference in average occupancy between two selected hospitals.
+
+$$ H_0: \mu_{average_occupancy \ hours(hospital\ 1)} -\mu_{ave \ bed \ occupancy \ (hospital\ 2)} = 0 $$
+
+Ha: There is a difference in average occupancy between two selected hospitals
+
+$$ H_a: \mu_{average_occupancy \ hours(hospital\ 1)} -\mu_{ave \ bed \ occupancy \ (hospital\ 2)} \neq 0$$
+
+Step 1 of the bootstrap will be to filter the bed occupancy data by the users selction
+in the below code i have selected the UI. 
+
+```{r}
+average_bed_occupancy_hosp <- joined_bed_data %>% 
+ select(location_name, percentage_occupancy) %>% 
+  #The below filter would be linked to the UI hospital selection. We can also
+  # add a season filter and quarter filter.
+  filter(location_name == "Western General Hospital" | 
+           location_name == "Belford Hospital") %>% 
+  group_by(location_name) 
+
+observed_ave_occupancy_stat <- average_bed_occupancy_hosp %>% 
+  specify(percentage_occupancy ~ location_name) %>%
+  #order will again be controlled by UI location name selection)
+  calculate(stat = "diff in means", 
+            order = c("Western General Hospital", "Belford Hospital"))
+  
+observed_ave_occupancy_stat
+
+# Extension - Can we add an if function here to return a phrase if in the observed stat 
+#there is a difference.
+
+```
+
+Upon review of the osberved stat, there is a difference between the 
+average bed occupancy, however is this signficant. 
+
+### 3b. Null Distribution Calculation 
+
+```{r}
+null_dist1 <- average_bed_occupancy_hosp %>% 
+#testing relationship between hospital and average bed occupancy.
+  specify(percentage_occupancy ~ location_name) %>% 
+#the null hypothesis is there is no relationship i.e. they are independent
+  hypothesise(null = "independence") %>% 
+  generate(reps = 10000, type = "permute") %>% 
+#Sample stat is mean of hospitals done in this order.
+  calculate(stat = "diff in means", 
+            order = c("Western General Hospital", "Belford Hospital"))
+
+head(null_dist1)
+```
+
+### 3c. **Visualise Average Bed Occupancy Distribution**
+
+```{r}
+# Lets's visualise the distribution with the observed stat. Direction set to 
+#both because we are looking for difference. 
+
+null_dist1 %>%
+  visualise(bins = 30) +
+  shade_p_value(obs_stat = observed_ave_occupancy_stat, direction = "both")
+```
+
+```{r}
+#Selection of one-tailed test.
+p_value <- null_dist1 %>%
+  get_p_value(obs_stat = observed_ave_occupancy_stat, direction = "both")
+
+p_value
+
+# Extension - Can we add an if function here to return a phrase whether there is
+#a significant difference based on probability value greater than significance value
+#e.g. O.05, 0.01 etc. The signficance value would need to be selected by the UI.
+
+```
+
+
+
+
+```
+
