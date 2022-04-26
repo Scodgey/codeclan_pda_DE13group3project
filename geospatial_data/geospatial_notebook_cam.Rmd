@@ -36,6 +36,10 @@ scot_local_authorities <-
   st_transform('+proj=longlat +datum=WGS84')
 ```
 
+```{r}
+plot(scot_local_authorities[1])
+```
+
 
 ```{r}
 # Joining on to NHS Joined 3 to see if we can get a working interactive map

@@ -4,7 +4,7 @@ library(shinydashboard)
 # Different way to create a dashboard - more fun
 library(fontawesome)
 # Icon list found here: https://www.angularjswiki.com/fontawesome/
-
+library(plotly)
 
 
 body <- 
@@ -32,7 +32,7 @@ body <-
                 # Dynamic infoBoxes
                 infoBox(
                   "Current Occupancy Percentage", # info box title
-                  "input$occupancy_rate",  # occupancy rate but have total as deafault 
+                  ave_bed_occ,  # occupancy rate but have total as default 
                   icon = icon("bed"), # bed icon for info box
                   color = "light-blue",
                   fill = TRUE
@@ -53,8 +53,8 @@ body <-
                          status = "primary", # allows header to be coloured
                          title = "Health Boards across Scotland",
                          solidHeader = TRUE,
-                         plotlyOutput(
-                           scottish_health_boards
+                         leafletOutput(
+                           "scottish_health_boards"
                          ),
                          width = NULL,
                          height = 600
@@ -69,8 +69,8 @@ body <-
                          height = 200
                        ),
                        box(
-                         title = "Hospitals with Highest Occupancy Rates",
-                         plotOutput("output$top_occupancy_hospitals"),
+                         title = "Hospitals with Highest Average Bed Occupancy",
+                         plotOutput("top_occupancy_hospitals"),
                          width = NULL,
                          height = 200
                        ),
@@ -181,7 +181,7 @@ body <-
                        ),
                        box(
                          title = "Health Boards with Most Occupancy",
-                         plotOutput("input$healthboard"),
+                         plotOutput("healthboard"),
                          width = NULL,
                          height = 300
                        )
@@ -246,7 +246,7 @@ body <-
                        ),
                        box(
                          title = "Health Boards with Most Discharge",
-                         plotOutput("input$healthboard"),
+                         plotOutput("healthboard_discharge"),
                          width = NULL,
                          height = 300
                        )
@@ -293,6 +293,24 @@ sidebar <- dashboardSidebar(
     menuItem("Admissions", icon = icon("hospital-user"), tabName = "Admissions"),
     menuItem("Occupancy", icon = icon("bed"), tabName = "Occupancy"),
     menuItem("Discharge", icon = icon("running"), tabName = "Discharge")
+  ),
+  selectInput("selected_healthboard",
+               "Health Board:",
+               choices = c("Ayreshire and Arran" = "S08000015",
+                          "Borders" = "S08000016",
+                          "Dumfries and Galloway"  ="S08000017",
+                          "Fife" = "S08000029",
+                          "Forth Valley" = "S08000019",
+                          "Grampian" = "S08000020",
+                          "Greater Glasgow & Clyde" = "S08000031",
+                          "Highland" = "S08000022",
+                          "Lanarkshire" = "S08000032",
+                          "Lothian" = "S08000024",
+                          "Orkney" = "S08000025",
+                          "Shetland" = "S08000026",
+                          "Tayside" = "S08000030",
+                          "Western Isles" = "S08000028"
+                           )
   )
 )
 
