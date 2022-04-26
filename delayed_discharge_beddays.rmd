@@ -13,10 +13,17 @@ delayed_discharge_df <- delayed_discharge_df %>%
 
 
 ```{r}
-summarise(count = n()) %>% 
+delayed_discharge_df %>% 
+  filter(!age_group == "18plus") %>% 
+  filter(!reason_for_delay == "All Delay Reasons") %>% 
 ggplot() + 
-  aes(x = datetime, y = count) +
-  geom_line()
+  aes(x = datetime) +
+  geom_line(aes(y = average_daily_number_of_delayed_beds, color = "#A61103")) + 
+  geom_line(aes(y = number_of_delayed_bed_days, colour = "#603BF2"))+
+  scale_y_sqrt() +
+  scale_colour_manual(values = c("#A61103", "#603BF2"), labels = c("avg_daily","number_delayed")) +
+labs(colour = "Delayed Beds")
+
 ```
 
 
