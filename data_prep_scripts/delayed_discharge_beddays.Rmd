@@ -1,0 +1,11 @@
+```{r}
+library(here)
+delayed_discharge_df <- read_csv(here("raw_data/delayed-discharge-beddays-health-board.csv"))
+```
+
+
+```{r}
+delayed_discharge_df %>% 
+    
+```
+
