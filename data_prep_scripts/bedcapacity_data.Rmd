@@ -185,12 +185,8 @@ The data used in this document was last updated	22 February 2022,
 # The next step was to load in the bed dataset from the group joined data set
 # script. 
 
-bed_data <- read_csv(here("raw_data/nhs_data_joined3.csv"))
+bed_data <- read_csv(here("raw_data/nhs_data_joined4.csv"))  
 
-#Next I loaded in the location look up file. 
-location_look_up <- read_csv(here("raw_data/hospital_locations_lookup_file.csv")) %>% 
-  clean_names() %>% 
-  select(-"id")
 ```
 
 
@@ -200,90 +196,47 @@ location_look_up <- read_csv(here("raw_data/hospital_locations_lookup_file.csv")
 bed_data %>% 
   skimr::skim()
 
-location_look_up %>% 
-  skimr::skim()
 ```
 
 
-```{r, results="hide"}
-#Remove columns not required to review bed occupancy & split quarter column.
+> **Plot 1 - Average Bed Occupancy (%) by Hospital**
 
-bed_data_year <- bed_data %>% 
-#change variable name to reflect definitions.
-  rename("available_staffed_beds" = "all_staffed_beds") %>% 
-  #Select will need to change if variables changed in joined data set 3. 
-  select(-c(month_of_delay:average_daily_number_of_delayed_beds))%>% 
-mutate(average_available_staffed_beds = round(average_available_staffed_beds),
-       average_occupied_beds = round(average_occupied_beds), 
-       percentage_occupancy = round(percentage_occupancy)) %>% 
-filter(!is.na(quarter_year)) %>% 
-#filter years to 2018 onwards, as agreed with project group.  
-filter(quarter_year >= 2018 & quarter %in% c("Q1", "Q2", "Q3", "Q4"))
+```{r}
 
-```
-
-
-
-```{r, results="hide"}
-#Upon review of the data it was identified that every second observation, 
-# had a statistical qualifier "d" (see qualifier information for definition). 
-#Based on the definition, and the intent of this analysis these observations 
-#were removed. 
-
-#This was filtered out prior to a join with the look_up file. 
-
-#join location look-up file to bed_data
-joined_bed_data <- bed_data_year %>% 
-  filter(!location_qf %in% "d") %>% 
-  left_join(location_look_up, by = "location") %>% 
-#End joined table at postcode variable. 
-  select(-c(address_line:based_on_postcode))
-
-
-```
-
-
-> **Plot 1 - Hospital Average Occupancy (%) Compared to other Scottish Hospitals:**
-
-
-```{r, echo=TRUE}
-plot1 <- joined_bed_data %>%
+plot1 <- bed_data %>%
   select(location_name, percentage_occupancy) %>% 
-  #You can add a filter column her by location name linked to ui, allow multiple selections.
+##UI - Add a filter column her by location name linked to ui, allow multiple selections.
   group_by(location_name) %>% 
   summarise(location_total = n(), 
             average_bed_occupancy = round(sum(percentage_occupancy, na.rm =TRUE)/ 
-                                        location_total)) %>% 
+                                            location_total)) %>% 
   mutate(quartiles = cut_number(x = average_bed_occupancy,n = 4, 
-                        labels = c("AveOcc in Lowest 25%",
-                                   "AveOcc in Lowest 50%",
-                                   "AveOcc in Highest 50%", 
-                                   "AveOcc in Highest 75%"))
-                                           ) %>% 
+                                labels = c("AveOcc in Lowest 25%",
+                                           "AveOcc in Lowest 50%",
+                                           "AveOcc in Highest 50%", 
+                                           "AveOcc in Highest 75%")) )%>% 
   ggplot()+
   aes(x = location_name, y = average_bed_occupancy, fill = quartiles)+
   geom_col()+
   theme_bw() +
   coord_flip()+
-labs(x = "Location Name", y = "Average Bed Occupancy (%)")+
+  labs(title = "Average Bed Occupancy (%) by Hospital", 
+       x = "Location Name", y = "Average Bed Occupancy (%)")+
   scale_fill_discrete(name = "Quartile")
 
 ggplotly(plot1)
-       
 
-#Checked NA's prior to removal, 8 in total across Dr Grays Hospital & Borders. 
-# Should a verification be added here in terms of NA's exceed percentage of 
-#location total entries.
 ```
 
 
-> **Plot 2 - Hospital Average Occupancy (%) & Season Compared to other Scottish Hospitals:**
+> **Plot 2 - Average Bed Occupancy by Season **
 
 
 ```{r, echo=TRUE}
-plot2 <- joined_bed_data %>%
+
+plot2 <- bed_data %>%
   select(location_name, percentage_occupancy, season) %>%  
-  #You can add a filter column her by location name linked to ui, allow multiple selections.
+##UI - Add a filter column here by location name linked to ui, allow multiple selections.
   group_by(location_name, season) %>% 
   summarise(location_total = n(), 
             average_bed_occupancy = round(sum(percentage_occupancy, na.rm =TRUE)/ 
@@ -293,32 +246,97 @@ plot2 <- joined_bed_data %>%
   geom_point()+
   theme_bw()+
   coord_flip()+
-labs(x = "Location Name", y = "Average Bed Occupancy (%)")
+labs(title = "Average Bed Occupancy (%) by Season", 
+     x = "Location Name", y = "Average Bed Occupancy (%)")
  
 ggplotly(plot2)
 
 ```
 
-> **Plot 3 - Hospital Average Occupancy (%) by Specialty (All) Hosiptals**
+> **Plot 3 - Hospital Average Occupancy (%) by Specialty (All) Hospitals**
 
+```{r}
 
-```{r, echo=TRUE}
-plot3 <- joined_bed_data %>%
+plot3 <- bed_data %>%
   select(specialty_name, percentage_occupancy) %>% 
   filter(!specialty_name %in% c("All Specialties", "All Acute")) %>% 
-  #You can add a filter column her by location name linked to ui, allow multiple selections.
-  group_by(specialty_name) %>% 
+##UI - Add a filter column here by location name linked to ui, allow multiple selections.
+  group_by(specialty_name, ) %>% 
+  summarise(specialty_total = n(), 
+            average_bed_occupancy = round(sum(percentage_occupancy, na.rm =TRUE)/ 
+                                        specialty_total)) %>% 
+  arrange(desc(average_bed_occupancy)) %>% 
+  ggplot()+
+  aes(x = reorder(specialty_name, desc(average_bed_occupancy)), 
+      y = average_bed_occupancy, fill = specialty_name)+
+  geom_col()+
+  theme_bw() +
+labs(title = "Average Bed Occupancy (%) by Specialty" , 
+     x = "Specialty Name", y = "Average Bed Occupancy (%)")+
+theme(legend.position = "none", axis.text.x=element_blank())+
+  scale_x_discrete(guide = guide_axis(check.overlap = TRUE))
+
+ggplotly(plot3)
+```
+
+> **Plot 4 - Average Bed Occupancy - Selected Hospital by Quarter**
+
+```{r}
+
+plot4 <- bed_data %>%
+  #Create date variable.
+  mutate(year_quarter = yearquarter(quarter), .after = quarter) %>% 
+  filter(!is.na(year_quarter)) %>% 
+  filter(location_name == "Aberdeen Royal Infirmary" |
+         location_name == "St John's Hospital") %>% 
+#UI - You can add a filter column here by location name linked to ui, allow multiple selections.
+  group_by(year_quarter, location_name) %>% 
+  summarise(location_total = n(), 
+            average_bed_occupancy = round(sum(percentage_occupancy, na.rm =TRUE)/ 
+                                        location_total)) %>% 
+  ggplot()+
+  aes(x = year_quarter, y = average_bed_occupancy, colour = location_name)+
+  geom_line()+
+  geom_point()+
+  scale_alpha_continuous()
+labs(title = "Average Bed Occupancy (%) by, Location & Quarter (2018 Q1 Onwards)")
+  
+
+  ggplotly(plot4) 
+
+
+```
+
+
+**Plot 5 - Average Bed Occupancy - Selected Specialty by Quarter**
+```{r}
+
+plot5 <- bed_data %>%
+  #Create date variable.
+  mutate(year_quarter = yearquarter(quarter), .after = quarter) %>% 
+  filter(!is.na(year_quarter)) %>% 
+  filter(specialty_name == "General Medicine" |
+         specialty_name == "Accident & Emergency") %>% 
+#UI - You can add a filter column here by location name linked to ui, allow multiple selections.
+  group_by(year_quarter, specialty_name) %>% 
   summarise(specialty_total = n(), 
             average_bed_occupancy = round(sum(percentage_occupancy, na.rm =TRUE)/ 
                                         specialty_total)) %>% 
   ggplot()+
-  aes(x = specialty_name, y = average_bed_occupancy)+
-  geom_col()+
-  theme_bw() +
-labs(x = "Location Name", y = "Average Bed Occupancy (%)")
+  aes(x = year_quarter, y = average_bed_occupancy, colour = specialty_name)+
+  geom_line()+
+  geom_point()+
+  scale_alpha_continuous()
+labs(title = "Average Bed Occupancy (%) by, Specialty & Quarter (2018 Q1 Onwards)")
+  
+
+  ggplotly(plot5) 
+
+
+
+
 
 ```
-
 
 
 # 3. Hypothesis Testing
@@ -341,17 +359,17 @@ Step 1 of the bootstrap will be to filter the bed occupancy data by the users se
 in the below code i have selected the UI. 
 
 ```{r}
-average_bed_occupancy_hosp <- joined_bed_data %>% 
- select(location_name, percentage_occupancy) %>% 
-  #The below filter would be linked to the UI hospital selection. We can also
-  # add a season filter and quarter filter.
+average_bed_occupancy_hosp <- bed_data %>% 
+#UI - The below filter would be linked to the UI hospital selection. We can also
+  # add a season filter.
   filter(location_name == "Western General Hospital" | 
-           location_name == "Belford Hospital") %>% 
+           location_name == "Belford Hospital") %>%
+  filter(season == "Autumn") %>% 
   group_by(location_name) 
 
 observed_ave_occupancy_stat <- average_bed_occupancy_hosp %>% 
   specify(percentage_occupancy ~ location_name) %>%
-  #order will again be controlled by UI location name selection)
+  #Order should be dictated by UI location name selection)
   calculate(stat = "diff in means", 
             order = c("Western General Hospital", "Belford Hospital"))
   
@@ -372,7 +390,7 @@ null_dist1 <- average_bed_occupancy_hosp %>%
 #testing relationship between hospital and average bed occupancy.
   specify(percentage_occupancy ~ location_name) %>% 
 #the null hypothesis is there is no relationship i.e. they are independent
-  hypothesize(null = "independence") %>% 
+  hypothesise(null = "independence") %>% 
   generate(reps = 10000, type = "permute") %>% 
 #Sample stat is mean of hospitals done in this order.
   calculate(stat = "diff in means", 
@@ -389,13 +407,18 @@ head(null_dist1)
 
 null_dist1 %>%
   visualise(bins = 30) +
-  shade_p_value(obs_stat = observed_ave_occupancy_stat, direction = "both")
+  shade_p_value(obs_stat = observed_ave_occupancy_stat, direction = "both") +
+  labs(x = "Null Distribution (Mean)" , y = "Count", 
+       caption = paste0("Observed Stat:", round(observed_ave_occupancy_stat)))
+  
+
 ```
 
 ```{r}
 #Selection of one-tailed test.
 p_value <- null_dist1 %>%
   get_p_value(obs_stat = observed_ave_occupancy_stat, direction = "both")
+  
 
 p_value
 
