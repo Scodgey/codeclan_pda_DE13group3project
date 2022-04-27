@@ -7,7 +7,7 @@ delayed_discharge_df <- read_csv(here("raw_data/delayed-discharge-beddays-health
 delayed_discharge_df <- delayed_discharge_df %>% 
   mutate(datetime = ym(month_of_delay), .after = month_of_delay) %>% 
   filter(datetime >= "2018-04-01")
-  filter(!age == "18plus") #removing 18plus value from age column-- nothing to
+  filter(!age_group == "18plus") #removing 18plus value from age column-- nothing to
                           #do with date
   
 #Writing output to a -new- csv

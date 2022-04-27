@@ -9,4 +9,5 @@ delayed_discharge <- delayed_discharge_df%>%
   geom_line(aes(x = datetime, y = ave_num, colour = "#603BF2"))+
   labs(title = "Average number of delayed bed days", y = "Delayed bed", x = "month over year") +
   theme(legend.position="none", plot.title = element_text(hjust = 0.5)) 
+
 ggplotly(delayed_discharge)
