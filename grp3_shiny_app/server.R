@@ -1,66 +1,3 @@
-### THIS ALL NEEDS TO BE IN GLOBAL
-
-library(zoo)
-
-# Loading in location and removing id and qualifier columns
-location_look_up <- read_csv(here("raw_data/hospital_locations_lookup_file.csv")) %>%
-  clean_names() %>%
-  select(-"id",
-    -contains("qf"))
-
-# joining location data with nhs data 3 and manipulating the data
-joined_bed_data_3 <- read_csv(here("raw_data/nhs_data_joined3.csv")) %>%
-  rename("available_staffed_beds" = "all_staffed_beds") %>%
-  mutate(
-    average_available_staffed_beds = round(average_available_staffed_beds),
-    average_occupied_beds = round(average_occupied_beds),
-    percentage_occupancy = round(percentage_occupancy),
-    ) %>%
-  mutate(quarter = as.Date(as.yearqtr(quarter, format = "%YQ%q"))) %>%
-  filter(!location_qf %in% "d") %>%
-  select(-contains("qf")) %>%
-  left_join(location_look_up, by = "location") %>%
-  filter(!is.na(location))
-
-scot_health_board_shapes <-
-  st_read(dsn = here("geospatial_data/scottish_local_authority_data_2021"),
-          layer = "SG_NHS_HealthBoards_2019") %>%
-  clean_names() %>%
-  st_simplify(dTolerance = 2000) %>%
-  rename(hb = hb_code) %>%
-  st_transform('+proj=longlat +datum=WGS84')
-
-delayed_discharge <- read_csv(here("clean_data/delayed_discharge_fable.csv"))
-
-admissions <- read_csv(here("raw_data/nhs_data_joined2.csv")) %>%
-  select(-contains("qf"))
-
-location_data <- read_csv(here("raw_data/hospital_locations_lookup_file.csv")) %>%
-  select(location, location_name) %>%
-  rename(treatment_location = location)
-
-source(here("helper_scripts/num_admissions_helper.R"))
-
-
-  
-
-# ave_delayed_discharge_rateyed_discharge %>%
-#   group_by(age_group) %>%
-#   ggplot()+
-#   aes(x = age_group, y = number_of_delayed_bed_days)+
-#   geom_boxplot()
-
-
-
-
-
-### dataset for creating the top 3 info boxes in Summary page and giving a rating
-### for how well each Health Board is doing
-
-
-library(shiny)
-library(sf)
-
 # Define server logic required to draw a histogram
 server <- shinyServer(function(input, output) {
 
@@ -73,6 +10,8 @@ server <- shinyServer(function(input, output) {
         ),
         layerId = scot_health_board_shapes$hb)
   })
+  
+
 
   ######################################
   ### Code for filtering by Polygons ###
@@ -413,8 +352,30 @@ output$bed_occ_hyp_2 <- renderPlot({
 
 
 output$delayed_bed_discharge_timeseries <- renderPlotly({
-  ggplotly(delayed_bed_discharge_timeseries)
+  ggplotly(delayed_discharge_plot)
 })
+
+delayed_dischrge_prediction_model <- renderPlot({fit_delayed <- delayed_dis_ts_sum %>%
+         model(
+           snaive = SNAIVE(count),
+           mean_model = MEAN(count),
+           arima = ARIMA(count)
+         )
+       
+       # with the models specified, we can now produce the forecasts.
+       # choose the number of future observations to forecast,
+       # this is called the forecast horizon h = 
+       
+       forecast_3year_delayed <- fit_delayed %>%
+         fabletools::forecast(h = "3 years")
+       
+       # once we’ve calculated our forecast, we can visualise it using
+       # the autoplot() function that will produce a plot of all forecasts.
+       
+       forecast_3year_delayed %>%
+         autoplot(delayed_dis_ts_sum)+
+         guides(colour = guide_legend(title = "3-Year Forecast"))+
+         labs(x = "", y = "number of delayed beds")})
 
 output$delayed_bed_discharge_by_reason <- renderPlot({
   delayed_discharge %>% 
@@ -437,6 +398,6 @@ output$delayed_bed_discharge_by_reason <- renderPlot({
                     size = 15,
                     grow = TRUE)+
   theme(legend.position = "none")
-})
+  })
 
 })
