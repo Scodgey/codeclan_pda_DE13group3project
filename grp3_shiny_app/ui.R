@@ -23,7 +23,7 @@ body <-
                 # Default will be whole population (if can work this out)
                 infoBox(
                   "Current Admission numbers", # info box title
-                  "input$admission_rate", # value in info box
+                  textOutput("ave_admissions"), # value in info box
                   icon = icon("hospital-user"), # hospital user icon
                   color = "light-blue",
                   # red, yellow, aqua, blue, light-blue, green, navy, teal, olive, lime, 
@@ -69,27 +69,20 @@ body <-
                 
                 column(6,
                        tabBox(
-                         title = "KPI Insights",
+                         #title = "Hospitals across Scottish Health Boards",
                          height = 500,
                          width = NULL,
                          
                          tabPanel(
-                           "Admission Rate",
+                           "A&E Targets by Hospital",
                            plotOutput("box 1 plot"),
                            width = NULL,
                            height = "100%"
                          ),
                          
                          tabPanel(
-                           "Average Bed Occupancy",
+                           "Bed Occupancy by Hospital",
                            plotOutput("top_occupancy_hospitals"),
-                           width = NULL,
-                           height = "100%"
-                         ),
-                         
-                         tabPanel(
-                           "Discharge Rate",
-                           plotOutput("Box content 3"),
                            width = NULL,
                            height = "100%"
                          )

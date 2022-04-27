@@ -16,9 +16,9 @@ joined_bed_data_3 <- read_csv(here("raw_data/nhs_data_joined3.csv")) %>%
     average_occupied_beds = round(average_occupied_beds), 
     percentage_occupancy = round(percentage_occupancy),
     ) %>% 
-  unite("datetime", quarter, quarter_year, remove = FALSE) %>% 
-  mutate(datetime = as.Date(as.yearqtr(datetime, format = "Q%q_%Y"))) %>% 
-  filter(!is.na(quarter_year))%>% 
+  #unite("datetime", quarter, quarter_year, remove = FALSE) %>% 
+  mutate(quarter = as.Date(as.yearqtr(quarter, format = "%YQ%q"))) %>% 
+  filter(!is.na(location))%>% 
   filter(!location_qf %in% "d") %>% 
   select(-contains("qf")) %>% 
   left_join(location_look_up, by = "location") 
@@ -31,11 +31,16 @@ scot_health_board_shapes <-
   rename(hb = hb_code) %>% 
   st_transform('+proj=longlat +datum=WGS84')
 
+delayed_discharge <- read_csv(here("clean_data/delayed_discharge_fable.csv"))
+
+admissions <- read_csv(here("raw_data/nhs_data_joined2.csv")) %>% 
+  select(-contains("qf"))
+
 
 ### dataset for creating the top 3 info boxes in Summary page and giving a rating
 ### for how well each Health Board is doing
 
-delayed_discharge <- read_csv(here("clean_data/delayed_discharge_fable.csv"))
+
   
 
 
@@ -51,10 +56,7 @@ server <- shinyServer(function(input, output) {
       addTiles() %>%
       addPolygons(popup = ~paste0(
         "NHS: ", hb_name, "<br>",
-        "Health Board Code: ", hb, "<br>",
-        "Admissions: ", "%", "<br>",
-        "Bed Occupancy: ", "%", "<br>",
-        "Discharge Delay: ", "%"
+        "Health Board Code: ", hb
         ),
         layerId = scot_health_board_shapes$hb)
   })
@@ -76,7 +78,7 @@ server <- shinyServer(function(input, output) {
   output$top_occupancy_hospitals <- renderPlot({
     if (is.null(rv())){
       joined_bed_data_3 %>%
-        select(location_name, percentage_occupancy, hb.x) %>%
+        select(location_name, percentage_occupancy, hb.x) %>% 
         #You can add a filter column her by location name linked to ui, allow multiple selections.
         group_by(location_name) %>%
         summarise(location_total = n(),
@@ -121,15 +123,18 @@ server <- shinyServer(function(input, output) {
         filter(age_group == "18plus",
                reason_for_delay == "All Delay Reasons")%>% 
         summarise(ave = mean(number_of_delayed_bed_days)) %>% 
-        pull(ave)
+        pull(ave)%>% 
+        round(digits = 2)
     }else{
      delayed_discharge %>% 
       filter(age_group == "18plus",
              reason_for_delay == "All Delay Reasons",
-             datetime %in% c(input$date_range),
+             datetime > input$date_range[1],
+             datetime < input$date_range[2],
              hbt == rv()) %>% 
       summarise(ave = mean(number_of_delayed_bed_days)) %>% 
-      pull(ave)}
+      pull(ave)%>% 
+        round(digits = 2)}
   })
   
   output$ave_bed_occ <- renderText({
@@ -140,22 +145,46 @@ server <- shinyServer(function(input, output) {
         summarise(location_total = n(),
                   average_bed_occupancy = mean(sum(percentage_occupancy, na.rm =TRUE)/
                                                  location_total)) %>% 
-        pull(average_bed_occupancy)
+        pull(average_bed_occupancy)%>% 
+        round(digits = 2)
     }else{
       joined_bed_data_3 %>%
-      select(location_name, percentage_occupancy, hb.x, datetime) %>%
-      filter(datetime %in% c(input$date_range),
+      select(location_name, percentage_occupancy, hb.x, quarter) %>% 
+      filter(quarter > input$date_range[1],
+             quarter < input$date_range[2],
              hb.x == rv()) %>% 
-    #You can add a filter column her by location name linked to ui, allow multiple selections.
+    #You can add a filter column here by location name linked to ui, allow multiple selections.
       summarise(location_total = n(),
               average_bed_occupancy = mean(sum(percentage_occupancy, na.rm =TRUE)/
                                              location_total)) %>% 
-    pull(average_bed_occupancy)}
+    pull(average_bed_occupancy) %>% 
+        round(digits = 2)}
   })
 
+  output$ave_admissions <- renderText({
+    if (is.null(rv())){
+      admissions %>%
+        select(hb, week_ending, number_admissions, age_group, sex)%>% 
+        filter(age_group == "All ages",
+               sex == "All") %>% 
+        #You can add a filter column her by location name linked to ui, allow multiple selections.
+        summarise(ave_adm = mean(number_admissions)) %>% 
+        pull(ave_adm)%>% 
+        round(digits = 2)
+    }else{
+      admissions %>%
+        select(hb, week_ending, number_admissions, age_group, sex)%>%
+        filter(week_ending > input$date_range[1],
+              week_ending < input$date_range[2],
+               hb == rv(),
+               age_group == "All ages",
+               sex == "All") %>%
+        summarise(ave_adm = mean(number_admissions)) %>% 
+        pull(ave_adm)%>% 
+        round(digits = 2)}
+  })
 
-
-
+colnames(admissions)
   
   
   
