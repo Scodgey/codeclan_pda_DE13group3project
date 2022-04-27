@@ -23,7 +23,7 @@ body <-
                 # Default will be whole population (if can work this out)
                 infoBox(
                   "Current Admission numbers", # info box title
-                  "input$admission_rate", # value in info box
+                  textOutput("ave_admissions"), # value in info box
                   icon = icon("hospital-user"), # hospital user icon
                   color = "light-blue",
                   # red, yellow, aqua, blue, light-blue, green, navy, teal, olive, lime, 
@@ -33,7 +33,7 @@ body <-
                 
                 infoBox(
                   "Current Occupancy Percentage", # info box title
-                  ave_bed_occ,  # occupancy rate but have total as default 
+                  textOutput("ave_bed_occ"),  # occupancy rate but have total as default 
                   icon = icon("bed"), # bed icon for info box
                   color = "light-blue",
                   fill = TRUE
@@ -41,7 +41,7 @@ body <-
                 
                 infoBox(
                   title = "Current Delayed Discharge Rate", # info box title
-                  "input$discharge_rate", # discharge rate but have total as default
+                  textOutput("ave_delayed_discharge_rate"), # discharge rate but have total as default
                   icon = icon("running"), # person icon for info box
                   color = "light-blue",
                   fill = TRUE
@@ -69,27 +69,20 @@ body <-
                 
                 column(6,
                        tabBox(
-                         title = "KPI Insights",
+                         #title = "Hospitals across Scottish Health Boards",
                          height = 500,
                          width = NULL,
                          
                          tabPanel(
-                           "Admission Rate",
+                           "A&E Targets by Hospital",
                            plotOutput("box 1 plot"),
                            width = NULL,
                            height = "100%"
                          ),
                          
                          tabPanel(
-                           "Average Bed Occupancy",
+                           "Bed Occupancy by Hospital",
                            plotOutput("top_occupancy_hospitals"),
-                           width = NULL,
-                           height = "100%"
-                         ),
-                         
-                         tabPanel(
-                           "Discharge Rate",
-                           plotOutput("Box content 3"),
                            width = NULL,
                            height = "100%"
                          )
@@ -311,30 +304,33 @@ sidebar <- dashboardSidebar(
   
   
   ### Health Board Select Input
+  ### Not needed anymore
   
-  selectInput("selected_healthboard",
-               "Health Board:",
-              selected = "Please Select:",
-               choices = c("Please Select:" = TRUE,
-                          "Ayreshire and Arran" = "S08000015",
-                          "Borders" = "S08000016",
-                          "Dumfries and Galloway"  ="S08000017",
-                          "Fife" = "S08000029",
-                          "Forth Valley" = "S08000019",
-                          "Grampian" = "S08000020",
-                          "Greater Glasgow & Clyde" = "S08000031",
-                          "Highland" = "S08000022",
-                          "Lanarkshire" = "S08000032",
-                          "Lothian" = "S08000024",
-                          "Orkney" = "S08000025",
-                          "Shetland" = "S08000026",
-                          "Tayside" = "S08000030",
-                          "Western Isles" = "S08000028"
-                           )
-  ),
+  # selectInput("selected_healthboard",
+  #              "Health Board:",
+  #             selected = "Please Select:",
+  #              choices = c("Please Select:" = TRUE,
+  #                         "Ayreshire and Arran" = "S08000015",
+  #                         "Borders" = "S08000016",
+  #                         "Dumfries and Galloway"  ="S08000017",
+  #                         "Fife" = "S08000029",
+  #                         "Forth Valley" = "S08000019",
+  #                         "Grampian" = "S08000020",
+  #                         "Greater Glasgow & Clyde" = "S08000031",
+  #                         "Highland" = "S08000022",
+  #                         "Lanarkshire" = "S08000032",
+  #                         "Lothian" = "S08000024",
+  #                         "Orkney" = "S08000025",
+  #                         "Shetland" = "S08000026",
+  #                         "Tayside" = "S08000030",
+  #                         "Western Isles" = "S08000028"
+  #                          )
+  # ),
   
   
   ### Year Select Input
+  ## when using will have to use as.date or something to work
+  
   
   dateRangeInput("date_range",
     label = "Date range input:",
