@@ -7,18 +7,18 @@ library(fontawesome)
 library(plotly)
 
 
-body <- 
+body <-
   dashboardBody(
-    
+
     ###########################################
     ###  Dashboard layout for SUMMARY page  ###
     ###########################################
-    
+
     tabItems(
       tabItem(tabName = "Summary",
               fluidRow(
-                
-                
+
+
                 # Creating an Info box of current admission number for the quarter
                 # Default will be whole population (if can work this out)
                 infoBox(
@@ -26,19 +26,19 @@ body <-
                   textOutput("ave_admissions"), # value in info box
                   icon = icon("hospital-user"), # hospital user icon
                   color = "light-blue",
-                  # red, yellow, aqua, blue, light-blue, green, navy, teal, olive, lime, 
+                  # red, yellow, aqua, blue, light-blue, green, navy, teal, olive, lime,
                   # orange, fuchsia, purple, maroon, black
                   fill = TRUE
                 ),
-                
+
                 infoBox(
                   "Current Occupancy Percentage", # info box title
-                  textOutput("ave_bed_occ"),  # occupancy rate but have total as default 
+                  textOutput("ave_bed_occ"),  # occupancy rate but have total as default
                   icon = icon("bed"), # bed icon for info box
                   color = "light-blue",
                   fill = TRUE
                 ),
-                
+
                 infoBox(
                   title = "Current Delayed Discharge Rate", # info box title
                   textOutput("ave_delayed_discharge_rate"), # discharge rate but have total as default
@@ -47,12 +47,12 @@ body <-
                   fill = TRUE
                 )
               ),
-              
-              
+
+
               ########################
               ### Health Board Map ###
               ########################
-              
+
               fluidRow(
                 column(6,
                        box(
@@ -66,20 +66,20 @@ body <-
                          height = 500
                        )
                 ),
-                
+
                 column(6,
                        tabBox(
                          #title = "Hospitals across Scottish Health Boards",
                          height = 500,
                          width = NULL,
-                         
+
                          tabPanel(
                            "Bed Occupancy by Hospital",
                            plotOutput("top_occupancy_hospitals"),
                            width = NULL,
                            height = "100%"
                          ),
-                         
+
                          tabPanel(
                            "A&E Targets by Hospital",
                            plotlyOutput("ae_attendees_plot"),
@@ -90,19 +90,19 @@ body <-
                 )
               )
               ),
-      
-      
+
+
       ##############################################
       ###  Dashboard layout for ADMISSIONS page  ###
       ##############################################
-      
+
       tabItem(tabName = "Admissions",
               fluidRow(
-                
+
                 #Creating the first row with the following columns
                 # 1. graph of trend of admissions with predictive modelling
                 # 2. row for the percentage of elect v planned & top 5 most populated health boards
-                
+
                 column(8,
                        box(
                          color = "blue",
@@ -113,7 +113,7 @@ body <-
                           width = NULL
                        )
                 ),
-                
+
                 column(4,
                        box(
                          title = "Percentage of Emergency v Planned",
@@ -129,14 +129,14 @@ body <-
                        )
                 )
               ),
-              
+
               #Creating the second row with the following columns
               # 1. age graph - that changes on year and health baord selected
               # 2. box plot of gender
               # 3. graph of smid score
-              
+
               fluidRow(
-                
+
                 box(
                   title = "Age",
                   plotOutput("age_ranges_admissions"),
@@ -149,7 +149,7 @@ body <-
                   width = 4,
                   height = 300
                 ),
-                
+
                 box(
                   title = "Deprivation",
                   plotOutput("smid_score_admissions"),
@@ -158,85 +158,131 @@ body <-
                 )
               )
       ),
-      
+
       #############################################
       ###  Dashboard layout for OCCUPANCY page  ###
       #############################################
-      
+
       tabItem(tabName = "Occupancy",
+
               fluidRow(
-                
+
+                #Selection for hospitals excluding bootstrap graphs
+                selectInput(
+                  "hospital_multi_selection",
+                  "Select Hospitals to Compare Bed Occupancy",
+                  choices = c(unique(bed_data$location_name)),
+                  multiple = 5
+                ),
+
+                #Selection for speciality for graph
+                selectInput(
+                  "specialty_multi_selection",
+                  "Select Specialty to Compare Bed Occupancy",
+                  choices = c(unique(bed_data$specialty_name)),
+                  multiple =5
+                )
+
+              ),
+
+              fluidRow(
+
                 #Creating the first row with the following columns
                 # 1. graph of trend of admissions with predictive modelling
                 # 2. row for the percentage of elect v planned & top 5 most populated health boards
-                
-                column(8,
+
+                column(6,
                        box(
-                         title = "Occupancy predictive model",
+                         title = "Comparing Average Bed Occupancy Between Hospitals per Quarter",
                          #this should be static but highlighted portion shows year selected
-                         plotOutput("predicted graph of occupancy"),
+                         plotlyOutput("bed_occ_comparison_quarter"),
                          width = NULL
                        )
                 ),
-                
-                ### put in a select input for multi hospitals
-                
-                column(4,
+
+                column(6,
                        box(
-                         title = "Percentage of Emergency v Planned",
-                         plotOutput("Occupancy Emergency v Planned"),
-                         width = NULL,
-                         height = 100
-                       ),
-                       box(
-                         title = "Health Boards with Most Occupancy",
-                         plotOutput("healthboard"),
-                         width = NULL,
-                         height = 300
+                         title = "Average Bed Occupancy (%) by Specialty",
+                         #this should be static but highlighted portion shows year selected
+                         plotlyOutput("bed_occ_specialty_comparison"),
+                         width = NULL
                        )
                 )
+
+                # column(4,
+                #        box(
+                #          title = "Percentage of Emergency v Planned",
+                #          plotOutput("Occupancy Emergency v Planned"),
+                #          width = NULL,
+                #          height = 100
+                #        ),
+                #        box(
+                #          title = "Health Boards with Most Occupancy",
+                #          plotOutput("healthboard"),
+                #          width = NULL,
+                #          height = 300
+                #        )
+                # )
               ),
-              
+
+              fluidRow(
+
+                #Selection numero uno for bootstrapping
+                selectInput(
+                  "hospital_boot_numero_uno",
+                  "Select Hospital for testing significant difference of bed occupancy mean #1",
+                  choices = c(unique(bed_data$location_name)),
+                  multiple = FALSE
+                ),
+
+                #Selection numero dos for bootstrapping
+                selectInput(
+                  "hospital_boot_numero_dos",
+                  "Select Hospital for testing significant difference of bed occupancy mean #2",
+                  choices = c(unique(bed_data$location_name)),
+                  multiple = FALSE
+                )
+              ),
+
+
               #Creating the second row with the following columns
               # 1. age graph - that changes on year and health baord selected
               # 2. box plot of gender
               # 3. graph of smid score
-              
+
               fluidRow(
-                
+
                 box(
-                  title = "Age",
-                  plotOutput("age_ranges_occupancy"),
-                  width = 4,
-                  height = 300
+                  title = "Hypothesis Test 1",
+                  plotOutput("bed_occ_hyp_1"),
+                  width = 5,
+                  height = "100%"
                 ),
                 box(
                   title = "Gender",
                   plotOutput("gender_diff_occupancy"),
-                  width = 4,
-                  height = 300
+                  width = 5,
+                  height = "100%"
                 ),
-                
                 box(
-                  title = "Deprivation",
-                  plotOutput("smid_score_occupancy"),
-                  width = 4,
-                  height = 300
+                  title = "Null Distribution Explaination",
+                  width = 2,
+                  height = "100%"
                 )
               )
       ),
-      
+
       #############################################
       ###  Dashboard layout for Discharge page  ###
       #############################################
-      
+
       tabItem(tabName = "Discharge",
               fluidRow(
-                
+
                 #Creating the first row with the following columns
                 # 1. graph of trend of admissions with predictive modelling
                 # 2. row for the percentage of elect v planned & top 5 most populated health boards
-                
+
                 column(8,
                        box(
                          title = "Discharge predictive model",
@@ -245,7 +291,7 @@ body <-
                          width = NULL
                        )
                 ),
-                
+
                 column(4,
                        box(
                          title = "Percentage of Emergency v Planned",
@@ -261,14 +307,14 @@ body <-
                        )
                 )
               ),
-              
+
               #Creating the second row with the following columns
               # 1. age graph - that changes on year and health baord selected
               # 2. box plot of gender
               # 3. graph of smid score
-              
+
               fluidRow(
-                
+
                 box(
                   title = "Age",
                   plotOutput("age_ranges_discharge"),
@@ -281,7 +327,7 @@ body <-
                   width = 4,
                   height = 300
                 ),
-                
+
                 box(
                   title = "Deprivation",
                   plotOutput("smid_score_discharge"),
@@ -290,7 +336,7 @@ body <-
                 )
               )
       )
-      
+
     )
   )
 
@@ -303,11 +349,11 @@ sidebar <- dashboardSidebar(
     menuItem("Occupancy", icon = icon("bed"), tabName = "Occupancy"),
     menuItem("Discharge", icon = icon("running"), tabName = "Discharge")
   ),
-  
-  
+
+
   ### Health Board Select Input
   ### Not needed anymore
-  
+
   # selectInput("selected_healthboard",
   #              "Health Board:",
   #             selected = "Please Select:",
@@ -328,25 +374,33 @@ sidebar <- dashboardSidebar(
   #                         "Western Isles" = "S08000028"
   #                          )
   # ),
-  
-  
+
+
   ### Year Select Input
   ## when using will have to use as.date or something to work
-  
-  
+
   dateRangeInput("date_range",
     label = "Date range input:",
     start = "2018/04/01",
     end = Sys.Date(),
     format = "dd/mm/yyyy"
   ),
-  
+
   selectInput(
-    "hospital_selection",
+    "hospital",
     label = "Hospital:",
-    choices = c(location_data$location_name)
+    choices = c(unique(location_data$location_name)),
+    multiple = FALSE
+  ),
+
+  selectInput(
+    "season",
+    label = "Season:",
+    choices = c(unique(bed_data$season)),
+    multiple = TRUE
   )
-  
+
+
 )
 
 

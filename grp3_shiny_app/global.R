@@ -50,8 +50,8 @@ library(tsibble) # Time series conversion.
 ## Data - Including Cleaning & Wrangling ----
 ###############################################.
 
-# Temporal Data
-# This is data required for capacity insight.
+# Admissions Data
+# This is data required for admissions insight.
 
 
 
@@ -59,15 +59,16 @@ library(tsibble) # Time series conversion.
 
 
 
-# Demographic Data
-# This is data required for demographic insight.
+# Occupancy Data
+# This is data required for occupancy insight.
+
+bed_data <- read_csv(here("raw_data/nhs_data_joined4.csv"))
 
 
 
 
-
-#Geographic Data
-#This is data required for georgraphical insight.
+# Discharge Data
+#This is data required for discharge insight.
 
 
 

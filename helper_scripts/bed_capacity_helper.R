@@ -68,10 +68,10 @@ plot2 <- bed_data %>%
 #Plot 3 - Hospital Average Occupancy (%) by Specialty (All) Hospitals
   
 plot3 <- bed_data %>%
-  select(specialty_name, percentage_occupancy) %>% 
-  filter(!specialty_name %in% c("All Specialties", "All Acute")) %>% 
+  select(specialty_name, percentage_occupancy, location_name) %>% 
+  filter(location_name %in% c("Ninewells Hospital", "The Balfour", "West Glasgow")) %>% 
   ##UI - Add a filter column here by specialty name linked to ui, allow multiple selections.
-  filter(specialty_name == "Physiotherapy" | specialty_name == "Infectious Diseases") %>% 
+  filter(specialty_name %in% c("General Medicine", "Physiotherapy")) %>% 
   group_by(specialty_name) %>% 
   summarise(specialty_total = n(), 
             average_bed_occupancy = round(sum(percentage_occupancy, na.rm =TRUE)/ 
@@ -82,10 +82,8 @@ plot3 <- bed_data %>%
       y = average_bed_occupancy, fill = specialty_name)+
   geom_col()+
   theme_bw() +
-  labs(title = "Average Bed Occupancy (%) by Specialty" , 
-       x = "Specialty Name", y = "Average Bed Occupancy (%)")+
-  theme(legend.position = "none", axis.text.x=element_blank())+
-  scale_x_discrete(guide = guide_axis(check.overlap = TRUE))
+  labs(x = "Specialty Name", y = "Average Bed Occupancy (%)")+
+  theme( axis.text.x=element_blank())
 
 ggplotly(plot3)
 
@@ -122,8 +120,7 @@ plot5 <- bed_data %>%
   #Create date variable.
   mutate(year_quarter = yearquarter(quarter), .after = quarter) %>% 
   filter(!is.na(year_quarter)) %>% 
-  filter(specialty_name == "General Medicine" |
-           specialty_name == "Accident & Emergency") %>% 
+  filter(specialty_name %in% c("General Medicine", "Accident & Emergency") %>% 
   #UI - You can add a filter column here by location name linked to ui, allow multiple selections.
   group_by(year_quarter, specialty_name) %>% 
   summarise(specialty_total = n(), 
