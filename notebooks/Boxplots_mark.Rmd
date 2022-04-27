@@ -21,7 +21,9 @@ ha_by_HB_age_sex <-
 ha_by_depriv <- 
   read_csv(here("raw_data/hospital_admissions_hb_deprivation.csv")) %>% clean_names()
  
-delayed_discharge_df <- read_csv(here("clean_data/delayed_discharge_fable.csv"))          
+delayed_discharge_df <- read_csv(here("clean_data/delayed_discharge_fable.csv"))  
+
+nhs_data_joined3 <- (read_csv(here("raw_data/nhs_data_joined3.csv")))
 ```
 
 
@@ -34,12 +36,67 @@ glimpse(activity_by_board_age_sex)
 
 ```
 
+```{r}
+delayed_discharge_df <- read_csv(here("clean_data/delayed_discharge_fable.csv"))
+
+
+delayed_discharge_df %>% 
+group_by(reason_for_delay) %>% 
+summarise(total_number_of_delayed_bed_days = sum(number_of_delayed_bed_days)) %>% 
+ggplot() +
+  geom_boxplot(aes(x = toatl_number_of_delayed_bed_days, y = reason_for_delay))
+geom_col()
+
+delayed_discharge_df %>% 
+  group_by(age_group) %>% 
+  ggplot()+
+  aes(x = age_group, y = number_of_delayed_bed_days) +
+  geom_boxplot()
+
+
+
+```
+
 
 ```{r}
 #function
-group_by(quarter, )
+delayed_discharge_df %>% 
+group_by(age_group) %>% 
+summarise(count = n())
 ggplot()
 aes()
 geom_boxplot()
+```
+```{r}
+nhs_data_joined1 <- read_csv(here("raw_data/nhs_data_joined1.csv")) 
+```
+
+```{r}
+nhs_data_joined2 <- read_csv(here("raw_data/nhs_data_joined2.csv")) 
+
+
+```
+```{r}
+nhs_data_joined1 %>% 
+rename(age_group = age)
+
+right_join(nhs_data_joined2)
+```
+
+boxplots 
+age
+length of stay
+
+gender
+length of stay
+```{r}
+
+
+age_group_count <- nhs_data_joined1 %>% 
+  group_by(age, length_of_stay) %>% 
+  summarise(count = n())
+  ggplot() +
+  geom_boxplot(aes(x = age_group_count, y = length_of_stay))
+
 ```
 
