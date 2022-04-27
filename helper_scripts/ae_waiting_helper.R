@@ -20,6 +20,7 @@ ae_wait_plot <- act_ae_waiting %>%
   geom_col(aes(x = month, y = number_meeting_target_aggregate), fill="lightblue", color = "black", width = 30, position = "dodge")+
   geom_col(aes(x = month, y = number_of_attendances_aggregate), fill="darkblue", width = 10)+
   scale_x_date(date_breaks = "months")+
+  geom_vline(xintercept = as.numeric(as.Date("2020-04-01")), linetype = 2, colour = "red")+
   theme(axis.text.x = element_text(angle=70, hjust=1),
         axis.title.x=element_blank())+
   labs(y = "Number of A&E Attendences")
