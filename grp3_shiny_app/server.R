@@ -35,6 +35,12 @@ delayed_discharge <- read_csv(here("clean_data/delayed_discharge_fable.csv"))
 admissions <- read_csv(here("raw_data/nhs_data_joined2.csv")) %>%
   select(-contains("qf"))
 
+location_data <- read_csv(here("raw_data/hospital_locations_lookup_file.csv")) %>% 
+  select(location, location_name) %>% 
+  rename(treatment_location = location)
+
+
+
 
 ### dataset for creating the top 3 info boxes in Summary page and giving a rating
 ### for how well each Health Board is doing
@@ -180,6 +186,26 @@ server <- shinyServer(function(input, output) {
         pull(ave_adm)%>%
         round(digits = 2)}
   })
+  
+  output$ae_attendees_plot<- renderPlotly({
+    ggplotly(
+    act_ae_waiting %>%
+    left_join(location_data, by = "treatment_location") %>% 
+    filter(location_name == input$hospital_selection)%>%
+    mutate(month = ym(month))%>%
+    filter(!month < "2018-03-31")%>%
+    filter(hbt == rv())%>%   #input required from ui 
+   #input required from ui 
+    ggplot()+
+    geom_col(aes(x = month, y = number_meeting_target_aggregate), fill="lightblue", color = "black", width = 30, position = "dodge")+
+    geom_col(aes(x = month, y = number_of_attendances_aggregate), fill="darkblue", width = 10)+
+    scale_x_date(date_breaks = "months")+
+    geom_vline(xintercept = as.numeric(as.Date("2020-04-01")), linetype = 2, colour = "red")+
+    theme(axis.text.x = element_text(angle=70, hjust=1),
+          axis.title.x=element_blank())+
+    labs(y = "Number of A&E Attendences"))
+  })
+
 
 
 

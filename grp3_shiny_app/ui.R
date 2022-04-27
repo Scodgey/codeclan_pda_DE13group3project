@@ -74,15 +74,15 @@ body <-
                          width = NULL,
                          
                          tabPanel(
-                           "A&E Targets by Hospital",
-                           plotOutput("box 1 plot"),
+                           "Bed Occupancy by Hospital",
+                           plotOutput("top_occupancy_hospitals"),
                            width = NULL,
                            height = "100%"
                          ),
                          
                          tabPanel(
-                           "Bed Occupancy by Hospital",
-                           plotOutput("top_occupancy_hospitals"),
+                           "A&E Targets by Hospital",
+                           plotlyOutput("ae_attendees_plot"),
                            width = NULL,
                            height = "100%"
                          )
@@ -178,6 +178,8 @@ body <-
                          width = NULL
                        )
                 ),
+                
+                ### put in a select input for multi hospitals
                 
                 column(4,
                        box(
@@ -337,6 +339,12 @@ sidebar <- dashboardSidebar(
     start = "2018/04/01",
     end = Sys.Date(),
     format = "dd/mm/yyyy"
+  ),
+  
+  selectInput(
+    "hospital_selection",
+    label = "Hospital:",
+    choices = c(location_data$location_name)
   )
   
 )
