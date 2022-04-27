@@ -35,6 +35,27 @@ delayed_discharge <- read_csv(here("clean_data/delayed_discharge_fable.csv"))
 admissions <- read_csv(here("raw_data/nhs_data_joined2.csv")) %>%
   select(-contains("qf"))
 
+location_data <- read_csv(here("raw_data/hospital_locations_lookup_file.csv")) %>%
+  select(location, location_name) %>%
+  rename(treatment_location = location)
+
+
+delayed_discharge %>%
+  group_by(reason_for_delay) %>%
+  summarise(total_number_of_delayed_bed_days = sum(number_of_delayed_bed_days))%>%
+  ggplot()+
+  aes(x = total_number_of_delayed_bed_days, y = reason_for_delay)+
+  geom_col()
+
+delayed_discharge %>%
+  group_by(age_group) %>%
+  ggplot()+
+  aes(x = age_group, y = number_of_delayed_bed_days)+
+  geom_boxplot()
+
+
+
+
 
 ### dataset for creating the top 3 info boxes in Summary page and giving a rating
 ### for how well each Health Board is doing
@@ -181,7 +202,217 @@ server <- shinyServer(function(input, output) {
         round(digits = 2)}
   })
 
+  output$ae_attendees_plot<- renderPlotly({
+    ggplotly(
+    act_ae_waiting %>%
+    left_join(location_data, by = "treatment_location") %>%
+    filter(location_name == input$hospital)%>%
+    mutate(month = ym(month))%>%
+    filter(!month < "2018-03-31")%>%
+    filter(hbt == rv())%>%   #input required from ui
+   #input required from ui
+    ggplot()+
+    geom_col(aes(x = month, y = number_meeting_target_aggregate), fill="lightblue", color = "black", width = 30, position = "dodge")+
+    geom_col(aes(x = month, y = number_of_attendances_aggregate), fill="darkblue", width = 10)+
+    scale_x_date(date_breaks = "months")+
+    geom_vline(xintercept = as.numeric(as.Date("2020-04-01")), linetype = 2, colour = "red")+
+    theme(axis.text.x = element_text(angle=70, hjust=1),
+          axis.title.x=element_blank())+
+    labs(y = "Number of A&E Attendences"))
+  })
 
+
+  ############################
+  ## Occupancy Tab - Graphs ##
+  ############################
+
+  ### geom_line to compare different hospitals by quarter
+
+  output$bed_occ_comparison_quarter <- renderPlotly({
+    ggplotly(
+      bed_data %>%
+        #Create date variable.
+        mutate(year_quarter = yearquarter(quarter), .after = quarter) %>%
+        filter(!is.na(year_quarter)) %>%
+        filter(location_name %in% c(input$hospital_multi_selection)) %>%
+        #UI - You can add a filter column here by location name linked to ui, allow multiple selections.
+        group_by(year_quarter, location_name) %>%
+        summarise(location_total = n(),
+                  average_bed_occupancy = round(sum(percentage_occupancy, na.rm =TRUE)/
+                                                  location_total)) %>%
+        ggplot()+
+        aes(x = year_quarter, y = average_bed_occupancy, colour = location_name)+
+        geom_line()+
+        geom_point()+
+        scale_alpha_continuous()
+    )
+  })
+
+
+
+  output$bed_occ_specialty_comparison <- renderPlotly({
+    ggplotly(
+
+      bed_data %>%
+        #Create date variable.
+        mutate(year_quarter = yearquarter(quarter), .after = quarter) %>%
+        filter(!is.na(year_quarter)) %>%
+        filter(specialty_name %in% c(input$specialty_multi_selection)) %>%
+                 #UI - You can add a filter column here by location name linked to ui, allow multiple selections.
+                 group_by(year_quarter, specialty_name) %>%
+                 summarise(specialty_total = n(),
+                           average_bed_occupancy = round(sum(percentage_occupancy, na.rm =TRUE)/
+                                                           specialty_total)) %>%
+                 ggplot()+
+                 aes(x = year_quarter, y = average_bed_occupancy, colour = specialty_name)+
+                 geom_line()+
+                 geom_point()+
+                 scale_alpha_continuous()
+
+    )
+  })
+
+
+
+  output$bed_occ_hyp_1 <- renderPlot({
+    ### Hypothesis Test 1 - Difference in Average Bed Occupancy (Two Hospitals)
+
+    #Perform an appropriate statistical test to determine whether
+    #there is a statistically significant difference average bed occupancy between
+    #two selected hospitals.
+
+    #H0: There is no difference in average occupancy between two selected hospitals.
+    #Ha: Ha: There is a difference in average occupancy between two selected hospitals.
+
+    average_bed_occupancy_twohospitals <- bed_data %>%
+      #UI - The below filter would be linked to the UI hospital selection. We can also
+      # add a season filter.
+      filter(location_name %in% c(input$hospital_boot_numero_uno, input$hospital_boot_numero_dos)) %>%
+      filter(season == input$season) %>%
+      group_by(location_name)
+
+    observed_ave_occupancy_stat1 <- average_bed_occupancy_twohospitals %>%
+      specify(percentage_occupancy ~ location_name) %>%
+      #Order should be dictated by UI location name selection)
+      calculate(stat = "diff in means",
+                order = c(input$hospital_boot_numero_uno, input$hospital_boot_numero_dos))
+
+    # This code creates a null distribution to determine if
+    #observed_ave_occupancy_stat1 is significant.
+
+    null_dist1 <- average_bed_occupancy_twohospitals %>%
+      #testing relationship between hospital and average bed occupancy.
+      specify(percentage_occupancy ~ location_name) %>%
+      #the null hypothesis is there is no relationship i.e. they are independent
+      hypothesise(null = "independence") %>%
+      generate(reps = 10000, type = "permute") %>%
+      #Sample stat is mean of hospitals done in this order.
+      calculate(stat = "diff in means",
+                order = c(input$hospital_boot_numero_uno, input$hospital_boot_numero_dos))
+
+    # This calculation generate probability of observing observed stat.
+    #Selection of one-tailed test.
+    p_value1 <- null_dist1 %>%
+      get_p_value(obs_stat = observed_ave_occupancy_stat1, direction = "both")
+
+
+    # Extension - Can we add an if function here to return a phrase whether there is
+    #a significant difference based on probability value greater than significance value
+    #(alpha)set at 0.05. Other development options could include UI selection of alpha.
+
+
+    # Let's visualise the distribution with the observed stat. Direction set to
+    #both because we are looking for difference.
+
+    if(p_value1 <= 0.05){
+      result = "Reject Null Hypothesis"
+    } else {
+      result = "Fail to Reject Null Hypothesis"
+    }
+
+    null_dist1 %>%
+      visualise(bins = 30) +
+      shade_p_value(obs_stat = observed_ave_occupancy_stat1, direction = "both") +
+      labs(title = "Simulation Based Null Distribution (Diff in Means)",
+           x = "Null Distribution" , y = "Count",
+           caption = paste0("Observed Stat:", round(observed_ave_occupancy_stat1),
+                            "\n",
+                            "Prob Value: ", p_value1, "\n", "alpha = ", 0.05,
+                            "\n",
+                            result))
+  })
+
+
+
+
+
+
+output$bed_occ_hyp_2 <- renderPlot({
+
+  #Perform an appropriate statistical test to determine whether
+  #there is a statistically significant difference average bed occupancy between
+  #one hospital and the average bed occupancy for Scotland .
+
+
+  #H0: There is no difference in average occupancy between selected hospital and
+  #Scotland.
+  #Ha: There is a difference between the selected hospital is greater than average
+  #for all of Scotland.
+
+  #Calculate Average Occupancy for All of Scotland Hospitals
+
+  ave_occupancy_scotland <- bed_data %>%
+    filter(season == input$season) %>%
+    summarise(total = n(), average_bed_occupancy = round(sum(percentage_occupancy,
+                                                             na.rm =TRUE)/
+                                                           total))
+
+  #Bootstrap on calculated Average Bed Occupancy for all of Scotland (No filters).
+  #Mean used in calculation is from previous code line.
+
+  null_dist2 <- bed_data %>%
+    filter(season == input$season) %>%
+    specify(response = percentage_occupancy) %>%
+    #We are hypothesing that our mean rating for all of Scotlands hospitals will be
+    # = to our cacluated value (i.e. no difference)
+    hypothesize(null = "point", mu = ave_occupancy_scotland$average_bed_occupancy) %>%
+    generate(reps = 10000, type = "bootstrap") %>%
+    calculate(stat = "mean")
+
+  #Calculate Average Occupancy for selected hospital.
+
+  average_bed_occupancy_onehospital_stat2 <- bed_data %>%
+    filter(season == input$season) %>%
+    #UI - The below filter would be linked to the UI hospital selection.
+    filter(location_name == input$hospital_boot_numero_uno) %>%
+    group_by(location_name) %>%
+    summarise(total = n(),
+              average_bed_occupancy_onehospital = sum(percentage_occupancy,
+                                                      na.rm = TRUE)/total)
+
+  # This calculation generate probability of observing observed stat.
+  #Selection of one-tailed test.
+  p_value2 <- null_dist2 %>%
+    get_p_value(obs_stat = average_bed_occupancy_onehospital_stat2$average_bed_occupancy_onehospital,
+                direction = "both")
+
+  if(p_value1 <= 0.05){
+    result = "Reject Null Hypothesis"
+  } else {
+    result = "Fail to Reject Null Hypothesis"
+  }
+
+  null_dist2 %>%
+    visualise(bins = 30) +
+    shade_p_value(obs_stat = average_bed_occupancy_onehospital_stat2$average_bed_occupancy_onehospital, direction = "both") +
+    labs(title = "Simulation Based Null Distribution (Diff in Means)",
+         x = "Null Distribution" , y = "Count",
+         caption = paste0("Observed Stat:", round(average_bed_occupancy_onehospital_stat2$average_bed_occupancy_onehospital),
+                          "\n",
+                          "Prob Value: ", p_value2, "\n", "alpha = ", 0.05,
+                          "\n",
+                          result))
+})
 
 
 })
