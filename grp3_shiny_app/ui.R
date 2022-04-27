@@ -18,28 +18,30 @@ body <-
       tabItem(tabName = "Summary",
               fluidRow(
                 
+                
                 # Creating an Info box of current admission number for the quarter
                 # Default will be whole population (if can work this out)
                 infoBox(
                   "Current Admission numbers", # info box title
-                  "input$admission_rate", # value in info box
+                  textOutput("ave_admissions"), # value in info box
                   icon = icon("hospital-user"), # hospital user icon
                   color = "light-blue",
                   # red, yellow, aqua, blue, light-blue, green, navy, teal, olive, lime, 
                   # orange, fuchsia, purple, maroon, black
                   fill = TRUE
                 ),
-                # Dynamic infoBoxes
+                
                 infoBox(
                   "Current Occupancy Percentage", # info box title
-                  ave_bed_occ,  # occupancy rate but have total as default 
+                  textOutput("ave_bed_occ"),  # occupancy rate but have total as default 
                   icon = icon("bed"), # bed icon for info box
                   color = "light-blue",
                   fill = TRUE
                 ),
+                
                 infoBox(
                   title = "Current Delayed Discharge Rate", # info box title
-                  "input$discharge_rate", # discharge rate but have total as default
+                  textOutput("ave_delayed_discharge_rate"), # discharge rate but have total as default
                   icon = icon("running"), # person icon for info box
                   color = "light-blue",
                   fill = TRUE
@@ -47,42 +49,47 @@ body <-
               ),
               
               
+              ########################
+              ### Health Board Map ###
+              ########################
+              
               fluidRow(
-                column(8,
+                column(6,
                        box(
                          status = "primary", # allows header to be coloured
                          title = "Health Boards across Scotland",
                          solidHeader = TRUE,
                          leafletOutput(
-                           "scottish_health_boards"
+                           outputId = "scottish_health_boards"
                          ),
                          width = NULL,
-                         height = 600
+                         height = 500
                        )
                 ),
                 
-                column(4,
-                       box(
-                         title = "Health Boards with Highest Admission Rates",
-                         plotOutput("box 1 plot"),
+                column(6,
+                       tabBox(
+                         #title = "Hospitals across Scottish Health Boards",
+                         height = 500,
                          width = NULL,
-                         height = 200
-                       ),
-                       box(
-                         title = "Hospitals with Highest Average Bed Occupancy",
-                         plotOutput("top_occupancy_hospitals"),
-                         width = NULL,
-                         height = 200
-                       ),
-                       box(
-                         title = "Hospitals with Highest Discharge Rates",
-                         plotOutput("Box content 3"),
-                         width = NULL,
-                         height = 200
+                         
+                         tabPanel(
+                           "A&E Targets by Hospital",
+                           plotOutput("box 1 plot"),
+                           width = NULL,
+                           height = "100%"
+                         ),
+                         
+                         tabPanel(
+                           "Bed Occupancy by Hospital",
+                           plotOutput("top_occupancy_hospitals"),
+                           width = NULL,
+                           height = "100%"
+                         )
                        )
                 )
               )
-      ),
+              ),
       
       
       ##############################################
@@ -294,24 +301,44 @@ sidebar <- dashboardSidebar(
     menuItem("Occupancy", icon = icon("bed"), tabName = "Occupancy"),
     menuItem("Discharge", icon = icon("running"), tabName = "Discharge")
   ),
-  selectInput("selected_healthboard",
-               "Health Board:",
-               choices = c("Ayreshire and Arran" = "S08000015",
-                          "Borders" = "S08000016",
-                          "Dumfries and Galloway"  ="S08000017",
-                          "Fife" = "S08000029",
-                          "Forth Valley" = "S08000019",
-                          "Grampian" = "S08000020",
-                          "Greater Glasgow & Clyde" = "S08000031",
-                          "Highland" = "S08000022",
-                          "Lanarkshire" = "S08000032",
-                          "Lothian" = "S08000024",
-                          "Orkney" = "S08000025",
-                          "Shetland" = "S08000026",
-                          "Tayside" = "S08000030",
-                          "Western Isles" = "S08000028"
-                           )
+  
+  
+  ### Health Board Select Input
+  ### Not needed anymore
+  
+  # selectInput("selected_healthboard",
+  #              "Health Board:",
+  #             selected = "Please Select:",
+  #              choices = c("Please Select:" = TRUE,
+  #                         "Ayreshire and Arran" = "S08000015",
+  #                         "Borders" = "S08000016",
+  #                         "Dumfries and Galloway"  ="S08000017",
+  #                         "Fife" = "S08000029",
+  #                         "Forth Valley" = "S08000019",
+  #                         "Grampian" = "S08000020",
+  #                         "Greater Glasgow & Clyde" = "S08000031",
+  #                         "Highland" = "S08000022",
+  #                         "Lanarkshire" = "S08000032",
+  #                         "Lothian" = "S08000024",
+  #                         "Orkney" = "S08000025",
+  #                         "Shetland" = "S08000026",
+  #                         "Tayside" = "S08000030",
+  #                         "Western Isles" = "S08000028"
+  #                          )
+  # ),
+  
+  
+  ### Year Select Input
+  ## when using will have to use as.date or something to work
+  
+  
+  dateRangeInput("date_range",
+    label = "Date range input:",
+    start = "2018/04/01",
+    end = Sys.Date(),
+    format = "dd/mm/yyyy"
   )
+  
 )
 
 
