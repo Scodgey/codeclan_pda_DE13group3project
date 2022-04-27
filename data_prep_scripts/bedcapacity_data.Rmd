@@ -260,8 +260,9 @@ ggplotly(plot2)
 plot3 <- bed_data %>%
   select(specialty_name, percentage_occupancy) %>% 
   filter(!specialty_name %in% c("All Specialties", "All Acute")) %>% 
-##UI - Add a filter column here by location name linked to ui, allow multiple selections.
-  group_by(specialty_name, ) %>% 
+##UI - Add a filter column here by specialty name linked to ui, allow multiple selections.
+  filter(specialty_name == "Physiotherapy" | specialty_name == "Infectious Diseases") %>% 
+  group_by(specialty_name) %>% 
   summarise(specialty_total = n(), 
             average_bed_occupancy = round(sum(percentage_occupancy, na.rm =TRUE)/ 
                                         specialty_total)) %>% 
@@ -357,7 +358,7 @@ Ha: There is a difference in average occupancy between two selected hospitals
 
 $$ H_a: \mu_{ave \ bed \ occupancy \ (hospital\ 1)} -\mu_{ave \ bed \ occupancy \ (hospital\ 2)} \neq 0$$
 
-Step 1 of the bootstrap will be to filter the bed occupancy data by the users selction
+Step 1 of the bootstrap will be to filter the bed occupancy data by the users selection
 in the below code i have selected the UI. 
 
 ```{r}
@@ -419,7 +420,7 @@ p_value1
 ### 3.1d Visualise Average Bed Occupancy Distribution
 
 ```{r}
-# Lets's visualise the distribution with the observed stat. Direction set to 
+# Let's visualise the distribution with the observed stat. Direction set to 
 #both because we are looking for difference. 
 
 null_dist1 %>%
