@@ -252,12 +252,12 @@ body <-
                   title = "Null Distribution Explaination",
                   width = 2,
                   height = "100%",
-                  "In the study of probability theory, the central limit theorem states that the distribution of sample approximates a normal distribution (also known as a “bell curve”) as the sample size becomes larger",
-                  "<br>",
+                  "In the study of probability theory, the central limit theorem states that the distribution of sample approximates a normal distribution (also known as a “bell curve”) as the sample size becomes larger.",
+
                   "Inferential statistics allows us to draw conclusions from a sample and generalise them to a population.",
-                  "<br>",
-                  "To conduct these test, select two hospitals from the drop down and also assign season(s) to produce a test of your hypothesis",
-                  "<br>",
+
+                  "To conduct these test, select two hospitals from the drop down and also assign season(s) to produce a test of your hypothesis.",
+
                   "If your test produces a probability value (p-value) below 0.05 - any difference observed is of significance."
                 )
               )
@@ -276,10 +276,11 @@ body <-
 
                 column(8,
                        box(
-                         title = "Discharge predictive model",
+                         title = "Discharge Rate From 2018 to 2022",
                          #this should be static but highlighted portion shows year selected
-                         plotOutput("predicted graph of dsicharge"),
-                         width = NULL
+                         plotlyOutput("delayed_bed_discharge_timeseries"),
+                         width = NULL,
+                         height = "100%"
                        )
                 ),
 

@@ -55,8 +55,19 @@ library(tsibble) # Time series conversion.
 
 
 
+delayed_bed_discharge_timeseries <- delayed_discharge %>%
+  select(datetime, number_of_delayed_bed_days) %>% 
+  group_by(datetime) %>% 
+  summarise(datetime, average_delayed_beds = mean(number_of_delayed_bed_days)) %>% 
+  ggplot()+
+  aes(x=datetime, y = average_delayed_beds)+
+  geom_line()+
+  geom_point()
 
-
+delayed_bed_discharge_by_reason <- delayed_discharge %>% 
+  select(reason_for_delay, number_of_delayed_bed_days) %>% 
+  filter(reason_for_delay != "All Delay Reasons") %>% 
+  summarise(reason_for_delay, ave_delayed_beds_days = mean(number_of_delayed_bed_days))
 
 
 # Demographic Data

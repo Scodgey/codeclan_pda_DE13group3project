@@ -39,13 +39,10 @@ location_data <- read_csv(here("raw_data/hospital_locations_lookup_file.csv")) %
   select(location, location_name) %>%
   rename(treatment_location = location)
 
+source(here("helper_scripts/num_admissions_helper.R"))
 
-delayed_discharge %>%
-  group_by(reason_for_delay) %>%
-  summarise(total_number_of_delayed_bed_days = sum(number_of_delayed_bed_days))%>%
-  ggplot()+
-  aes(x = total_number_of_delayed_bed_days, y = reason_for_delay)+
-  geom_col()
+
+  
 
 delayed_discharge %>%
   group_by(age_group) %>%
@@ -413,6 +410,12 @@ output$bed_occ_hyp_2 <- renderPlot({
                           "\n",
                           result))
 })
+
+
+output$delayed_bed_discharge_timeseries <- renderPlotly({
+  ggplotly(delayed_bed_discharge_timeseries)
+})
+
 
 
 })
