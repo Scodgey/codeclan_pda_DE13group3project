@@ -11,7 +11,7 @@ delayed_discharge_df <- delayed_discharge_df %>%
                           #do with date
   
 #Writing output to a -new- csv
-  write_csv(delayed_discharge_df,"clean_data/delayed_discharge_fable.csv")
+  write_csv(delayed_discharge_df, here("clean_data/delayed_discharge_fable.csv"))
   
   
   
