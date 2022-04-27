@@ -31,7 +31,6 @@ library(bslib) # provides tools for customising Bootstrap themes directly from R
 library(thematic) # Transfers CSS themes into R plots
 library(treemapify) #for creating treemap plots.
 library(feasts) # Time series plots.
-library(feasts) # Time series plots.
 library(infer) # for bootstrapping.
 library(tsibbledata) #datasets for working with time series data.
 library(tsibble) # provides a tidy data structure for time series. 
