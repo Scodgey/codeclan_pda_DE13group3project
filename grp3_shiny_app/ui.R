@@ -33,7 +33,7 @@ body <-
                 
                 infoBox(
                   "Current Occupancy Percentage", # info box title
-                  ave_bed_occ,  # occupancy rate but have total as default 
+                  textOutput("ave_bed_occ"),  # occupancy rate but have total as default 
                   icon = icon("bed"), # bed icon for info box
                   color = "light-blue",
                   fill = TRUE
@@ -41,7 +41,7 @@ body <-
                 
                 infoBox(
                   title = "Current Delayed Discharge Rate", # info box title
-                  "input$discharge_rate", # discharge rate but have total as default
+                  textOutput("ave_delayed_discharge_rate"), # discharge rate but have total as default
                   icon = icon("running"), # person icon for info box
                   color = "light-blue",
                   fill = TRUE
@@ -311,30 +311,33 @@ sidebar <- dashboardSidebar(
   
   
   ### Health Board Select Input
+  ### Not needed anymore
   
-  selectInput("selected_healthboard",
-               "Health Board:",
-              selected = "Please Select:",
-               choices = c("Please Select:" = TRUE,
-                          "Ayreshire and Arran" = "S08000015",
-                          "Borders" = "S08000016",
-                          "Dumfries and Galloway"  ="S08000017",
-                          "Fife" = "S08000029",
-                          "Forth Valley" = "S08000019",
-                          "Grampian" = "S08000020",
-                          "Greater Glasgow & Clyde" = "S08000031",
-                          "Highland" = "S08000022",
-                          "Lanarkshire" = "S08000032",
-                          "Lothian" = "S08000024",
-                          "Orkney" = "S08000025",
-                          "Shetland" = "S08000026",
-                          "Tayside" = "S08000030",
-                          "Western Isles" = "S08000028"
-                           )
-  ),
+  # selectInput("selected_healthboard",
+  #              "Health Board:",
+  #             selected = "Please Select:",
+  #              choices = c("Please Select:" = TRUE,
+  #                         "Ayreshire and Arran" = "S08000015",
+  #                         "Borders" = "S08000016",
+  #                         "Dumfries and Galloway"  ="S08000017",
+  #                         "Fife" = "S08000029",
+  #                         "Forth Valley" = "S08000019",
+  #                         "Grampian" = "S08000020",
+  #                         "Greater Glasgow & Clyde" = "S08000031",
+  #                         "Highland" = "S08000022",
+  #                         "Lanarkshire" = "S08000032",
+  #                         "Lothian" = "S08000024",
+  #                         "Orkney" = "S08000025",
+  #                         "Shetland" = "S08000026",
+  #                         "Tayside" = "S08000030",
+  #                         "Western Isles" = "S08000028"
+  #                          )
+  # ),
   
   
   ### Year Select Input
+  ## when using will have to use as.date or something to work
+  
   
   dateRangeInput("date_range",
     label = "Date range input:",

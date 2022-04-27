@@ -1,5 +1,7 @@
 ### THIS ALL NEEDS TO BE IN GLOBAL 
 
+library(zoo)
+
 # Loading in location and removing id and qualifier columns
 location_look_up <- read_csv(here("raw_data/hospital_locations_lookup_file.csv")) %>% 
   clean_names() %>% 
@@ -14,6 +16,8 @@ joined_bed_data_3 <- read_csv(here("raw_data/nhs_data_joined3.csv")) %>%
     average_occupied_beds = round(average_occupied_beds), 
     percentage_occupancy = round(percentage_occupancy),
     ) %>% 
+  unite("datetime", quarter, quarter_year, remove = FALSE) %>% 
+  mutate(datetime = as.Date(as.yearqtr(datetime, format = "Q%q_%Y"))) %>% 
   filter(!is.na(quarter_year))%>% 
   filter(!location_qf %in% "d") %>% 
   select(-contains("qf")) %>% 
@@ -27,14 +31,12 @@ scot_health_board_shapes <-
   rename(hb = hb_code) %>% 
   st_transform('+proj=longlat +datum=WGS84')
 
-ave_bed_occ <- joined_bed_data_3 %>%
-  select(location_name, percentage_occupancy, hb.x) %>%
-  #You can add a filter column her by location name linked to ui, allow multiple selections.
-  summarise(location_total = n(),
-            average_bed_occupancy = mean(sum(percentage_occupancy, na.rm =TRUE)/
-                                           location_total)) %>% 
-  pull(average_bed_occupancy) %>% 
-  round()
+
+### dataset for creating the top 3 info boxes in Summary page and giving a rating
+### for how well each Health Board is doing
+
+delayed_discharge <- read_csv(here("clean_data/delayed_discharge_fable.csv"))
+  
 
 
 
@@ -113,7 +115,43 @@ server <- shinyServer(function(input, output) {
       labs(x = "Location Name", y = "Average Bed Occupancy (%)")}
   })
   
-
+  output$ave_delayed_discharge_rate <- renderText({
+    if (is.null(rv())){
+      delayed_discharge %>% 
+        filter(age_group == "18plus",
+               reason_for_delay == "All Delay Reasons")%>% 
+        summarise(ave = mean(number_of_delayed_bed_days)) %>% 
+        pull(ave)
+    }else{
+     delayed_discharge %>% 
+      filter(age_group == "18plus",
+             reason_for_delay == "All Delay Reasons",
+             datetime %in% c(input$date_range),
+             hbt == rv()) %>% 
+      summarise(ave = mean(number_of_delayed_bed_days)) %>% 
+      pull(ave)}
+  })
+  
+  output$ave_bed_occ <- renderText({
+    if (is.null(rv())){
+      joined_bed_data_3 %>%
+        select(location_name, percentage_occupancy, hb.x)%>% 
+        #You can add a filter column her by location name linked to ui, allow multiple selections.
+        summarise(location_total = n(),
+                  average_bed_occupancy = mean(sum(percentage_occupancy, na.rm =TRUE)/
+                                                 location_total)) %>% 
+        pull(average_bed_occupancy)
+    }else{
+      joined_bed_data_3 %>%
+      select(location_name, percentage_occupancy, hb.x, datetime) %>%
+      filter(datetime %in% c(input$date_range),
+             hb.x == rv()) %>% 
+    #You can add a filter column her by location name linked to ui, allow multiple selections.
+      summarise(location_total = n(),
+              average_bed_occupancy = mean(sum(percentage_occupancy, na.rm =TRUE)/
+                                             location_total)) %>% 
+    pull(average_bed_occupancy)}
+  })
 
 
 
