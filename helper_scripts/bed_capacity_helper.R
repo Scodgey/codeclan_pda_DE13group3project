@@ -84,8 +84,8 @@ plot3 <- bed_data %>%
   theme_bw() +
   labs(title = "Average Bed Occupancy (%) by Specialty" , 
        x = "Specialty Name", y = "Average Bed Occupancy (%)")+
-  theme(legend.position = "none", axis.text.x=element_blank())+
-  scale_x_discrete(guide = guide_axis(check.overlap = TRUE))
+  theme(legend.position = "none", axis.text.x=element_blank())
+  
 
 ggplotly(plot3)
 
@@ -108,7 +108,7 @@ plot4 <- bed_data %>%
   aes(x = year_quarter, y = average_bed_occupancy, colour = location_name)+
   geom_line()+
   geom_point()+
-  scale_alpha_continuous()
+  scale_alpha_continuous()+
 labs(title = "Average Bed Occupancy (%) by, Location & Quarter (2018 Q1 Onwards)")
 
 

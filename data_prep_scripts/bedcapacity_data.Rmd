@@ -299,7 +299,7 @@ plot4 <- bed_data %>%
   aes(x = year_quarter, y = average_bed_occupancy, colour = location_name)+
   geom_line()+
   geom_point()+
-  scale_alpha_continuous()
+  scale_alpha_continuous()+
 labs(title = "Average Bed Occupancy (%) by, Location & Quarter (2018 Q1 Onwards)")
   
 
