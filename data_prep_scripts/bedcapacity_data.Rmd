@@ -196,8 +196,6 @@ bed_data <- read_csv(here("raw_data/nhs_data_joined4.csv"))
 bed_data %>% 
   skimr::skim()
 
-location_look_up %>% 
-  skimr::skim()
 ```
 
 
@@ -341,7 +339,6 @@ labs(title = "Average Bed Occupancy (%) by, Specialty & Quarter (2018 Q1 Onwards
 ```
 
 
-
 # 3. Hypothesis Testing
 
 Perform an appropriate statistical test to determine whether 
@@ -363,16 +360,16 @@ in the below code i have selected the UI.
 
 ```{r}
 average_bed_occupancy_hosp <- bed_data %>% 
- select(location_name, percentage_occupancy) %>% 
-  #The below filter would be linked to the UI hospital selection. We can also
-  # add a season filter and quarter filter.
+#UI - The below filter would be linked to the UI hospital selection. We can also
+  # add a season filter.
   filter(location_name == "Western General Hospital" | 
-           location_name == "Belford Hospital") %>% 
+           location_name == "Belford Hospital") %>%
+  filter(season == "Autumn") %>% 
   group_by(location_name) 
 
 observed_ave_occupancy_stat <- average_bed_occupancy_hosp %>% 
   specify(percentage_occupancy ~ location_name) %>%
-  #order will again be controlled by UI location name selection)
+  #Order should be dictated by UI location name selection)
   calculate(stat = "diff in means", 
             order = c("Western General Hospital", "Belford Hospital"))
   
@@ -410,13 +407,18 @@ head(null_dist1)
 
 null_dist1 %>%
   visualise(bins = 30) +
-  shade_p_value(obs_stat = observed_ave_occupancy_stat, direction = "both")
+  shade_p_value(obs_stat = observed_ave_occupancy_stat, direction = "both") +
+  labs(x = "Null Distribution (Mean)" , y = "Count", 
+       caption = paste0("Observed Stat:", round(observed_ave_occupancy_stat)))
+  
+
 ```
 
 ```{r}
 #Selection of one-tailed test.
 p_value <- null_dist1 %>%
   get_p_value(obs_stat = observed_ave_occupancy_stat, direction = "both")
+  
 
 p_value
 
