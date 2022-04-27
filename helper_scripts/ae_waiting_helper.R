@@ -9,9 +9,14 @@
 act_ae_waiting <-read_csv(here("raw_data/monthly_ae_activity_waitingtimes.csv")) %>% 
   clean_names()
 
+location_data <- read_csv(here("raw_data/hospital_locations_lookup_file.csv")) %>% 
+  select(location, location_name) %>% 
+  rename(treatment_location = location)
+
 # Plots
 
 ae_wait_plot <- act_ae_waiting %>%
+  left_join(location_data, by = "treatment_location") %>% 
   mutate(month = ym(month))%>%
   filter(!month < "2018-03-31")%>%
   filter(hbt == "S08000015")%>%   #input required from ui 
