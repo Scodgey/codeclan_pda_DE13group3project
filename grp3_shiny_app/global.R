@@ -42,7 +42,8 @@ library(leaflet) #geospatial e.g. markers etc.
 library(rnaturalearthdata) #geospatial
 library(zoo) #Time series conversion.
 library(tsibble) # Time series conversion. 
-
+library(fable) # time series forecasting
+library(urca) #this installs tests and helper functions for time series models
 #}
 
 ###############################################.
