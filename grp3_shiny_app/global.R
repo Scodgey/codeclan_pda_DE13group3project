@@ -49,12 +49,23 @@ library(tsibble) # Time series conversion.
 ## Data - Including Cleaning & Wrangling ----
 ###############################################.
 
+bed_data <- read_csv(here("raw_data/nhs_data_joined4.csv"))  
+
+act_ae_waiting <-read_csv(here("raw_data/monthly_ae_activity_waitingtimes.csv")) %>% 
+  clean_names()
+
+location_data <- read_csv(here("raw_data/hospital_locations_lookup_file.csv")) %>% 
+  select(location, location_name) %>% 
+  rename(treatment_location = location)
+
+
 # Temporal Data
 # This is data required for capacity insight.
 
 
 
-delayed_bed_discharge_timeseries <- delayed_discharge %>%
+# Create a plot to see how the number of delayed beds changes over time
+delayed_discharge_plot <- delayed_discharge %>%
   select(datetime, number_of_delayed_bed_days) %>% 
   group_by(datetime) %>% 
   summarise(datetime, average_delayed_beds = mean(number_of_delayed_bed_days)) %>% 
@@ -63,10 +74,10 @@ delayed_bed_discharge_timeseries <- delayed_discharge %>%
   geom_line()+
   geom_point()
 
-delayed_bed_discharge_by_reason <- delayed_discharge %>% 
-  select(reason_for_delay, number_of_delayed_bed_days) %>% 
-  filter(reason_for_delay != "All Delay Reasons") %>% 
-  summarise(reason_for_delay, ave_delayed_beds_days = mean(number_of_delayed_bed_days))
+library(treemapify)
+
+
+
 
 
 # Demographic Data
@@ -86,6 +97,85 @@ delayed_bed_discharge_by_reason <- delayed_discharge %>%
 # Non-Categorised Data
 # This is data that does not fall into the above categories and may be
 # common across datasets.
+
+
+
+# Prediction Models
+# This is data that predicts the trends of admission numbers and delayed discharge
+# of beds for the next 3 years 
+
+
+
+##
+## Delayed Discharge Prediction Model
+##
+# read the dataset in
+
+delayed_discharge_df <- read_csv(here("raw_data/delayed-discharge-beddays-health-board.csv")) %>%
+  clean_names()
+
+# create a datetime column 
+
+delayed_discharge <- delayed_discharge_df %>% 
+  mutate(datetime = ym(month_of_delay), .after = month_of_delay) %>% 
+  filter(datetime >= "2018-04-01")
+
+
+
+
+
+
+# to create a forecasting model using the fable package, we need to change our dataframe into a tsibble 
+# where the key is a combination of the chosen columns indexed by the datetime column.
+
+delayed_dis_ts <- delayed_discharge %>%
+  filter(!age_group == "18plus")%>%
+  filter(!reason_for_delay == "All Delay Reasons") %>%
+  filter(hbt == "S92000003")%>%
+  as_tsibble(key = c(hbt, age_group, reason_for_delay, number_of_delayed_bed_days), index = datetime)
+
+
+# for some reason one of the forecasting models seems to be working better with the format yearmonth, 
+# so we'll change our datetime column
+# then we select the variables we need and sumamrise the number of delayed beds
+
+delayed_dis_ts_sum <- delayed_dis_ts%>%
+  mutate(datetime = yearmonth(datetime))%>%
+  as_tsibble(index = datetime) %>%
+  select(datetime, number_of_delayed_bed_days)%>%
+  summarise(count = sum(number_of_delayed_bed_days))
+
+# use autoplot() to check the series
+autoplot(delayed_dis_ts_sum)
+
+# need to install the urca package (this installs tests and helper functions for time series models
+
+library(urca)
+library(fable)
+
+# create a fit dataset which has the results from our three different models
+
+fit_delayed <- delayed_dis_ts_sum %>%
+  model(
+    snaive = SNAIVE(count),
+    mean_model = MEAN(count),
+    arima = ARIMA(count)
+  )
+
+# with the models specified, we can now produce the forecasts.
+# choose the number of future observations to forecast,
+# this is called the forecast horizon
+# once we’ve calculated our forecast, we can visualise it using
+# the autoplot() function that will produce a plot of all forecasts.
+
+delayed_dischrge_prediction_model <- fit_delayed %>%
+  fabletools::forecast(h = "3 years") %>%
+  autoplot(delayed_dis_ts_sum)+
+  guides(colour = guide_legend(title = "3-Year Forecast"))+
+  labs(x = "", y = "number of delayed beds")
+# by default, argument level = c(80,95) is passed to autoplot(), and so 80% and 95% prediction intervals
+# are shown.
+
 
 
 

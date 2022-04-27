@@ -44,11 +44,11 @@ source(here("helper_scripts/num_admissions_helper.R"))
 
   
 
-delayed_discharge %>%
-  group_by(age_group) %>%
-  ggplot()+
-  aes(x = age_group, y = number_of_delayed_bed_days)+
-  geom_boxplot()
+# ave_delayed_discharge_rateyed_discharge %>%
+#   group_by(age_group) %>%
+#   ggplot()+
+#   aes(x = age_group, y = number_of_delayed_bed_days)+
+#   geom_boxplot()
 
 
 
@@ -393,7 +393,7 @@ output$bed_occ_hyp_2 <- renderPlot({
     get_p_value(obs_stat = average_bed_occupancy_onehospital_stat2$average_bed_occupancy_onehospital,
                 direction = "both")
 
-  if(p_value1 <= 0.05){
+  if(p_value2 <= 0.05){
     result = "Reject Null Hypothesis"
   } else {
     result = "Fail to Reject Null Hypothesis"
@@ -416,6 +416,27 @@ output$delayed_bed_discharge_timeseries <- renderPlotly({
   ggplotly(delayed_bed_discharge_timeseries)
 })
 
-
+output$delayed_bed_discharge_by_reason <- renderPlot({
+  delayed_discharge %>% 
+  select(reason_for_delay, datetime, age_group, average_daily_number_of_delayed_beds) %>% 
+  filter(reason_for_delay != "All Delay Reasons",
+         age_group == "18plus",
+         datetime > input$date_range[1],
+         datetime < input$date_range[2]) %>% 
+  group_by(reason_for_delay) %>% 
+  summarise(ave_num_delay = sum(average_daily_number_of_delayed_beds)) %>% 
+  ggplot()+
+  aes(area = ave_num_delay, 
+      label = paste(reason_for_delay, "\n", 
+                    ave_num_delay), 
+      fill = reason_for_delay)+
+  geom_treemap()+
+  geom_treemap_text(fontface = "italic", 
+                    colour = "white", 
+                    place = "centre",
+                    size = 15,
+                    grow = TRUE)+
+  theme(legend.position = "none")
+})
 
 })

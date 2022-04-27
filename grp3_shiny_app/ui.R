@@ -77,7 +77,8 @@ body <-
                            "Bed Occupancy by Hospital",
                            plotOutput("top_occupancy_hospitals"),
                            width = NULL,
-                           height = "100%"
+                           height = "100%",
+                           status = 
                          ),
 
                          tabPanel(
@@ -105,7 +106,7 @@ body <-
 
                 column(8,
                        box(
-                         color = "blue",
+                         status = "primary",
                          solidHeader = TRUE,
                          title = "Admissions predictive model",
                          #this should be static but highlighted portion shows year selected
@@ -166,22 +167,25 @@ body <-
       tabItem(tabName = "Occupancy",
 
               fluidRow(
-
-                #Selection for hospitals excluding bootstrap graphs
-                selectInput(
-                  "hospital_multi_selection",
-                  "Select Hospitals to Compare Bed Occupancy",
-                  choices = c(unique(bed_data$location_name)),
-                  multiple = 5
+                
+                column(6,
+                       #Selection for hospitals excluding bootstrap graphs
+                       selectInput(
+                         "hospital_multi_selection",
+                         "Select Hospitals to Compare Bed Occupancy",
+                         choices = c(unique(bed_data$location_name)),
+                         multiple = 5
+                       )
                 ),
                 
                 #Selection for speciality for graph
-                selectInput(
-                  "specialty_multi_selection",
-                  "Select Specialty to Compare Bed Occupancy",
-                  choices = c(unique(bed_data$specialty_name)),
-                  multiple =5
-                )
+                column(6,
+                       selectInput(
+                         "specialty_multi_selection",
+                         "Select Specialty to Compare Bed Occupancy",
+                         choices = c(unique(bed_data$specialty_name)),
+                         multiple = 5
+                       ))
               ),
               
               fluidRow(
@@ -192,10 +196,13 @@ body <-
                 
                 column(6,
                        box(
+                         status = "primary",
                          title = "Comparing Average Bed Occupancy Between Hospitals per Quarter",
                          #this should be static but highlighted portion shows year selected
                          plotlyOutput("bed_occ_comparison_quarter"),
-                         width = NULL
+                         width = "100%",
+                         height = "100%",
+                         solidHeader = TRUE
                        )
                 ),
 
@@ -204,7 +211,10 @@ body <-
                          title = "Average Bed Occupancy (%) by Specialty",
                          #this should be static but highlighted portion shows year selected
                          plotlyOutput("bed_occ_specialty_comparison"),
-                         width = NULL
+                         width = "100%",
+                         height = "100%",
+                         status = "primary",
+                         solidHeader = TRUE
                        )
                 )
               ),
@@ -212,20 +222,20 @@ body <-
               fluidRow(
                 
                 #Selection numero uno for bootstrapping
-                selectInput(
+                column(3, selectInput(
                   "hospital_boot_numero_uno",
                   "Select Hospital for testing significant difference of bed occupancy mean #1",
                   choices = c(unique(bed_data$location_name)),
                   multiple = FALSE
-                ),
+                )),
 
                 #Selection numero dos for bootstrapping
-                selectInput(
+                column(3, selectInput(
                   "hospital_boot_numero_dos",
                   "Select Hospital for testing significant difference of bed occupancy mean #2",
                   choices = c(unique(bed_data$location_name)),
                   multiple = FALSE
-                )
+                ))
               ),
 
 
@@ -236,30 +246,39 @@ body <-
 
               fluidRow(
 
-                box(
+                
+                       box(
                   title = "Testing Mean Bed Occupancy Between Hospitals",
                   plotOutput("bed_occ_hyp_1"),
-                  width = 5,
-                  height = "100%"
+                  width = 6,
+                  height = "100%",
+                  status = "primary",
+                  solidHeader = TRUE
                 ),
                 box(
                   title = "Testing Hospital #1 Against Total Hospital Mean Bed Occupancy",
                   plotOutput("bed_occ_hyp_2"),
-                  width = 5,
-                  height = "100%"
-                ),
-                box(
-                  title = "Null Distribution Explaination",
-                  width = 2,
+                  width = 6,
                   height = "100%",
-                  "In the study of probability theory, the central limit theorem states that the distribution of sample approximates a normal distribution (also known as a “bell curve”) as the sample size becomes larger.",
-
-                  "Inferential statistics allows us to draw conclusions from a sample and generalise them to a population.",
-
-                  "To conduct these test, select two hospitals from the drop down and also assign season(s) to produce a test of your hypothesis.",
-
-                  "If your test produces a probability value (p-value) below 0.05 - any difference observed is of significance."
-                )
+                  status = "primary",
+                  solidHeader = TRUE
+                )),
+              
+              fluidRow(
+                       box(
+                         title = "Null Distribution Explaination",
+                         status = "info",
+                         solidHeader = TRUE,
+                         width = 12,
+                         height = "100%",
+                         "In the study of probability theory, the central limit theorem states that the distribution of sample approximates a normal distribution (also known as a “bell curve”) as the sample size becomes larger.",
+                         
+                         "Inferential statistics allows us to draw conclusions from a sample and generalise them to a population.",
+                         
+                         "To conduct these test, select two hospitals from the drop down and also assign season(s) to produce a test of your hypothesis.",
+                         
+                         "If your test produces a probability value (p-value) below 0.05 - any difference observed is of significance."
+                       )
               )
       ),
 
@@ -274,7 +293,7 @@ body <-
                 # 1. graph of trend of admissions with predictive modelling
                 # 2. row for the percentage of elect v planned & top 5 most populated health boards
 
-                column(8,
+                column(6,
                        box(
                          title = "Discharge Rate From 2018 to 2022",
                          #this should be static but highlighted portion shows year selected
@@ -284,52 +303,45 @@ body <-
                        )
                 ),
 
-                column(4,
+                column(6,
                        box(
-                         title = "Percentage of Emergency v Planned",
-                         plotOutput("discharge Emergency v Planned"),
+                         title = "Breakdown of Reasons for Delayed Discharges",
+                         plotOutput("delayed_bed_discharge_by_reason"),
                          width = NULL,
-                         height = 100
-                       ),
-                       box(
-                         title = "Health Boards with Most Discharge",
-                         plotOutput("healthboard_discharge"),
-                         width = NULL,
-                         height = 300
+                         height = "100%"
                        )
                 )
-              ),
-
-              #Creating the second row with the following columns
-              # 1. age graph - that changes on year and health baord selected
-              # 2. box plot of gender
-              # 3. graph of smid score
-
-              fluidRow(
-
-                box(
-                  title = "Age",
-                  plotOutput("age_ranges_discharge"),
-                  width = 4,
-                  height = 300
-                ),
-                box(
-                  title = "Gender Box Plot",
-                  plotOutput("gender_diff_discharge"),
-                  width = 4,
-                  height = 300
-                ),
-
-                box(
-                  title = "Deprivation",
-                  plotOutput("smid_score_discharge"),
-                  width = 4,
-                  height = 300
-                )
               )
-      )
-
+      ),
+      
+      ################################################
+      ###  Dashboard layout for Prediction Models  ###
+      ################################################
+      
+      tabItem(tabName = "Prediction Models",
+              fluidRow(
+                
+                column(6,
+                       box(
+                         title = "Admission Numbers across Scotland Prediction Model",
+                         plotlyOutput("admission_prediction_model"),
+                         width = NULL,
+                         height = "100%"
+                       )
+                ),
+                
+                column(6,
+                       box(
+                         title = "Delayed Discharge across Scotland Prediction Model",
+                         plotlyOutput("delayed_dischrge_prediction_model"),
+                         width = NULL,
+                         height = "100%"
+                       )
+                )
+                
+              )
     )
+  )
   )
 
 
