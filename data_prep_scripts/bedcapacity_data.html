@@ -1380,92 +1380,6 @@ window.initializeCodeFolding = function(show) {
 
 
 
-<style type="text/css">
-  code {
-    white-space: pre;
-  }
-  .sourceCode {
-    overflow: visible;
-  }
-</style>
-<style type="text/css" data-origin="pandoc">
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-}
-code span.al { font-weight: bold; } /* Alert */
-code span.an { font-style: italic; } /* Annotation */
-code span.cf { font-weight: bold; } /* ControlFlow */
-code span.co { font-style: italic; } /* Comment */
-code span.cv { font-style: italic; } /* CommentVar */
-code span.do { font-style: italic; } /* Documentation */
-code span.dt { text-decoration: underline; } /* DataType */
-code span.er { font-weight: bold; } /* Error */
-code span.in { font-style: italic; } /* Information */
-code span.kw { font-weight: bold; } /* Keyword */
-code span.pp { font-weight: bold; } /* Preprocessor */
-code span.wa { font-style: italic; } /* Warning */
-
-.sourceCode .row {
-  width: 100%;
-}
-.sourceCode {
-  overflow-x: auto;
-}
-.code-folding-btn {
-  margin-right: -30px;
-}
-</style>
-<script>
-// apply pandoc div.sourceCode style to pre.sourceCode instead
-(function() {
-  var sheets = document.styleSheets;
-  for (var i = 0; i < sheets.length; i++) {
-    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
-    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
-    for (var j = 0; j < rules.length; j++) {
-      var rule = rules[j];
-      // check if there is a div.sourceCode rule
-      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
-      var style = rule.style.cssText;
-      // check if color or background-color is set
-      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
-      // replace div.sourceCode by a pre.sourceCode rule
-      sheets[i].deleteRule(j);
-      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
-    }
-  }
-})();
-</script>
 
 
 
@@ -1854,7 +1768,7 @@ Percentage occupancy = (aob / asb) x 100</td>
 </div>
 </div>
 <div id="data" class="section level1">
-<h1>2.Data</h1>
+<h1>2. Data</h1>
 <div id="a.-data-background-quality" class="section level4">
 <h4>2a. Data Background &amp; Quality</h4>
 <p>Outpatient, inpatient and daycase activity data are collected across
@@ -1887,30 +1801,14 @@ This may result in changes in the used data sources.</p>
 <p><br></p>
 </div>
 </div>
-<div id="data-analysis---beds" class="section level1">
-<h1>3. Data Analysis - Beds</h1>
+<div id="data-analysis---beds-occupancy" class="section level1">
+<h1>3. Data Analysis - Beds Occupancy</h1>
 <blockquote>
 <p><strong>Plot 1 - Average Bed Occupancy (%) by Hospital</strong></p>
 </blockquote>
 <blockquote>
 <p><strong>Plot 2 - Average Bed Occupancy by Season </strong></p>
 </blockquote>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>plot2 <span class="ot">&lt;-</span> bed_data <span class="sc">%&gt;%</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(location_name, percentage_occupancy, season) <span class="sc">%&gt;%</span>  </span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="do">##UI - Add a filter column here by location name linked to ui, allow multiple selections.</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(location_name, season) <span class="sc">%&gt;%</span> </span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">location_total =</span> <span class="fu">n</span>(), </span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">average_bed_occupancy =</span> <span class="fu">round</span>(<span class="fu">sum</span>(percentage_occupancy, <span class="at">na.rm =</span><span class="cn">TRUE</span>)<span class="sc">/</span> </span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>                                        location_total)) <span class="sc">%&gt;%</span> </span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>()<span class="sc">+</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(<span class="at">x =</span> location_name, <span class="at">y =</span> average_bed_occupancy, <span class="at">shape =</span> season, <span class="at">colour =</span> season)<span class="sc">+</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()<span class="sc">+</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>()<span class="sc">+</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Average Bed Occupancy (%) by Season&quot;</span>, </span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>     <span class="at">x =</span> <span class="st">&quot;Location Name&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Average Bed Occupancy (%)&quot;</span>)</span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a> </span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplotly</span>(plot2)</span></code></pre></div>
 <blockquote>
 <p><strong>Plot 3 - Hospital Average Occupancy (%) by Specialty (All)
 Hospitals</strong></p>
@@ -1919,42 +1817,60 @@ Hospitals</strong></p>
 <p><strong>Plot 4 - Average Bed Occupancy - Selected Hospital by
 Quarter</strong></p>
 </blockquote>
+<blockquote>
 <p><strong>Plot 5 - Average Bed Occupancy - Selected Specialty by
 Quarter</strong></p>
+</blockquote>
 </div>
 <div id="hypothesis-testing" class="section level1">
-<h1>3. Hypothesis Testing</h1>
-<p>Perform an appropriate statistical test to determine whether there is
-a statistically significant difference in the average occupancy between
-hospitals.</p>
-<div id="a.-hypothesis-test" class="section level3">
-<h3>3a. Hypothesis Test</h3>
+<h1>4. Hypothesis Testing</h1>
+<div id="a-hypothesis-test-1---difference-in-average-bed-occupancy-two-hospitals" class="section level4">
+<h4>4.1a Hypothesis Test 1 - Difference in Average Bed Occupancy (Two
+Hospitals)</h4>
+<p><br> Perform an appropriate statistical test to determine whether
+there is a statistically significant difference in average bed occupany
+between two selected hospitals.</p>
+<p><br></p>
 <p>H0: There is no difference in average occupancy between two selected
 hospitals.</p>
-<p><span class="math display">\[ H_0: \mu_{average_occupancy \
-hours(hospital\ 1)} -\mu_{ave \ bed \ occupancy \ (hospital\ 2)} = 0
+<p><span class="math display">\[ H_0: \mu_{ave\ bed \ occupancy \
+(hospital\ 1)} -\mu_{ave \ bed \ occupancy \ (hospital\ 2)} = 0
 \]</span></p>
 <p>Ha: There is a difference in average occupancy between two selected
 hospitals</p>
-<p><span class="math display">\[ H_a: \mu_{average_occupancy \
-hours(hospital\ 1)} -\mu_{ave \ bed \ occupancy \ (hospital\ 2)} \neq
+<p><span class="math display">\[ H_a: \mu_{ave \ bed \ occupancy \
+(hospital\ 1)} -\mu_{ave \ bed \ occupancy \ (hospital\ 2)} \neq
 0\]</span></p>
-<p>Step 1 of the bootstrap will be to filter the bed occupancy data by
-the users selction in the below code i have selected the UI.</p>
-<p>Upon review of the osberved stat, there is a difference between the
-average bed occupancy, however is this signficant.</p>
+<p><br></p>
 </div>
-<div id="b.-null-distribution-calculation" class="section level3">
-<h3>3b. Null Distribution Calculation</h3>
+<div id="b-null-distribution-calculation" class="section level4">
+<h4>4.1b Null Distribution Calculation</h4>
 </div>
-<div id="c.-visualise-average-bed-occupancy-distribution" class="section level3">
-<h3>3c. <strong>Visualise Average Bed Occupancy
-Distribution</strong></h3>
+<div id="c-probability-value-p-value" class="section level4">
+<h4>4.1c Probability Value (P-Value)</h4>
 </div>
-<div id="d.-visualise-average-bed-occupancy-distribution" class="section level3">
-<h3>3d. <strong>Visualise Average Bed Occupancy
-Distribution</strong></h3>
-<p>```</p>
+<div id="d-visualise-average-bed-occupancy-distribution" class="section level4">
+<h4>4.1d Visualise Average Bed Occupancy Distribution</h4>
+</div>
+<div id="e-calculate-confidence-intervals-ci" class="section level4">
+<h4>4.1e Calculate Confidence Intervals (CI)</h4>
+</div>
+<div id="a-hypothesis-test-2---difference-in-average-bed-occupancy-hospital-vs-scotland" class="section level4">
+<h4>4.2a Hypothesis Test 2 - Difference in Average Bed Occupancy
+(Hospital Vs Scotland)</h4>
+<p><br> Perform an appropriate statistical test to determine whether
+there is a statistically significant difference in average bed occupancy
+between one hospital and the average bed occupancy for Scotland.</p>
+<p><br></p>
+<p>H0: There is no difference in average occupancy between selected
+hospital and Scotland.</p>
+<p><span class="math display">\[ H_0: \mu_{average\ bed\ occupancy \
+(scotland)} -\mu_{ave \ bed \ occupancy \ (hospital)} = 0 \]</span></p>
+<p>Ha: The average occupancy of the selected hospital is greater than
+average for all of Scotland</p>
+<p><span class="math display">\[ H_a: \mu_{ave \ bed \ occupancy \
+(scotland)} -\mu_{ave \ bed \ occupancy \ (hospital)} \neq0 \]</span>
+<br></p>
 </div>
 </div>
 

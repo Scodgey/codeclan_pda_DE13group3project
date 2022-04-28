@@ -1,0 +1,22 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+```{r}
+
+```
+
+```{r}
+attendance_gender_df <- read_csv(here("raw_data/nhs_data_joined2.csv")) %>% clean_names()
+
+attendance_gender <- attendance_gender_df %>% 
+  filter(!sex == "All") %>% 
+  group_by(sex) %>%
+  summarise(number_of_admissions = mean(number_admissions, na.rm = TRUE)) %>% 
+  ggplot() +
+  aes(y = number_of_admissions) +
+  geom_col(aes(x = sex, fill = sex))
+
+ggplotly(attendance_gender)
+
+```
