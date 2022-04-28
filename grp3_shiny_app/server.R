@@ -466,6 +466,14 @@ output$delayed_dischrge_prediction_model <- renderPlot({
   delayed_dischrge_prediction_model
 })
 
+output$admission_prediction_model_2018_2019 <- renderPlot({
+  admission_prediction_model_to_plot_1
+})
+
+output$admission_prediction_model_2020_to_2022 <- renderPlot({
+  admission_prediction_model_to_plot_2
+})
+
 # output$delayed_discharge_prediction_model <- reactive({delayed_dis_ts <- delayed_discharge %>%
 #   filter(!age_group == "18plus")%>%
 #   filter(!reason_for_delay == "All Delay Reasons") %>%
@@ -502,6 +510,7 @@ output$delayed_dischrge_prediction_model <- renderPlot({
 # # by default, argument level = c(80,95) is passed to autoplot(), and so 80% and 95% prediction intervals
 # # are shown.
 # })
+
 
 
 

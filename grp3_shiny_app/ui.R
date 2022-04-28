@@ -108,23 +108,11 @@ body <-
                        box(
                          solidHeader = TRUE,
                          status = "primary",
-                         title = "Summary of Admission Demographics",
-                         width = "100%",
-                         height = "100%"
-                       )),
-                
-                column(6,
-                       box(
-                         solidHeader = TRUE,
-                         status = "primary",
                          title = "Age",
                          plotlyOutput("admissions_age_grouped"),
                          width = "100%",
                          height = "100%"
-                       ))
-              ),
-              
-              fluidRow(
+                       )),
                 column(6, box(
                   solidHeader = TRUE,
                   status = "primary",
@@ -132,8 +120,12 @@ body <-
                   plotlyOutput("admissions_gender"),
                   width = "100%",
                   height = "100%"
-                )),
+                ))
+              ),
+              
+              fluidRow(
                 column(6, 
+                       offset = 3,
                        box(
                          solidHeader = TRUE,
                          status = "primary",
@@ -221,7 +213,15 @@ body <-
                          "Select Hospital for testing significant difference of bed occupancy mean #2",
                          choices = c(unique(bed_data$location_name)),
                          multiple = FALSE
-                       ))
+                       )),
+                
+                column(3,
+                       selectInput(
+                  "season",
+                  label = "Season:",
+                  choices = c(unique(bed_data$season)),
+                  multiple = TRUE
+                ))
               ),
               
               fluidRow(
@@ -313,9 +313,9 @@ body <-
                        box(
                          status = "primary",
                          solidHeader = TRUE,
-                         title = "Admission Numbers across Scotland Prediction Model",
-                         #plotlyOutput("admission_prediction_model"),
-                         width = NULL,
+                         title = "Admission Numbers Prediction Model with 2018 - 2019 Data",
+                         plotOutput("admission_prediction_model_2018_2019"),
+                         width = "100%",
                          height = "100%"
                        )
                 ),
@@ -324,14 +324,27 @@ body <-
                        box(
                          status = "primary",
                          solidHeader = TRUE,
-                         title = "Delayed Discharge across Scotland Prediction Model",
-                         plotOutput("delayed_dischrge_prediction_model"),
-                         width = NULL,
+                         title = "Admission Numbers Prediction Model with 2020 - 2022 Data",
+                         plotOutput("admission_prediction_model_2020_to_2022"),
+                         width = "100%",
                          height = "100%"
                        )
                 )
                 
-              )
+              ),
+              fluidRow(
+                
+                column(6,
+                       offset=3,
+                       box(
+                         status = "primary",
+                         solidHeader = TRUE,
+                         title = "Admission Numbers across Scotland Prediction Model",
+                         plotOutput("delayed_dischrge_prediction_model"),
+                         width = "100%",
+                         height = "100%"
+                       )
+                ))
       )
     )
   )
@@ -362,13 +375,6 @@ sidebar <- dashboardSidebar(
     label = "Hospital:",
     choices = c(unique(location_data$location_name)),
     multiple = FALSE
-  ),
-  
-  selectInput(
-    "season",
-    label = "Season:",
-    choices = c(unique(bed_data$season)),
-    multiple = TRUE
   )
   
 )
