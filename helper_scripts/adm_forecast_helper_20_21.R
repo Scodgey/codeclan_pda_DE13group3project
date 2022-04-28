@@ -19,7 +19,7 @@ autoplot(nhs_data_joined_forecast)
 
 fit <- nhs_data_joined_forecast %>%
   model(
-    snaive = SNAIVE(count),
+    snaive = SNAIVE(count ~ lag("year")),
     mean_model = MEAN(count),
     arima = ARIMA(count)
   )
