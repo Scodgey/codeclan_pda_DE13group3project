@@ -139,14 +139,12 @@ server <- shinyServer(function(input, output, session) {
   })
 
   output$ae_attendees_plot<- renderPlotly({
+    if (is.null(rv())){
     ggplotly(
     act_ae_waiting %>%
     left_join(location_data, by = "treatment_location") %>%
-    filter(location_name == input$hospital)%>%
     mutate(month = ym(month))%>%
-    filter(!month < "2018-03-31")%>%
-    filter(hbt == rv())%>%   #input required from ui
-   #input required from ui
+    filter(!month < "2018-03-31")%>%   
     ggplot()+
     geom_col(aes(x = month, y = number_meeting_target_aggregate), fill="lightblue", color = "black", width = 30, position = "dodge")+
     geom_col(aes(x = month, y = number_of_attendances_aggregate), fill="darkblue", width = 10)+
@@ -155,6 +153,23 @@ server <- shinyServer(function(input, output, session) {
     theme(axis.text.x = element_text(angle=70, hjust=1),
           axis.title.x=element_blank())+
     labs(y = "Number of A&E Attendences"))
+      }else{
+        ggplotly(
+          act_ae_waiting %>%
+            left_join(location_data, by = "treatment_location") %>%
+            filter(location_name == input$hospital)%>%
+            mutate(month = ym(month))%>%
+            filter(!month < "2018-03-31")%>%
+            filter(hbt == rv())%>%   #input required from ui
+            #input required from ui
+            ggplot()+
+            geom_col(aes(x = month, y = number_meeting_target_aggregate), fill="lightblue", color = "black", width = 30, position = "dodge")+
+            geom_col(aes(x = month, y = number_of_attendances_aggregate), fill="darkblue", width = 10)+
+            scale_x_date(date_breaks = "months")+
+            geom_vline(xintercept = as.numeric(as.Date("2020-04-01")), linetype = 2, colour = "red")+
+            theme(axis.text.x = element_text(angle=70, hjust=1),
+                  axis.title.x=element_blank())+
+            labs(y = "Number of A&E Attendences"))}
   })
 
 
@@ -165,6 +180,7 @@ server <- shinyServer(function(input, output, session) {
   ### geom_line to compare different hospitals by quarter
 
   output$bed_occ_comparison_quarter <- renderPlotly({
+    req(input$hospital_multi_selection)
     ggplotly(
       bed_data %>%
         #Create date variable.
@@ -187,8 +203,8 @@ server <- shinyServer(function(input, output, session) {
 
 
   output$bed_occ_specialty_comparison <- renderPlotly({
+    req(input$specialty_multi_selection)
     ggplotly(
-
       bed_data %>%
         #Create date variable.
         mutate(year_quarter = yearquarter(quarter), .after = quarter) %>%
@@ -280,9 +296,74 @@ server <- shinyServer(function(input, output, session) {
 
 
 output$admissions_age_grouped <- renderPlotly({
+  
+  admissions_age_groups <- admissions %>% 
+    filter(age_group != "All ages",
+           !is.na(age_group)) %>% 
+    select(hb, week_ending, age_group, number_admissions, percent_variation) %>%
+    filter(hb == input$healthboard_demographics) %>%  
+    group_by(week_ending, age_group) %>% 
+    summarise(age_group, ave = mean(number_admissions)) %>% 
+    mutate(age_group = factor(age_group,
+                              levels = c("Under 5",
+                                         "5 - 14",
+                                         "15 - 44",
+                                         "45 - 64",
+                                         "65 - 74",
+                                         "75 - 84",
+                                         "85 and over"))) %>%
+    arrange(desc(age_group)) %>% 
+    ggplot()+
+    aes(x = age_group, y = ave)+
+    geom_boxplot()+
+    xlab("Age Groupings")+
+    ylab("Number of Admissions")
+  
   ggplotly(admissions_age_groups)
 })
 
+
+output$admissions_simd_quin_grouped <- renderPlotly({
+  
+  admissions_simd_quin <- admissions %>% 
+    filter(!is.na(simd_quintile)) %>%
+    select(hb, week_ending, simd_quintile, number_admissions, percent_variation) %>% 
+    filter(hb == input$healthboard_demographics) %>% 
+    mutate(simd_quintile = as.character(simd_quintile)) %>% 
+    group_by(week_ending, simd_quintile) %>% 
+    summarise(simd_quintile, ave = mean(number_admissions)) %>% 
+    arrange(desc(simd_quintile)) %>% 
+    ggplot()+
+    aes(x = simd_quintile, y = ave, fill =simd_quintile)+
+    geom_col()+
+    xlab("Deprivation Scores")+
+    ylab("Average Number of Admissions")+ 
+    scale_fill_manual(values=c("1" = "#ACF0F2",
+                                 "2" = "#0003C7",
+                                 "3" = "#799AE0",
+                                 "4" = "#002253",
+                                 "5" = "#0092B2"))+
+    theme(legend.position = "none")
+  
+  ggplotly(admissions_simd_quin)
+})
+
+
+
+output$admissions_gender <- renderPlotly({
+  attendance_gender <- admissions %>%
+    select(week_ending, sex, number_admissions, hb) %>% 
+    filter(!sex == "All") %>%
+    filter(hb == input$healthboard_demographics) %>% 
+    group_by(sex) %>%
+    summarise(number_of_admissions = mean(number_admissions, na.rm = TRUE)) %>%
+    ggplot() +
+    aes(y = number_of_admissions) +
+    geom_col(aes(x = sex, fill = sex))+
+    xlab("Genders")+
+    ylab("Average Number of Admissions")
+  ggplotly(attendance_gender)
+})
 
 
 output$bed_occ_hyp_2 <- renderPlot({

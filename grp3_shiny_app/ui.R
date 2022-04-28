@@ -89,36 +89,59 @@ body <-
       
       tabItem(tabName = "Admissions",
               
+              
+              fluidRow(
+                selectInput(
+                  "healthboard_demographics",
+                  "Choose a NHS Health Board",
+                  choices = c(unique(admissions$hb))
+                )
+              ),
+              
               #Creating the second row with the following columns
               # 1. age graph - that changes on year and health baord selected
               # 2. box plot of gender
               # 3. graph of smid score
               
               fluidRow(
+                column(6,
+                       box(
+                         solidHeader = TRUE,
+                         status = "primary",
+                         title = "Summary of Admission Demographics",
+                         width = "100%",
+                         height = "100%"
+                       )),
                 
                 column(6,
                        box(
-                  title = "Age",
-                  plotlyOutput("admissions_age_grouped"),
-                  width = "100%",
-                  height = "100%"
-                ))),
+                         solidHeader = TRUE,
+                         status = "primary",
+                         title = "Age",
+                         plotlyOutput("admissions_age_grouped"),
+                         width = "100%",
+                         height = "100%"
+                       ))
+              ),
               
               fluidRow(
-                box(
+                column(6, box(
+                  solidHeader = TRUE,
+                  status = "primary",
                   title = "Gender",
-                  plotOutput("gender_diff_admissions"),
+                  plotlyOutput("admissions_gender"),
                   width = "100%",
                   height = "100%"
                 )),
-              
-              fluidRow(
-                box(
-                  title = "Deprivation",
-                  plotOutput("smid_score_admissions"),
-                  width = "100%",
-                  height = "100%"
-                )
+                column(6, 
+                       box(
+                         solidHeader = TRUE,
+                         status = "primary",
+                         title = "Deprivation",
+                         plotlyOutput("admissions_simd_quin_grouped"),
+                         width = "100%",
+                         height = "100%"
+                       ))
               )
       ),
       
@@ -204,7 +227,7 @@ body <-
               fluidRow(
                 box(
                   title = "Null Distribution Explaination",
-                  status = "info",
+                  status = "primary",
                   solidHeader = TRUE,
                   width = 12,
                   height = "100%",
@@ -228,7 +251,7 @@ body <-
                   plotOutput("bed_occ_hyp_1"),
                   width = 6,
                   height = "100%",
-                  status = "info",
+                  status = "primary",
                   solidHeader = TRUE
                 ),
                 
@@ -238,7 +261,7 @@ body <-
                   plotOutput("bed_occ_hyp_2"),
                   width = 6,
                   height = "100%",
-                  status = "info",
+                  status = "primary",
                   solidHeader = TRUE
                 ))
       ),
@@ -323,7 +346,7 @@ sidebar <- dashboardSidebar(
     menuItem("Discharge", icon = icon("running"), tabName = "Discharge"),
     menuItem("Predictive Models", icon = icon("chart-line"), tabName = "Predictive_Models")
   ),
-
+  
   
   
   ### Year Select Input
