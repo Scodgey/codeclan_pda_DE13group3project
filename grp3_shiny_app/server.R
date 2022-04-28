@@ -1,5 +1,5 @@
 # Define server logic required to draw a histogram
-server <- shinyServer(function(input, output) {
+server <- shinyServer(function(input, output, session) {
 
   output$scottish_health_boards <- renderLeaflet({
     leaflet(scot_health_board_shapes) %>%
@@ -279,7 +279,9 @@ server <- shinyServer(function(input, output) {
   })
 
 
-
+output$admissions_age_grouped <- renderPlotly({
+  ggplotly(admissions_age_groups)
+})
 
 
 
@@ -355,28 +357,6 @@ output$delayed_bed_discharge_timeseries <- renderPlotly({
   ggplotly(delayed_discharge_plot)
 })
 
-delayed_dischrge_prediction_model <- renderPlot({fit_delayed <- delayed_dis_ts_sum %>%
-         model(
-           snaive = SNAIVE(count),
-           mean_model = MEAN(count),
-           arima = ARIMA(count)
-         )
-       
-       # with the models specified, we can now produce the forecasts.
-       # choose the number of future observations to forecast,
-       # this is called the forecast horizon h = 
-       
-       forecast_3year_delayed <- fit_delayed %>%
-         fabletools::forecast(h = "3 years")
-       
-       # once we’ve calculated our forecast, we can visualise it using
-       # the autoplot() function that will produce a plot of all forecasts.
-       
-       forecast_3year_delayed %>%
-         autoplot(delayed_dis_ts_sum)+
-         guides(colour = guide_legend(title = "3-Year Forecast"))+
-         labs(x = "", y = "number of delayed beds")})
-
 output$delayed_bed_discharge_by_reason <- renderPlot({
   delayed_discharge %>% 
   select(reason_for_delay, datetime, age_group, average_daily_number_of_delayed_beds) %>% 
@@ -399,5 +379,49 @@ output$delayed_bed_discharge_by_reason <- renderPlot({
                     grow = TRUE)+
   theme(legend.position = "none")
   })
+
+
+output$delayed_dischrge_prediction_model <- renderPlot({
+  delayed_dischrge_prediction_model
+})
+
+# output$delayed_discharge_prediction_model <- reactive({delayed_dis_ts <- delayed_discharge %>%
+#   filter(!age_group == "18plus")%>%
+#   filter(!reason_for_delay == "All Delay Reasons") %>%
+#   filter(hbt == "S92000003")%>%
+#   as_tsibble(key = c(hbt, age_group, reason_for_delay, number_of_delayed_bed_days), index = datetime)
+# 
+# # for some reason one of the forecasting models seems to be working better with 
+# # the format yearmonth, so we'll change our datetime column
+# # then we select the variables we need and sumamrise the number of delayed beds
+# delayed_dis_ts_sum <- delayed_dis_ts%>%
+#   mutate(datetime = yearmonth(datetime))%>%
+#   as_tsibble(index = datetime) %>%
+#   select(datetime, number_of_delayed_bed_days)%>%
+#   summarise(count = sum(number_of_delayed_bed_days))
+# 
+# # create a fit dataset which has the results from our three different models
+# fit_delayed <- delayed_dis_ts_sum %>%
+#   model(
+#     snaive = SNAIVE(count),
+#     mean_model = MEAN(count),
+#     arima = ARIMA(count)
+#   )
+# 
+# # with the models specified, we can now produce the forecasts.
+# # choose the number of future observations to forecast,
+# # this is called the forecast horizon
+# # once we’ve calculated our forecast, we can visualise it using
+# # the autoplot() function that will produce a plot of all forecasts.
+# delayed_dischrge_prediction_model <- fit_delayed %>%
+#   fabletools::forecast(h = "3 years") %>%
+#   autoplot(delayed_dis_ts_sum)+
+#   guides(colour = guide_legend(title = "3-Year Forecast"))+
+#   labs(x = "", y = "number of delayed beds")
+# # by default, argument level = c(80,95) is passed to autoplot(), and so 80% and 95% prediction intervals
+# # are shown.
+# })
+
+
 
 })

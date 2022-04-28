@@ -88,38 +88,6 @@ body <-
       ##############################################
       
       tabItem(tabName = "Admissions",
-              fluidRow(
-                
-                #Creating the first row with the following columns
-                # 1. graph of trend of admissions with predictive modelling
-                # 2. row for the percentage of elect v planned & top 5 most populated health boards
-                
-                column(8,
-                       box(
-                         status = "primary",
-                         solidHeader = TRUE,
-                         title = "Admissions predictive model",
-                         #this should be static but highlighted portion shows year selected
-                         plotOutput("predicted graph of admissions"),
-                         width = NULL
-                       )
-                ),
-                
-                column(4,
-                       box(
-                         title = "Percentage of Emergency v Planned",
-                         plotOutput("Admission Emergency v Planned"),
-                         width = NULL,
-                         height = 100
-                       ),
-                       box(
-                         title = "Health Boards with Most Admissions",
-                         plotOutput("input$healthboard"),
-                         width = NULL,
-                         height = 300
-                       )
-                )
-              ),
               
               #Creating the second row with the following columns
               # 1. age graph - that changes on year and health baord selected
@@ -128,24 +96,28 @@ body <-
               
               fluidRow(
                 
-                box(
+                column(6,
+                       box(
                   title = "Age",
-                  plotOutput("age_ranges_admissions"),
-                  width = 4,
-                  height = 300
-                ),
+                  plotlyOutput("admissions_age_grouped"),
+                  width = "100%",
+                  height = "100%"
+                ))),
+              
+              fluidRow(
                 box(
                   title = "Gender",
                   plotOutput("gender_diff_admissions"),
-                  width = 4,
-                  height = 300
-                ),
-                
+                  width = "100%",
+                  height = "100%"
+                )),
+              
+              fluidRow(
                 box(
                   title = "Deprivation",
                   plotOutput("smid_score_admissions"),
-                  width = 4,
-                  height = 300
+                  width = "100%",
+                  height = "100%"
                 )
               )
       ),
@@ -284,19 +256,23 @@ body <-
                 
                 column(6,
                        box(
+                         status = "primary",
+                         solidHeader = TRUE,
                          title = "Discharge Rate From 2018 to 2022",
                          #this should be static but highlighted portion shows year selected
                          plotlyOutput("delayed_bed_discharge_timeseries"),
-                         width = NULL,
+                         width = "100%",
                          height = "100%"
                        )
                 ),
                 
                 column(6,
                        box(
+                         status = "primary",
+                         solidHeader = TRUE,
                          title = "Breakdown of Reasons for Delayed Discharges",
                          plotOutput("delayed_bed_discharge_by_reason"),
-                         width = NULL,
+                         width = "100%",
                          height = "100%"
                        )
                 )
@@ -307,13 +283,15 @@ body <-
       ###  Dashboard layout for Prediction Models  ###
       ################################################
       
-      tabItem(tabName = "Predictive Models",
+      tabItem(tabName = "Predictive_Models",
               fluidRow(
                 
                 column(6,
                        box(
+                         status = "primary",
+                         solidHeader = TRUE,
                          title = "Admission Numbers across Scotland Prediction Model",
-                         plotlyOutput("admission_prediction_model"),
+                         #plotlyOutput("admission_prediction_model"),
                          width = NULL,
                          height = "100%"
                        )
@@ -321,6 +299,8 @@ body <-
                 
                 column(6,
                        box(
+                         status = "primary",
+                         solidHeader = TRUE,
                          title = "Delayed Discharge across Scotland Prediction Model",
                          plotOutput("delayed_dischrge_prediction_model"),
                          width = NULL,
@@ -341,7 +321,7 @@ sidebar <- dashboardSidebar(
     menuItem("Admissions", icon = icon("hospital-user"), tabName = "Admissions"),
     menuItem("Occupancy", icon = icon("bed"), tabName = "Occupancy"),
     menuItem("Discharge", icon = icon("running"), tabName = "Discharge"),
-    menuItem("Predictive Models", icon = icon("chart-line"), tabName = "Predictive Models")
+    menuItem("Predictive Models", icon = icon("chart-line"), tabName = "Predictive_Models")
   ),
 
   
