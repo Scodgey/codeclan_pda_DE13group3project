@@ -339,7 +339,7 @@ body <-
                        box(
                          status = "primary",
                          solidHeader = TRUE,
-                         title = "Admission Numbers across Scotland Prediction Model",
+                         title = "Delayed Bed Discharge Rate Prediction Model with 2018 - 2022 Data",
                          plotOutput("delayed_dischrge_prediction_model"),
                          width = "100%",
                          height = "100%"
