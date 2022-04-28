@@ -197,26 +197,28 @@ delayed_dischrge_prediction_model <- fit_delayed %>%
 # are shown.
 
 
-admissions_age_groups <- admissions %>% 
-  filter(age_group != "All ages",
-         !is.na(age_group)) %>% 
-  select(week_ending, age_group, number_admissions, percent_variation) %>% 
-  group_by(week_ending, age_group) %>% 
-  summarise(age_group, ave = mean(number_admissions)) %>% 
-  arrange(desc(age_group)) %>% 
-  ggplot()+
-  aes(x = age_group, y = ave)+
-  geom_boxplot()
+# admissions_age_groups <- admissions %>% 
+#   filter(age_group != "All ages",
+#          !is.na(age_group)) %>% 
+#   select(week_ending, age_group, number_admissions, percent_variation) %>% 
+#   group_by(week_ending, age_group) %>% 
+#   summarise(age_group, ave = mean(number_admissions)) %>% 
+#   arrange(desc(age_group)) %>% 
+#   ggplot()+
+#   aes(x = age_group, y = ave)+
+#   geom_boxplot()
+# 
+# admissions_simd_quin <- admissions %>% 
+#   filter(!is.na(simd_quintile)) %>% 
+#   select(week_ending, simd_quintile, number_admissions, percent_variation) %>% 
+#   group_by(week_ending, simd_quintile) %>% 
+#   summarise(simd_quintile, ave = mean(number_admissions)) %>% 
+#   arrange(desc(simd_quintile)) %>% 
+#   ggplot()+
+#   aes(x = simd_quintile, y = ave)+
+#   geom_col()
 
-admissions_simd_quin <- admissions %>% 
-  filter(!is.na(simd_quintile)) %>% 
-  select(week_ending, simd_quintile, number_admissions, percent_variation) %>% 
-  group_by(week_ending, simd_quintile) %>% 
-  summarise(simd_quintile, ave = mean(number_admissions)) %>% 
-  arrange(desc(simd_quintile)) %>% 
-  ggplot()+
-  aes(x = simd_quintile, y = ave)+
-  geom_col()
+
 
 
 
