@@ -1,68 +1,5 @@
-### THIS ALL NEEDS TO BE IN GLOBAL
-
-library(zoo)
-
-# Loading in location and removing id and qualifier columns
-location_look_up <- read_csv(here("raw_data/hospital_locations_lookup_file.csv")) %>%
-  clean_names() %>%
-  select(-"id",
-    -contains("qf"))
-
-# joining location data with nhs data 3 and manipulating the data
-joined_bed_data_3 <- read_csv(here("raw_data/nhs_data_joined3.csv")) %>%
-  rename("available_staffed_beds" = "all_staffed_beds") %>%
-  mutate(
-    average_available_staffed_beds = round(average_available_staffed_beds),
-    average_occupied_beds = round(average_occupied_beds),
-    percentage_occupancy = round(percentage_occupancy),
-    ) %>%
-  mutate(quarter = as.Date(as.yearqtr(quarter, format = "%YQ%q"))) %>%
-  filter(!location_qf %in% "d") %>%
-  select(-contains("qf")) %>%
-  left_join(location_look_up, by = "location") %>%
-  filter(!is.na(location))
-
-scot_health_board_shapes <-
-  st_read(dsn = here("geospatial_data/scottish_local_authority_data_2021"),
-          layer = "SG_NHS_HealthBoards_2019") %>%
-  clean_names() %>%
-  st_simplify(dTolerance = 2000) %>%
-  rename(hb = hb_code) %>%
-  st_transform('+proj=longlat +datum=WGS84')
-
-delayed_discharge <- read_csv(here("clean_data/delayed_discharge_fable.csv"))
-
-admissions <- read_csv(here("raw_data/nhs_data_joined2.csv")) %>%
-  select(-contains("qf"))
-
-location_data <- read_csv(here("raw_data/hospital_locations_lookup_file.csv")) %>%
-  select(location, location_name) %>%
-  rename(treatment_location = location)
-
-source(here("helper_scripts/num_admissions_helper.R"))
-
-
-  
-
-delayed_discharge %>%
-  group_by(age_group) %>%
-  ggplot()+
-  aes(x = age_group, y = number_of_delayed_bed_days)+
-  geom_boxplot()
-
-
-
-
-
-### dataset for creating the top 3 info boxes in Summary page and giving a rating
-### for how well each Health Board is doing
-
-
-library(shiny)
-library(sf)
-
 # Define server logic required to draw a histogram
-server <- shinyServer(function(input, output) {
+server <- shinyServer(function(input, output, session) {
 
   output$scottish_health_boards <- renderLeaflet({
     leaflet(scot_health_board_shapes) %>%
@@ -73,6 +10,8 @@ server <- shinyServer(function(input, output) {
         ),
         layerId = scot_health_board_shapes$hb)
   })
+  
+
 
   ######################################
   ### Code for filtering by Polygons ###
@@ -340,7 +279,9 @@ server <- shinyServer(function(input, output) {
   })
 
 
-
+output$admissions_age_grouped <- renderPlotly({
+  ggplotly(admissions_age_groups)
+})
 
 
 
@@ -393,7 +334,7 @@ output$bed_occ_hyp_2 <- renderPlot({
     get_p_value(obs_stat = average_bed_occupancy_onehospital_stat2$average_bed_occupancy_onehospital,
                 direction = "both")
 
-  if(p_value1 <= 0.05){
+  if(p_value2 <= 0.05){
     result = "Reject Null Hypothesis"
   } else {
     result = "Fail to Reject Null Hypothesis"
@@ -413,8 +354,73 @@ output$bed_occ_hyp_2 <- renderPlot({
 
 
 output$delayed_bed_discharge_timeseries <- renderPlotly({
-  ggplotly(delayed_bed_discharge_timeseries)
+  ggplotly(delayed_discharge_plot)
 })
+
+output$delayed_bed_discharge_by_reason <- renderPlot({
+  delayed_discharge %>% 
+  select(reason_for_delay, datetime, age_group, average_daily_number_of_delayed_beds) %>% 
+  filter(reason_for_delay != "All Delay Reasons",
+         age_group == "18plus",
+         datetime > input$date_range[1],
+         datetime < input$date_range[2]) %>% 
+  group_by(reason_for_delay) %>% 
+  summarise(ave_num_delay = sum(average_daily_number_of_delayed_beds)) %>% 
+  ggplot()+
+  aes(area = ave_num_delay, 
+      label = paste(reason_for_delay, "\n", 
+                    ave_num_delay), 
+      fill = reason_for_delay)+
+  geom_treemap()+
+  geom_treemap_text(fontface = "italic", 
+                    colour = "white", 
+                    place = "centre",
+                    size = 15,
+                    grow = TRUE)+
+  theme(legend.position = "none")
+  })
+
+
+output$delayed_dischrge_prediction_model <- renderPlot({
+  delayed_dischrge_prediction_model
+})
+
+# output$delayed_discharge_prediction_model <- reactive({delayed_dis_ts <- delayed_discharge %>%
+#   filter(!age_group == "18plus")%>%
+#   filter(!reason_for_delay == "All Delay Reasons") %>%
+#   filter(hbt == "S92000003")%>%
+#   as_tsibble(key = c(hbt, age_group, reason_for_delay, number_of_delayed_bed_days), index = datetime)
+# 
+# # for some reason one of the forecasting models seems to be working better with 
+# # the format yearmonth, so we'll change our datetime column
+# # then we select the variables we need and sumamrise the number of delayed beds
+# delayed_dis_ts_sum <- delayed_dis_ts%>%
+#   mutate(datetime = yearmonth(datetime))%>%
+#   as_tsibble(index = datetime) %>%
+#   select(datetime, number_of_delayed_bed_days)%>%
+#   summarise(count = sum(number_of_delayed_bed_days))
+# 
+# # create a fit dataset which has the results from our three different models
+# fit_delayed <- delayed_dis_ts_sum %>%
+#   model(
+#     snaive = SNAIVE(count),
+#     mean_model = MEAN(count),
+#     arima = ARIMA(count)
+#   )
+# 
+# # with the models specified, we can now produce the forecasts.
+# # choose the number of future observations to forecast,
+# # this is called the forecast horizon
+# # once we’ve calculated our forecast, we can visualise it using
+# # the autoplot() function that will produce a plot of all forecasts.
+# delayed_dischrge_prediction_model <- fit_delayed %>%
+#   fabletools::forecast(h = "3 years") %>%
+#   autoplot(delayed_dis_ts_sum)+
+#   guides(colour = guide_legend(title = "3-Year Forecast"))+
+#   labs(x = "", y = "number of delayed beds")
+# # by default, argument level = c(80,95) is passed to autoplot(), and so 80% and 95% prediction intervals
+# # are shown.
+# })
 
 
 
