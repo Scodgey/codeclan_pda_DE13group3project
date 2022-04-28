@@ -17,4 +17,6 @@ attendance_gender <- attendance_gender_df %>%
   aes(y = number_of_admissions) +
   geom_col(aes(x = sex, fill = sex))
 
+ggplotly(attendance_gender)
+
 ```
