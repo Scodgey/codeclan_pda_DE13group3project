@@ -1,0 +1,40 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+#loading_data
+
+attendance_df <- read_csv(here("raw_data/nhs_data_joined2.csv")) %>% clean_names()
+```
+
+
+attendance %>% 
+group_by(simd_quintile) %>% 
+ggplot() +
+  
+  
+select  simd_quintile, admissions
+        gender !"all", admissions
+        age group !"all, admissions
+
+```{r}
+attendance %>% 
+  filter(!is.na(simd_quintile)) %>% 
+  group_by(simd_quintile) %>%
+ggplot() +
+  aes(x = simd_quintile) +
+  geom_col((aes(y = number_admissions, color = "#603BF2" ))) +
+  theme(legend.position = "none")
+
+```
+```{r}
+
+```
+
+
+Is gender a driver for hospital admissions?
+
+
+

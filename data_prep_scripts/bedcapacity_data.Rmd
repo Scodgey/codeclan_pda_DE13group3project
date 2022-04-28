@@ -144,7 +144,7 @@ was admitted.
  Percentage Occupancy (%) | The percentage occupancy is the percentage of average available staffed beds that were occupied by inpatients during the period: Percentage occupancy = (aob / asb) x 100 |
  
 
-# 2.Data 
+# 2.  Data 
 
 #### 2a. Data Background & Quality 
 Outpatient, inpatient and daycase activity data are collected across NHS Scotland 
@@ -176,7 +176,7 @@ The data used in this document was last updated	22 February 2022,
 
 <br>
 
-# 3. Data Analysis - Beds
+# 3. Data Analysis - Beds Occupancy
 
 ```{r, results="hide"}
 # The first step in the analysis was to run the library's available on the 
@@ -232,7 +232,7 @@ ggplotly(plot1)
 > **Plot 2 - Average Bed Occupancy by Season **
 
 
-```{r, echo=TRUE}
+```{r}
 
 plot2 <- bed_data %>%
   select(location_name, percentage_occupancy, season) %>%  
@@ -299,7 +299,7 @@ plot4 <- bed_data %>%
   aes(x = year_quarter, y = average_bed_occupancy, colour = location_name)+
   geom_line()+
   geom_point()+
-  scale_alpha_continuous()
+  scale_alpha_continuous()+
 labs(title = "Average Bed Occupancy (%) by, Location & Quarter (2018 Q1 Onwards)")
   
 
@@ -309,7 +309,9 @@ labs(title = "Average Bed Occupancy (%) by, Location & Quarter (2018 Q1 Onwards)
 ```
 
 
-**Plot 5 - Average Bed Occupancy - Selected Specialty by Quarter**
+> **Plot 5 - Average Bed Occupancy - Selected Specialty by Quarter**
+
+
 ```{r}
 
 plot5 <- bed_data %>%
@@ -340,15 +342,18 @@ labs(title = "Average Bed Occupancy (%) by, Specialty & Quarter (2018 Q1 Onwards
 ```
 
 
-# 3. Hypothesis Testing
+# 4. Hypothesis Testing
 
 
 
-### 3.1a Hypothesis Test 1 - Difference in Average Bed Occupancy (Two Hospitals)
+#### 4.1a Hypothesis Test 1 - Difference in Average Bed Occupancy (Two Hospitals)
 
+<br>
 Perform an appropriate statistical test to determine whether 
-there is a statistically significant difference average bed occupany between 
+there is a statistically significant difference in average bed occupany between 
 two selected hospitals. 
+
+<br>
 
 H0: There is no difference in average occupancy between two selected hospitals.
 
@@ -358,10 +363,12 @@ Ha: There is a difference in average occupancy between two selected hospitals
 
 $$ H_a: \mu_{ave \ bed \ occupancy \ (hospital\ 1)} -\mu_{ave \ bed \ occupancy \ (hospital\ 2)} \neq 0$$
 
-Step 1 of the bootstrap will be to filter the bed occupancy data by the users selection
-in the below code i have selected the UI. 
+<br>
 
 ```{r}
+#Step 1 of the bootstrap will be to filter the bed occupancy data by the users selection.
+#in the below code i have selected the UI for testing code. 
+
 average_bed_occupancy_twohospitals <- bed_data %>% 
 #UI - The below filter would be linked to the UI hospital selection. We can also
   # add a season filter.
@@ -381,7 +388,7 @@ observed_ave_occupancy_stat1
 ```
 
 
-### 3.1b Null Distribution Calculation 
+#### 4.1b Null Distribution Calculation 
 
 ```{r}
 # This code creates a null distribution to determine if 
@@ -400,7 +407,7 @@ null_dist1 <- average_bed_occupancy_twohospitals %>%
 head(null_dist1)
 ```
 
-### 3.1c  - Probability Value 
+#### 4.1c  Probability Value (P-Value)
 
 ```{r}
 # This calculation generate probability of observing observed stat.
@@ -417,7 +424,7 @@ p_value1
 ```
 
 
-### 3.1d Visualise Average Bed Occupancy Distribution
+#### 4.1d Visualise Average Bed Occupancy Distribution
 
 ```{r}
 # Let's visualise the distribution with the observed stat. Direction set to 
@@ -434,7 +441,7 @@ null_dist1 %>%
 ```
 
 
-### 3.1e **Calcualate Confidence Intervals (CI)**
+#### 4.1e Calculate Confidence Intervals (CI)
 
 ```{r}
 # This code generates the confidence intervals (upper and lower) for the
@@ -459,11 +466,14 @@ null_dist1%>%
                         
 ```
 
-### 3.2a Hypothesis Test 2 - Difference in Average Bed Occupancy (Hospitals Vs Scotland)
+#### 4.2a Hypothesis Test 2 - Difference in Average Bed Occupancy (Hospital Vs Scotland)
 
+<br>
 Perform an appropriate statistical test to determine whether 
-there is a statistically significant difference average bed occupancy between 
-one hospital and the average bed occupancy for scotland . 
+there is a statistically significant difference in average bed occupancy between 
+one hospital and the average bed occupancy for Scotland.
+
+<br>
 
 
 H0: There is no difference in average occupancy between selected hospital and Scotland.
@@ -472,8 +482,8 @@ $$ H_0: \mu_{average\ bed\ occupancy \ (scotland)} -\mu_{ave \ bed \ occupancy \
 
 Ha: The average occupancy of the selected hospital is greater than average for all of Scotland
 
-$$ H_a: \mu_{ave \ bed \ occupancy \ (scotland)} -\mu_{ave \ bed \ occupancy \ (hospital)} \neq $$
-
+$$ H_a: \mu_{ave \ bed \ occupancy \ (scotland)} -\mu_{ave \ bed \ occupancy \ (hospital)} \neq0 $$
+<br>
 
 ```{r}
 #Calculate Average Occupancy for All of Scotland Hospitals
