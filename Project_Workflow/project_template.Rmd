@@ -129,7 +129,7 @@ within the group of what the project brief was, what outcomes we had to meet,
 and how we would meet such outcomes.Each person within the group 
 shared their own interpretation of the brief and their thoughts on how best to 
 achieve the project outcomes. We began *"with the end user in mind"* and as a 
-result, we reached consenus in an efficient and coordinated manner.
+result, we reached consensus in an efficient and coordinated manner.
 
 As the project evolved, our group prioritised the development of a dashboard which 
 would ultimately, provide enough information, to allow the end user to answer the 
@@ -147,7 +147,41 @@ as specialty, time, year, quarter, season, geographical location
 
 ### Motivations for using the data you have chosen
 
-We used the dataset on ... to answer ... and because it was ...
+In the planning stages, we established that bed occupancy, number of admissions,
+and delayed discharges would be the key performance indicators to gain insights
+into the Winter Crisis and it's strain on Scottish NHS Health Boards.
+
+We used a dataset of the NHS Health Boards across Scotland, to give an interactive
+map that would allow quick glances into the rate of our key performance indicators
+at a health board area. This was done in our summary tab of the dashboard and was
+included to allow Public Health Scotland to look at key measures with a geo-spatial
+aspect.
+
+We used the dataset on bed occupancy to answer how strained hospitals and health
+boards are and we chose to do this because we wanted to have a measure that could
+be used to measure current strains on the NHS. This would then be developed to be
+a live measure, and allow administrators to re-allocate resources based on live
+figures. We allowed comparisons of this measure to be one hopsital against the 
+total average rate of bed occupancy, and also compare two hospitals against each
+other.
+
+We used the dataset on number of admissions by health board & by hospital to 
+look at the changes of number of people admitted against time. This answers the
+question whether there is an increased of admissions during the winter period,
+and if there is a cyclic trend of admissions - with increased numbers admitted 
+during winter versus other times of the year. This was because we were interested
+in determining the strain that increased admissions would put on resources, and 
+if there was a cyclic trend, it would help planning the allocation of resources 
+to change when the rate of admission was high. This dataset also allowed us to 
+compare rate of admission before and during the COIVD-19 pandemic - and then we 
+used predictive modelling to model the future rate of admissions based on the 
+current data trend.
+
+We finally used a dataset based on delayed discharge to answer what demographic 
+of patients have an increased time spent in hospitals because we wanted to see 
+which individuals are most effected by strains in the NHS. This was set up to 
+allow filtering based on a date range and hospitals, again to allow planning of
+resources when there was an increased pressure on the NHS.
 
 ### Data quality and potential bias, including a brief summary of data cleaning and transformations
 
@@ -156,6 +190,18 @@ According to the About tab on the dataset page/dedicated page online, the data q
 The dataset may/may not be biased because ...
 
 To clean the datasets we ...
+
+Geo-spatial data on the Health Boards within Scotland were mapped to give an 
+interactive map that highlights the bed occupancy, number of admissions and 
+delayed discharge rate within Health Boards. This was done by researching the 
+borders of each Health Board and obtaining polygons/shapes to be mapped using
+the `leaflet` package. Once this was done, a `join` was performed on the each 
+data set - to give each data set an identifier column for Health Boards. This 
+would allow the map to filter `plots` and `infoBoxes` when a Health Board was 
+clicked. This was all placed upon the __Summary tab__, and had three info Boxes;
+the selected Health Board's bed occupancy, admissions and delayed discharge. The
+tab also had two plots of the bed occupancy and the A&E targets - both of which 
+were split up hospitals within the Health Board.
 
 ### How is the data stored and structured
 
