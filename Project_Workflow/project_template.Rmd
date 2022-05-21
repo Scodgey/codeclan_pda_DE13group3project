@@ -36,7 +36,7 @@ of R-Shiny Web App.
 * Identifying the datasets necessary to answer the questions set by the group as 
 part of satisfying the brief; 
 * Cleaning and wrangling of Admissions Data (including A&E Admissions);
-* Admissions analysis scripts and visualisation (plots).Analysis included
+* Admissions analysis scripts and visualisation (plots). Analysis included
 use of predictive modelling. 
 
 **Mark** worked on:
@@ -78,7 +78,7 @@ Demographic & Geographic Aspects of the domain, and was designed such to provide
 the theoretical front end user (NHS Administration Staff) with user-friendly
 access to information on key performance indicators (KPI's). 
 
-The theoretical client for the project was Public Health Scotland (PHS)
+The theoretical client for the project was Public Health Scotland (PHS).
 
 ### Stages of the project
 
@@ -187,10 +187,69 @@ resources when there was an increased pressure on the NHS.
 
 According to the About tab on the dataset page/dedicated page online, the data quality ...
 
-The dataset may/may not be biased because ...
+All measures were taken to making the dataset as unbiased as possible while data
+cleaning and transformation steps were taken - and this was important to us, as 
+we understand that biased data leads to biased conclusions and we didn't want
+anyone to be mislead by our analysis of the data. The only biases that could 
+have been introduce was from the source of the data - this is discussed later in
+this document but it should be noted that there will be no biases introduced from
+PHS. The PHS website also has information on the data quality, and we concluded
+that the data was unbiased and fairly collected with consent from individuals
+(links to the privacy policies are contained in the Data Ethics of this document).
 
-To clean the datasets we ...
 
+When loading in the data, the data looked to be fairly clean. First we used the 
+`janitor` package and the `clean_names()` function to reduce the column names of
+all data sets to snake case. We then went on to create individual files to work
+on for each tab within our shiny app, by taking specific data sets and using 
+the `row_bind` function to create bigger data sets to be used for each .
+
+#### Date Time Manipulation
+
+A data set was created from __Admissions__ data collect form PHS, and contained 
+information on the admissions by:
+
+* Sex
+* Deprivation Score
+* Speciality within hospitals
+* Health Boards
+
+The main cleaning step for this data set was carried out to create a datetime 
+variable (to be used in the predictive modelling). Using the `lubridate` package,
+the week and quarter of year was obtained from the `week_ending` variable (the
+quarter needed to be changed from "Q[1, 2, 3, 4]" to "Spring", "Summer", "Autumn"
+or "Winter").
+
+<br>
+
+This was also carried out in the __Delayed Discharge__ data set - `row_bind` was
+done on information with:
+
+* Health Boards
+* Speciality within hospitals
+
+And, as stated before, a datetime variable was created in the same way as the
+Admissions data set
+
+<br>
+
+A __Bed Occupancy__ data set was created based on the delayed discharge data set,
+but a variable was changed to become `average_occupied_beds` based on rounding the
+amount of occupied beds.
+
+Then final steps were taken to limit the year of data sets to 2018 and onwards
+(as we determined that recent years were of most importance to make conclusions
+on the pandemic's effect against our key performance indicators). There was 
+duplicated data (which was signified by `_qualifier` variables after each
+individual variable) which was removed by removing any columns ending with 
+`_qualfier`.
+
+To allow geo-spatial information to be gained from the data set, we performed a
+`left_join` on address line variable to give location specific data.
+
+
+#### Geo-spatial Data
+The geo-spatial data needed further steps format the data to create interactive maps. 
 Geo-spatial data on the Health Boards within Scotland were mapped to give an 
 interactive map that highlights the bed occupancy, number of admissions and 
 delayed discharge rate within Health Boards. This was done by researching the 
@@ -201,22 +260,68 @@ would allow the map to filter `plots` and `infoBoxes` when a Health Board was
 clicked. This was all placed upon the __Summary tab__, and had three info Boxes;
 the selected Health Board's bed occupancy, admissions and delayed discharge. The
 tab also had two plots of the bed occupancy and the A&E targets - both of which 
-were split up hospitals within the Health Board.
+were split up hospitals within the Health Board - and changed depending on the 
+health board selected when clicking on the interactive map.
+
+To look further into the cleaning steps, the `data_prep_row_bind` and `helper`
+files have detailed notes on each step included within them.
 
 ### How is the data stored and structured
 
-[**Hint**: This page offers a good starting point for understanding the data structure: https://guides.statistics.gov.scot/article/34-understanding-the-data-structure]
+Everything on `statistics.gov.scot` stores their data as _linked data_, which is 
+a way of storing data in data sets by giving them a unique URL. This then means 
+that each data point can be given characteristics (we would see this as variables) 
+that can be "given" to a data point. 
 
-The data is in the form of ...
+In practice, the data is stored as triplets:- with the "subject" being a data 
+point, "predicate" being the variable given, then the "object" being the value
+of the variable.
 
-This means ...
+The benefits of storing data in this format is that the structure of data is 
+held at the data point level, so there is no need for a very complicated 
+structural database system. When the data points hold the data structure,
+links for each data source is very easy to find and makes linking data sets
+very easy too. As each data point has a unique URL, searching for data, 
+accumulating data points into data sets and querying data sets is very efficient
+to do.
 
-Benefits of storing the data like this are ...
+Further guidance on how the `statistics.gov.scot` data is stored and structured 
+can be found at:
+`https://guides.statistics.gov.scot/article/34-understanding-the-data-structure`.
 
 ### Ethical and legal considerations of the data
 
-[**Hint:** this page contains information on the Open Government License which covers most datasets on statistics.gov.scot: http://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/]
+The data sets used are public sector information licensed under the Open 
+Government Licence, which means that the information contained in the data sets
+can be used by: 
+* copying, publishing, distributing and transmitting the Information
+* adapting the Information for use in research
+* exploiting the Information commercially and non-commercially
 
-There are no/There may be ethical considerations, because ...
+In our case, we are adapting it for use in research, and as long as we acknowledge
+the source of the information (which we are doing here), we can freely use the 
+data sets.
 
-The datasets are covered by the Open Government License, which means ...
+After acquisition, we checked that the information contained in each data set did
+not contain personal information of individuals - and this was to confirm that
+Public Health Scotland (the source of the data sets) has followed data protection
+laws. This was confirmed and more information into data protection carried out
+by PHS can be found in the following link: `https://www.opendata.nhs.scot/about`
+and `https://publichealthscotland.scot/our-privacy-notice/organisational-background/`.
+
+The data checks we performed were to see if there was any personally identifiable
+information contained in each data set - potential personal details that might be
+contained in these data sets would be:
+* name
+* address
+* email address
+* date of birth
+* NHS number 
+* next-of-kin contacts
+* details of your GP
+
+All of which were not found. As a final legal consideration was how the data was
+obtained, but by PHS standards, consent is needed to collect and publish this
+data on PHS - concluding that the data could be used after considering these
+ethical/legal factors.
+
