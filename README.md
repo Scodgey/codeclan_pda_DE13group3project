@@ -64,33 +64,33 @@ The theoretical client for the project was Public Health Scotland (PHS).
 The stages of this project were as follows:
 
 <br>
-**22nd April 2022:
+22nd April 2022:
 
 * Group review and consideration of project brief;
 * Agreement on project management approach - communication & collaboration methods, action tracking & version control methods;
 * Setting up of group repository on github.
 
 <br>
-** 23rd to 24th April 2022:
+23rd to 24th April 2022:
 
 * Development & consolidation of group questions and allocation of focus areas to each team member, for further research and dataset identification.
 * Selection of datasets;
 * Joining of datasets where applicable.
 
 <br>
-**25th to 26th April:**
+25th to 26th April:
 
 * Initial dashboard planning and wireframe;
 * Initital data analysis & visualisations.
 
 <br>
-**27th of April:**
+27th of April:
 
 * Continuation of dashboard development and analysis;
 * Presentation preparation and rehearsal.
 
 <br>
-**28th of April:**
+28th of April:
 
 * Delivery of group project presentation inclusive of dashboard, to project client, Public Health Scotland.
 
@@ -174,7 +174,7 @@ The benefits of storing data in this format is that the structure of data is hel
 Further guidance on how the statistics.gov.scot data is stored and structured can be found at: https://guides.statistics.gov.scot/article/34-understanding-the-data-structure.
 
 <br>
-### Ethical and legal considerations of the data
+### Ethical and legal considerations of the data:
 
 The data sets used are public sector information licensed under the Open Government Licence, which means that the information contained in the data sets can be used by: * copying, publishing, distributing and transmitting the Information * adapting the Information for use in research * exploiting the Information commercially and non-commercially
 
