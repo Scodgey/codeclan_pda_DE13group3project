@@ -173,8 +173,6 @@ The benefits of storing data in this format is that the structure of data is hel
 
 Further guidance on how the statistics.gov.scot data is stored and structured can be found at: https://guides.statistics.gov.scot/article/34-understanding-the-data-structure.
 
-<br>
-
 ### Ethical and legal considerations of the data:
 
 The data sets used are public sector information licensed under the Open Government Licence, which means that the information contained in the data sets can be used by: * copying, publishing, distributing and transmitting the Information * adapting the Information for use in research * exploiting the Information commercially and non-commercially
