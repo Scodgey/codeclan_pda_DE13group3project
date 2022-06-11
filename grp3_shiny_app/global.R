@@ -53,8 +53,6 @@ library(treemapify) # Creating tree maps
 ## Data - Including Cleaning & Wrangling ----
 ###############################################.
 
-
-
 ### Load in data for diff tabs in shiny dashbaord
 
 # The bed Occupancy Data
@@ -85,7 +83,6 @@ delayed_discharge <- read_csv(here("raw_data/delayed-discharge-beddays-health-bo
   filter(datetime >= "2018-04-01")
 
 
-
 ### Temporal Plots ### 
 # This is data required for capacity insight.
 
@@ -100,7 +97,7 @@ delayed_discharge_plot <- delayed_discharge %>%
   geom_point()
 
 
-# Needed for Occupancy graphs
+### Bed - Occupancy Data/Plots ####
 # Loading in location and removing id and qualifier columns
 location_look_up <- read_csv(here("raw_data/hospital_locations_lookup_file.csv")) %>%
   clean_names() %>%
@@ -123,15 +120,6 @@ joined_bed_data_3 <- read_csv(here("raw_data/nhs_data_joined3.csv")) %>%
 
 
 
-
-
-### Demographic Plots ###
-# This is data required for demographic insight.
-
-
-
-
-
 ### Geospatial Data ###
 #This is data required for georgraphical insight.
 
@@ -142,12 +130,6 @@ scot_health_board_shapes <-
   st_simplify(dTolerance = 2000) %>%
   rename(hb = hb_code) %>%
   st_transform('+proj=longlat +datum=WGS84')
-
-
-
-# Non-Categorised Data
-# This is data that does not fall into the above categories and may be
-# common across datasets.
 
 
 
@@ -261,47 +243,12 @@ delayed_dischrge_prediction_model <- fit_delayed %>%
 # the autoplot() function that will produce a plot of all forecasts.
 
 
-
-
-###############################################.
-## Functions ----
-###############################################.
-
-#These are functions that have been developed to avoid repeated code within 
-#the UI, Server or other R.Scripts.
-
-
-
-
-
-
-
-###############################################.
-## Palettes and plot parameters ----
-###############################################.
-#These are plot parameters that have been developed to avoid repeated code in 
-# plot parameters.
-
-
-
-
-
-
 ###############################################.
 ## Objects, names, lists ----
 ###############################################.
 
 
-
-
-
-
 #source(here("helper_scripts/num_admissions_helper.R"))
-
-
-
-
-
 
 
 nhs_data_joined_2_ts_1 <- nhs_data_joined2 %>%

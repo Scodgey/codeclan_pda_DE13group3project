@@ -1,17 +1,17 @@
 ---
-title: "Group 3 Bed-Capacity"
+title: "Group 3 Bed-Capacity Analysis & Plots"
 output:
   html_document: 
-   theme: journal
+   theme: bootstrap
    highlight: monochrome
    toc: yes
    toc_depth: 3
    toc_float: yes
-   code_folding: hide  
       
 ---
 
 ```{r setup, include=FALSE}
+
 knitr::opts_chunk$set(echo = FALSE)#Whether to display code inc it's results.
 knitr::opts_chunk$set(message = FALSE)#Whether to display messages.
 knitr::opts_chunk$set(warning = FALSE)#Whether to display warnings.
@@ -21,18 +21,22 @@ knitr::opts_chunk$set(eval = FALSE)#Whether to evaluate the code & incl results.
 ```
 
 
-# 1. Documentation
+
+
+---
+
+## 1. Documentation
 
 <br>
 
 
-#### Purpose of this document.
+#### 1.1 Purpose of this document.
 
 The purpose of this document is to improve insight into bed capacity across
 each of Scotland's Health Boards.  
 
 This document aims to achieve this by analysing open source data made available by 
-[ Public Health Scptland (PHS) ](https://www.opendata.nhs.scot/) via
+[ Public Health Scotland (PHS) ](https://www.opendata.nhs.scot/) via
 The Scottish Health and Social Care Open Data platform.
 
 This documents focuses on bed capacity across Scotland's Acute Hospital Activity.
@@ -44,92 +48,11 @@ NHS Beds Information publication from ISD Scotland ](https://publichealthscotlan
 Note that 'Acute' hospital care excludes obstetric, psychiatric and 
 long stay care services that are covered in other groups and datasets.
 
-
-#### 1a. Domain Knowledge 
-
-The average number of available hospital beds in Scotland has generally been
-decreasing over the years. In 2019/20, the average available staffed beds for acute
-specialties was 13,156; a small 0.5% increase on last year (2018/19) and a 6%
-decrease when compared to five years ago (2014/15).
-For 2019/20:
-- 9,260 (70%) were for medical specialties
-- 3,896 (30%) were for surgical specialties.
-The percentage occupancy has remained relatively stable over the years. In
-2019/20, the percentage occupancy for acute specialties was 86.7%.
-
-How long a patient stays in hospital will be strongly related to the complexity 
-of any operation carried out as well the underlying health condition of the person. 
-The average length of stay has been reducing over the years. In 2019/20, 
-the average length of stay was 6.1 days compared to 6.9 days in 2010/11. 
-Patients admitted as emergencies generally stay longer than elective hospital 
-admissions. In 2019/20:
-
-* Elective admissions: the average length of stay was 3.4 days
-* Emergency admissions: the average length of stay was 6.7 days
-
-The number of hospital beds has been reducing for many years. This is a result of both
-medical advances which have led to shorter stays in hospital for patients including planned
-daycase procedures (see Chart 10) alongside a shift to treatment and care in a more
-ambulatory setting or in the community.
-
-
-Background
-There are two broad ways in which patients access and make use of acute hospital
-services.
-
-
-* 1. The first is part of a planned or elective pathway of care which is 
-normally initiated following a visit to the GP or other healthcare professional, 
-and may result in a referral to see a consultant as an **outpatient** for 
-specialist advice or diagnosis. This outpatient appointment may then result in 
-an onward referral for further tests or admission into hospital for treatment.
-
 <br>
 
-* 2. The second way in which patients make use of hospital services is as a result 
-of an emergency referral either by a healthcare professional or directly by the 
-patient themselves.This may be via an Accident & Emergency department, directly to
-Ambulatory Emergency Care or to an Acute Assessment Unit, where it will be decided 
-if the patient needs to be admitted to an **inpatient ward**.
-
-
-When admitted to hospital, the patient is either treated on a same day basis, 
-often referred to as a **daycase**, or as an inpatient, when the patient will
-normally spend at least one night in hospital. Some inpatients may be discharged from 
-hospital on the same day as their admission.
-
-
-
-#### 1b. Definitions Used in this Document  
-<br>
-
-* **Admissions;** terminology used to describe hospital activity in the
-reported periods. Strictly speaking the activity actually refers to hospital 
-discharges in the reported time period rather than admissions. The difference 
-between admissions and discharges is of small importance at the level of detail
-considered in this document. 
+#### 1.2 Domain Definitions
 
 <br>
-
-* **Hospital admissions;** number of **continuous inpatient stays (CIS)** 
-in hospital where the patient was admitted.When showing information by CIS, 
-the admission type e.g. elective/emergency is determined by the first admitting 
-episode. As a result, transfers will generally not appear within the CIS
-analysis.When a transfer does appear it is often the result of a patient being 
-transferred from another provider unit e.g. outwith Scotland. However, there 
-will also be instances where the admission type has been incorrectly coded, 
-unfortunately it is not possible to fully ascertain what the correct admission 
-type should have been. As a result, you will see that a small proportion of 
-transfers do appear within the various tables. 
-
-<br>
-
-* **Episodes of Care and Continuous Inpatient Stays;**
-If patient admitted,  care can  be transferred between consultants of different 
-specialty's. These separate elements are known as ‘episodes’ of care within each continuous
-inpatient stay. For the purpose of this document,hospital admissions are 
-defined as the number of continuous inpatient stays in hospital where the patient 
-was admitted.
 
 
 | **Bed Definition** | **Description** |
@@ -142,11 +65,19 @@ was admitted.
  Temporary | A [temporary bed ](https://www.ndc.scot.nhs.uk/Dictionary-A-Z/Definitions/index.asp?Search=T&ID=492&Title=Temporary%20Bed/ ) is a bed erected in a ward, additional to the bed complement of the ward, Note: Temporary beds are used at times of overcrowding and are normally located in the area of accommodation of the specialty involved. |
  Occupied Bed | An occupied bed is an available staffed bed, which is either being used to accommodate an inpatient or reserved for a patient on pass: **Total number of occupied bed days (tobd) = Sum of the number of occupied beds for each day of the quarter. Average number of occupied beds per day (aob) = tobd / number of days in the quarter.** |
  Percentage Occupancy (%) | The percentage occupancy is the percentage of average available staffed beds that were occupied by inpatients during the period: Percentage occupancy = (aob / asb) x 100 |
- 
 
-# 2.  Data 
+---
 
-#### 2a. Data Background & Quality 
+<br>
+
+## 2.  Data 
+
+<br>
+
+#### 2.1 Data Background & Quality 
+
+<br>
+
 Outpatient, inpatient and daycase activity data are collected across NHS Scotland 
 and arebased on nationally available information routinely drawn from hospital 
 administrative systems across the country. The principal data sources are:
@@ -167,7 +98,12 @@ data and contains summarised data by NHS Board of Treatment, hospital and
 specialty. ISD(S)1 is also used for return outpatient activity since completeness 
 for return outpatients in SMR00 is poor**
 
-#### 2b. Revision
+<br>
+
+#### 2.2 Data Revision
+
+<br>
+
 NHS Boards can update both their current and historical data monthly. This may 
 result in changes in the used data sources.
 
@@ -176,16 +112,26 @@ The data used in this document was last updated	22 February 2022,
 
 <br>
 
-# 3. Data Analysis - Beds Occupancy
+---
 
-```{r, results="hide"}
+## 3. Data Analysis - Beds Occupancy.
+
+<br>
+
+The following code chunks were transferred to the dashboard UI and Server
+scripts. The interpretation of the analysis is dependent upon the filters selected 
+as UI and is therefore subject to change. Plots can be viewed within dashboard.
+
+
+```{r}
+
 # The first step in the analysis was to run the library's available on the 
 # global.r script for this project.  
 
 # The next step was to load in the bed dataset from the group joined data set
 # script. 
 
-bed_data <- read_csv(here("raw_data/nhs_data_joined4.csv"))  
+bed_data <- read_csv(here("raw_data/nhs_data_joined4.csv")) 
 
 ```
 
@@ -201,7 +147,7 @@ bed_data %>%
 
 > **Plot 1 - Average Bed Occupancy (%) by Hospital**
 
-```{r}
+```{r, echo=TRUE}
 
 plot1 <- bed_data %>%
   select(location_name, percentage_occupancy) %>% 
@@ -232,7 +178,7 @@ ggplotly(plot1)
 > **Plot 2 - Average Bed Occupancy by Season **
 
 
-```{r}
+```{r, echo=TRUE}
 
 plot2 <- bed_data %>%
   select(location_name, percentage_occupancy, season) %>%  
@@ -255,7 +201,7 @@ ggplotly(plot2)
 
 > **Plot 3 - Hospital Average Occupancy (%) by Specialty (All) Hospitals**
 
-```{r}
+```{r, echo=TRUE}
 
 plot3 <- bed_data %>%
   select(specialty_name, percentage_occupancy) %>% 
@@ -278,11 +224,12 @@ theme(legend.position = "none", axis.text.x=element_blank())+
   scale_x_discrete(guide = guide_axis(check.overlap = TRUE))
 
 ggplotly(plot3)
+
 ```
 
 > **Plot 4 - Average Bed Occupancy - Selected Hospital by Quarter**
 
-```{r}
+```{r, echo=TRUE}
 
 plot4 <- bed_data %>%
   #Create date variable.
@@ -312,7 +259,7 @@ labs(title = "Average Bed Occupancy (%) by, Location & Quarter (2018 Q1 Onwards)
 > **Plot 5 - Average Bed Occupancy - Selected Specialty by Quarter**
 
 
-```{r}
+```{r, echo=TRUE}
 
 plot5 <- bed_data %>%
   #Create date variable.
@@ -336,19 +283,21 @@ labs(title = "Average Bed Occupancy (%) by, Specialty & Quarter (2018 Q1 Onwards
   ggplotly(plot5) 
 
 
-
-
-
 ```
 
 
-# 4. Hypothesis Testing
+<br>
 
-
-
-#### 4.1a Hypothesis Test 1 - Difference in Average Bed Occupancy (Two Hospitals)
+## 4. Hypothesis Testing
 
 <br>
+
+<br>
+
+#### 4.1 Hypothesis Test 1 - Difference in Average Bed Occupancy (Two Hospitals)
+
+<br>
+
 Perform an appropriate statistical test to determine whether 
 there is a statistically significant difference in average bed occupany between 
 two selected hospitals. 
@@ -365,7 +314,11 @@ $$ H_a: \mu_{ave \ bed \ occupancy \ (hospital\ 1)} -\mu_{ave \ bed \ occupancy 
 
 <br>
 
-```{r}
+#### 4.1a Calcuate Observed Statistic 
+
+<br>
+
+```{r, echo=TRUE}
 #Step 1 of the bootstrap will be to filter the bed occupancy data by the users selection.
 #in the below code i have selected the UI for testing code. 
 
@@ -386,11 +339,13 @@ observed_ave_occupancy_stat1 <- average_bed_occupancy_twohospitals %>%
 observed_ave_occupancy_stat1
 
 ```
-
+<br>
 
 #### 4.1b Null Distribution Calculation 
 
-```{r}
+<br>
+
+```{r, echo=TRUE}
 # This code creates a null distribution to determine if 
 #observed_ave_occupancy_stat1 is significant. 
 
@@ -406,10 +361,13 @@ null_dist1 <- average_bed_occupancy_twohospitals %>%
 
 head(null_dist1)
 ```
+<br>
 
 #### 4.1c  Probability Value (P-Value)
 
-```{r}
+<br>
+
+```{r, echo=TRUE}
 # This calculation generate probability of observing observed stat.
 #Selection of one-tailed test.
 p_value1 <- null_dist1 %>%
@@ -422,11 +380,13 @@ p_value1
 #(alpha)set at 0.05. Other development options could include UI selection of alpha.
 
 ```
-
+<br>
 
 #### 4.1d Visualise Average Bed Occupancy Distribution
 
-```{r}
+<br>
+
+```{r, echo=TRUE}
 # Let's visualise the distribution with the observed stat. Direction set to 
 #both because we are looking for difference. 
 
@@ -439,11 +399,13 @@ null_dist1 %>%
   
 
 ```
+<br>
 
+#### 4.1e Calculate Confidence Intervals (CI) & Visualisation
 
-#### 4.1e Calculate Confidence Intervals (CI)
+<br>
 
-```{r}
+```{r, echo=TRUE}
 # This code generates the confidence intervals (upper and lower) for the
 #generated null distribution.
 
@@ -453,7 +415,8 @@ bed_ci_95_twohospitals <- null_dist1 %>%
 bed_ci_95_twohospitals
 
 ```
-```{r}
+
+```{r, echo=TRUE}
 # This code generates the visual of confidence intervals (upper and lower) for the
 #generated null distribution.
 
@@ -465,8 +428,9 @@ null_dist1%>%
                         "CI Upper: ", round(bed_ci_95_twohospitals$upper_ci, digits = 3)))
                         
 ```
+<br>
 
-#### 4.2a Hypothesis Test 2 - Difference in Average Bed Occupancy (Hospital Vs Scotland)
+#### 4.2 Hypothesis Test 2 - Difference in Average Bed Occupancy (Hospital Vs Scotland)
 
 <br>
 Perform an appropriate statistical test to determine whether 
@@ -485,31 +449,11 @@ Ha: The average occupancy of the selected hospital is greater than average for a
 $$ H_a: \mu_{ave \ bed \ occupancy \ (scotland)} -\mu_{ave \ bed \ occupancy \ (hospital)} \neq0 $$
 <br>
 
-```{r}
-#Calculate Average Occupancy for All of Scotland Hospitals
+#### 4.1a Calcuate Observed Statistic 
 
-ave_occupancy_scotland <- bed_data %>%
-  summarise(total = n(), average_bed_occupancy = round(sum(percentage_occupancy,
-                                                           na.rm =TRUE)/ 
-                                            total))
-```
+<br>
 
-```{r}
-# Bootstrap on calculated Average Bed Occupancy for all of Scotland (No filters).
-#Mean used in calculation is from previous code line. 
-
-null_dist2 <- bed_data %>% 
-  specify(response = percentage_occupancy) %>% 
-  #We are hypothesing that our mean rating for all of Scotlands hospitals will be
-  # = to our cacluated value (i.e. no difference)
-  hypothesize(null = "point", mu = ave_occupancy_scotland$average_bed_occupancy) %>% 
-  generate(reps = 10000, type = "bootstrap") %>% 
-calculate(stat = "mean")
-
-```
-
-```{r}
-
+```{r, echo=TRUE}
 #Calculate Average Occupancy for selected hospital.
 
 average_bed_occupancy_onehospital_stat2 <- bed_data %>% 
@@ -523,8 +467,44 @@ average_bed_occupancy_onehospital_stat2 <- bed_data %>%
 
 average_bed_occupancy_onehospital_stat2
 ```
+<br>
 
-```{r}
+#### 4.2b Null Distribution Calculation 
+
+<br>
+```{r, echo=TRUE}
+#Calculate Average Occupancy for All of Scotland Hospitals. 
+#Then create null distribution around this mean.
+
+ave_occupancy_scotland <- bed_data %>%
+  summarise(total = n(), average_bed_occupancy = round(sum(percentage_occupancy,
+                                                           na.rm =TRUE)/ 
+                                            total))
+
+ave_occupancy_scotland
+```
+
+<br>
+
+```{r, echo=TRUE}
+# Bootstrap on calculated Average Bed Occupancy for all of Scotland (No filters).
+#Mean used in calculation is from previous code line. 
+
+null_dist2 <- bed_data %>% 
+  specify(response = percentage_occupancy) %>% 
+  #We are hypothesing that our mean rating for all of Scotlands hospitals will be
+  # = to our calculated value (i.e. no difference)
+  hypothesize(null = "point", mu = ave_occupancy_scotland$average_bed_occupancy) %>% 
+  generate(reps = 10000, type = "bootstrap") %>% 
+calculate(stat = "mean")
+
+```
+<br>
+
+#### 4.2c  Probability Value (P-Value)
+
+<br>
+```{r, echo=TRUE}
 # This calculation generate probability of observing observed stat.
 #Selection of one-tailed test.
 p_value2 <- null_dist2 %>%
@@ -538,9 +518,13 @@ p_value2
 #(alpha)set at 0.05. Other development options could include UI selection of alpha.
 
 ```
+<br>
 
+#### 4.2d Visualise Average Bed Occupancy Distribution
 
-```{r}
+<br>
+
+```{r, echo=TRUE}
 # Lets's visualise the distribution with the observed stat. Direction set to 
 #both because we are looking for difference. 
 
@@ -554,8 +538,13 @@ null_dist2 %>%
                         "Prob Value: ", p_value2, "\n", "alpha = ", 0.05))
 
 ```
+<br>
 
-```{r}
+#### 4.2e Calculate Confidence Intervals (CI) & Visualisation
+
+<br>
+
+```{r, echo=TRUE}
 # This code generates the confidence intervals (upper and lower) for the
 #generated null distribution.
 
@@ -565,7 +554,7 @@ bed_ci_95_onehospital <- null_dist2 %>%
 bed_ci_95_onehospital
 ```
 
-```{r}
+```{r, echo=TRUE}
 # This code generates the visual of confidence intervals (upper and lower) for the
 #generated null distribution.
 
@@ -580,4 +569,4 @@ null_dist2%>%
 
 
 
-
+**End of Analysis Script**
