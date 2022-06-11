@@ -64,32 +64,33 @@ The theoretical client for the project was Public Health Scotland (PHS).
 The stages of this project were as follows:
 
 <br>
-22nd April 2022;
+**22nd April 2022:**
 
 * Group review and consideration of project brief;
 * Agreement on project management approach - communication & collaboration methods, action tracking & version control methods;
 * Setting up of group repository on github.
 
 <br>
-23rd to 24th April 2022;
+**23rd to 24th April 2022:**
 
 * Development & consolidation of group questions and allocation of focus areas to each team member, for further research and dataset identification.
 * Selection of datasets;
 * Joining of datasets where applicable.
 
 <br>
-25th to 26th April:
+**25th to 26th April:**
+
 * Initial dashboard planning and wireframe;
 * Initital data analysis & visualisations.
 
 <br>
-27th of April:
+**27th of April:**
 
 * Continuation of dashboard development and analysis;
 * Presentation preparation and rehearsal.
 
 <br>
-28th of April:
+**28th of April:**
 
 * Delivery of group project presentation inclusive of dashboard, to project client, Public Health Scotland.
 
@@ -174,12 +175,21 @@ Further guidance on how the statistics.gov.scot data is stored and structured ca
 
 <br>
 ### Ethical and legal considerations of the data
+
 The data sets used are public sector information licensed under the Open Government Licence, which means that the information contained in the data sets can be used by: * copying, publishing, distributing and transmitting the Information * adapting the Information for use in research * exploiting the Information commercially and non-commercially
 
 In our case, we are adapting it for use in research, and as long as we acknowledge the source of the information (which we are doing here), we can freely use the data sets.
 
 After acquisition, we checked that the information contained in each data set did not contain personal information of individuals - and this was to confirm that Public Health Scotland (the source of the data sets) has followed data protection laws. This was confirmed and more information into data protection carried out by PHS can be found in the following link: https://www.opendata.nhs.scot/about and https://publichealthscotland.scot/our-privacy-notice/organisational-background/.
 
-The data checks we performed were to see if there was any personally identifiable information contained in each data set - potential personal details that might be contained in these data sets would be: * name * address * email address * date of birth * NHS number * next-of-kin contacts * details of your GP
+The data checks we performed were to see if there was any personally identifiable information contained in each data set - potential personal details that might be contained in these data sets would be: 
+
+* Name; 
+* Address; 
+* Email address; 
+* Date of birth; 
+* NHS number; 
+* Next-of-kin contacts; 
+* Details of GP.
 
 All of which were not found. As a final legal consideration was how the data was obtained, but by PHS standards, consent is needed to collect and publish this data on PHS - concluding that the data could be used after considering these ethical/legal factors.
