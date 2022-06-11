@@ -64,14 +64,14 @@ The theoretical client for the project was Public Health Scotland (PHS).
 The stages of this project were as follows:
 
 <br>
-**22nd April 2022:**
+**22nd April 2022:
 
 * Group review and consideration of project brief;
 * Agreement on project management approach - communication & collaboration methods, action tracking & version control methods;
 * Setting up of group repository on github.
 
 <br>
-**23rd to 24th April 2022:**
+** 23rd to 24th April 2022:
 
 * Development & consolidation of group questions and allocation of focus areas to each team member, for further research and dataset identification.
 * Selection of datasets;
