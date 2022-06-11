@@ -5,34 +5,34 @@ This is a repository for the Codeclan DE13 Cohort - Group Project
 Names of group members
 Scott Wright, Cameron Fraser, Alisa Tunonen & Mark Fojas
 
-### Roles & responsibilities of each member:**
+### Roles & responsibilities of each team member:
 <br>
 Scott worked on:
 
-Cleaning & wrangling of Bed Capacity Data;
-Bed Capacity analysis scripts and visualisation (plots).Analysis included inferential statistics - bootstrapping methods;
-Generated data joining script for group and joined datasets ready for analysis.
+* Cleaning & wrangling of Bed Capacity Data;
+* Bed Capacity analysis scripts and visualisation (plots).Analysis included inferential statistics - bootstrapping methods;
+* Generated data joining script for group and joined datasets ready for analysis.
 
 <br>
 Cameron worked on:
 
-Cleaning & wrangling of Geospatial Data;
-Development of R-Shiny Web App (dashboard) inclusive of R-Shiny global, UI and server scripts;
-Led the process of merging each group members scripts into the above scripts of R-Shiny Web App.
+* Cleaning & wrangling of Geospatial Data;
+* Development of R-Shiny Web App (dashboard) inclusive of R-Shiny global, UI and server scripts;
+* Led the process of merging each group members scripts into the above scripts of R-Shiny Web App.
 
 <br>
 Alisa worked on:
 
-Identifying the datasets necessary to answer the questions set by the group as part of satisfying the brief;
-Cleaning and wrangling of Admissions Data (including A&E Admissions);
-Admissions analysis scripts and visualisation (plots). Analysis included use of predictive modelling.
+* Identifying the datasets necessary to answer the questions set by the group as part of satisfying the brief;
+* Cleaning and wrangling of Admissions Data (including A&E Admissions);
+* Admissions analysis scripts and visualisation (plots). Analysis included use of predictive modelling.
 
 <br>
 Mark worked on:
 
-Cleaning and wrangling of Delayed Discharge Data (inclusive of reviewing demographic influences such as age, reasons for delay and deprivation);
-Delayed discharge analysis scripts and visualisation (plots);
-Researched and considered influence of NHS staff numbers/working hours, for potential future analysis.
+* Cleaning and wrangling of Delayed Discharge Data (inclusive of reviewing demographic influences such as age, reasons for delay and deprivation);
+* Delayed discharge analysis scripts and visualisation (plots);
+* Researched and considered influence of NHS staff numbers/working hours, for potential future analysis.
 
 <br>
 Everyone worked on:
@@ -60,49 +60,64 @@ The dashboard outlines our topic in terms of providing insight into Temporal, De
 
 The theoretical client for the project was Public Health Scotland (PHS).
 
-### Stages of the project
+### Stages of the project:
 The stages of this project were as follows:
 
+<br>
 22nd April 2022;
 
-Group review and consideration of project brief;
-Agreement on project management approach - communication & collaboration methods, action tracking & version control methods;
-Setting up of group repository on github.
+* Group review and consideration of project brief;
+* Agreement on project management approach - communication & collaboration methods, action tracking & version control methods;
+* Setting up of group repository on github.
+
+<br>
 23rd to 24th April 2022;
 
-Development & consolidation of group questions and allocation of focus areas to each team member, for further research and dataset identification.
-Selection of datasets;
-Joining of datasets where applicable.
-25th to 26th April:
+* Development & consolidation of group questions and allocation of focus areas to each team member, for further research and dataset identification.
+* Selection of datasets;
+* Joining of datasets where applicable.
 
-Initial dashboard planning and wireframe;
-Initital data analysis & visualisations.
+<br>
+25th to 26th April:
+* Initial dashboard planning and wireframe;
+* Initital data analysis & visualisations.
+
+<br>
 27th of April:
 
-Continuation of dashboard development and analysis;
-Presentation preparation and rehearsal.
+* Continuation of dashboard development and analysis;
+* Presentation preparation and rehearsal.
+
+<br>
 28th of April:
 
-Delivery of group project presentation inclusive of dashboard, to project client, Public Health Scotland.
-Which tools were used in the project
-Zoom (predominantly used at weekends when team members were remote working);
-Git/GitHub (collaboration & version control);
-Slack in aid of remote team communication and collaboration;
-R Studio (Integrated Development Environment);
-Morning (9.45am) and afternoon (2.30pm) team stand-ups (Mon-Fri).
-Meeting with Public Health Scotland representative on Monday
-How did you gather and synthesise requirements for the project?
+* Delivery of group project presentation inclusive of dashboard, to project client, Public Health Scotland.
+
+### Which tools were used in the project?
+
+* Zoom (predominantly used at weekends when team members were remote working);
+* Git/GitHub (collaboration & version control);
+* Slack in aid of remote team communication and collaboration;
+* R Studio (Integrated Development Environment);
+* Morning (9.45am) and afternoon (2.30pm) team stand-ups (Mon-Fri).
+* Meeting with Public Health Scotland representative on Monday of project week.
+
+
+### How did you gather and synthesise requirements for the project?
 In the first instance, we needed to create clarity and a mutual understanding within the group of what the project brief was, what outcomes we had to meet, and how we would meet such outcomes.Each person within the group shared their own interpretation of the brief and their thoughts on how best to achieve the project outcomes. We began “with the end user in mind” and as a result, we reached consensus in an efficient and coordinated manner.
 
 As the project evolved, our group prioritised the development of a dashboard which would ultimately, provide enough information, to allow the end user to answer the questions set/asked by the project brief.
 
 Our dashboard focused on the following areas;
 
-Bed Capacity;
-Admissions;
-Delayed Discharge, and to
-Provide the functionality to observe the above through changing variables such as specialty, time, year, quarter, season, geographical location (health board/hospital), age and social deprivation.
-Motivations for using the data you have chosen
+* Bed Capacity;
+* Admissions;
+* Delayed Discharge, and to
+* Provide the functionality to observe the above through changing variables such as specialty, time, year, quarter, season, geographical location (health board/hospital), age and social deprivation.
+
+
+### Motivations for using the data you have chosen?
+
 In the planning stages, we established that bed occupancy, number of admissions, and delayed discharges would be the key performance indicators to gain insights into the Winter Crisis and it’s strain on Scottish NHS Health Boards.
 
 We used a dataset of the NHS Health Boards across Scotland, to give an interactive map that would allow quick glances into the rate of our key performance indicators at a health board area. This was done in our summary tab of the dashboard and was included to allow Public Health Scotland to look at key measures with a geo-spatial aspect.
@@ -113,7 +128,8 @@ We used the dataset on number of admissions by health board & by hospital to loo
 
 We finally used a dataset based on delayed discharge to answer what demographic of patients have an increased time spent in hospitals because we wanted to see which individuals are most effected by strains in the NHS. This was set up to allow filtering based on a date range and hospitals, again to allow planning of resources when there was an increased pressure on the NHS.
 
-Data quality and potential bias, including a brief summary of data cleaning and transformations
+### Data quality and potential bias, including a brief summary of data cleaning and transformations:
+
 According to the About tab on the dataset page/dedicated page online, the data quality …
 
 All measures were taken to making the dataset as unbiased as possible while data cleaning and transformation steps were taken - and this was important to us, as we understand that biased data leads to biased conclusions and we didn’t want anyone to be mislead by our analysis of the data. The only biases that could have been introduce was from the source of the data - this is discussed later in this document but it should be noted that there will be no biases introduced from PHS. The PHS website also has information on the data quality, and we concluded that the data was unbiased and fairly collected with consent from individuals (links to the privacy policies are contained in the Data Ethics of this document).
@@ -130,12 +146,10 @@ Health Boards
 The main cleaning step for this data set was carried out to create a datetime variable (to be used in the predictive modelling). Using the lubridate package, the week and quarter of year was obtained from the week_ending variable (the quarter needed to be changed from “Q[1, 2, 3, 4]” to “Spring”, “Summer”, “Autumn” or “Winter”).
 
 
-
 This was also carried out in the Delayed Discharge data set - row_bind was done on information with:
 
 Health Boards
-Speciality within hospitals
-And, as stated before, a datetime variable was created in the same way as the Admissions data set
+Speciality within hospitals and, as stated before, a datetime variable was created in the same way as the Admissions data set
 
 
 A Bed Occupancy data set was created based on the delayed discharge data set, but a variable was changed to become average_occupied_beds based on rounding the amount of occupied beds.
@@ -158,7 +172,8 @@ The benefits of storing data in this format is that the structure of data is hel
 
 Further guidance on how the statistics.gov.scot data is stored and structured can be found at: https://guides.statistics.gov.scot/article/34-understanding-the-data-structure.
 
-Ethical and legal considerations of the data
+<br>
+### Ethical and legal considerations of the data
 The data sets used are public sector information licensed under the Open Government Licence, which means that the information contained in the data sets can be used by: * copying, publishing, distributing and transmitting the Information * adapting the Information for use in research * exploiting the Information commercially and non-commercially
 
 In our case, we are adapting it for use in research, and as long as we acknowledge the source of the information (which we are doing here), we can freely use the data sets.
