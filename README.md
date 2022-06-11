@@ -1,53 +1,66 @@
 # codeclan_pda_DE13group3project
- This is a repository for the Codeclan DE13 Cohort - Group Project
+
+This is a repository for the Codeclan DE13 Cohort - Group Project
 
 Names of group members
 Scott Wright, Cameron Fraser, Alisa Tunonen & Mark Fojas
 
-Roles & responsibilities of each member
+### Roles & responsibilities of each member:**
+<br>
 Scott worked on:
 
 Cleaning & wrangling of Bed Capacity Data;
 Bed Capacity analysis scripts and visualisation (plots).Analysis included inferential statistics - bootstrapping methods;
 Generated data joining script for group and joined datasets ready for analysis.
+
+<br>
 Cameron worked on:
 
 Cleaning & wrangling of Geospatial Data;
 Development of R-Shiny Web App (dashboard) inclusive of R-Shiny global, UI and server scripts;
 Led the process of merging each group members scripts into the above scripts of R-Shiny Web App.
+
+<br>
 Alisa worked on:
 
 Identifying the datasets necessary to answer the questions set by the group as part of satisfying the brief;
 Cleaning and wrangling of Admissions Data (including A&E Admissions);
 Admissions analysis scripts and visualisation (plots). Analysis included use of predictive modelling.
+
+<br>
 Mark worked on:
 
 Cleaning and wrangling of Delayed Discharge Data (inclusive of reviewing demographic influences such as age, reasons for delay and deprivation);
 Delayed discharge analysis scripts and visualisation (plots);
 Researched and considered influence of NHS staff numbers/working hours, for potential future analysis.
+
+<br>
 Everyone worked on:
 
-Reviewing the project brief and determining our approach to satisfying it - posing questions for the collective group to consider, and exploring the areas highlighted;
-Dashboard design & layout (wireframe) - agreeing initial and final concepts both visually and from a functional perspective (with the end user in mind);
-Development of group presentation (including final delivery & rehearsal).
-Brief description of dashboard topic
+* Reviewing the project brief and determining our approach to satisfying it - posing questions for the collective group to consider, and exploring the areas highlighted;
+* Dashboard design & layout (wireframe) - agreeing initial and final concepts both visually and from a functional perspective (with the end user in mind);
+* Development of group presentation (including final delivery & rehearsal).
+
+
+### Brief description of dashboard topic:
+
 The core topic for the dashboard was the impact that winter might have on Scotland’s health care system (NHS), primarily in the hospital (acute care) sector.
 
 Key focus areas and questions to be answered using the information provided by the dashboard, were:
 
-To what extent is the ‘winter crises’ the media predicts real?;
+* To what extent is the ‘winter crises’ the media predicts real?;
 
-How has winter impacted Scotland’s NHS in the past?;
+* How has winter impacted Scotland’s NHS in the past?;
 
-Potential impact in winter 2022;
+* Potential impact in winter 2022;
 
-How might the pandemic influence the potential scenario?.
+* How might the pandemic influence the potential scenario?.
 
 The dashboard outlines our topic in terms of providing insight into Temporal, Demographic & Geographic Aspects of the domain, and was designed such to provide the theoretical front end user (NHS Administration Staff) with user-friendly access to information on key performance indicators (KPI’s).
 
 The theoretical client for the project was Public Health Scotland (PHS).
 
-Stages of the project
+### Stages of the project
 The stages of this project were as follows:
 
 22nd April 2022;
